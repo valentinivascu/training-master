@@ -18,7 +18,7 @@
 :root{
   --bg:#141619; --surface:#1D2025; --surface-2:#272B32; --line:#353A43;
   --text:#EFEBE3; --muted:#959CA7; --good:#5DBB8A; --warn:#E0B552; --danger:#E0736B;
-  --accent:#DB7440; --accent-dim:#7A3F1E; --anim-eq:#4A505B;
+  --accent:#DB7440; --accent-dim:#7A3F1E; --anim-eq:#454B55; --anim-pad:#3A4049; --anim-floor:#191C20; --anim-body:#E6E0D6; --anim-body2:#7D838D; --anim-hair:#2B2420; --anim-mp:var(--accent); --anim-ms:rgba(219,116,64,.45); --glow:rgba(219,116,64,.26);
   --r:14px; --tab-h:62px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -237,6 +237,75 @@ details.how ul li b{color:var(--text)}
 
 @media (max-width:359px){.tgrid{grid-template-columns:repeat(2,1fr)}.bwrow{grid-template-columns:1fr 1fr}.bwrow .btn{grid-column:1/-1}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+@supports (color: color-mix(in srgb, red 50%, transparent)){
+  :root{--anim-ms:color-mix(in srgb, var(--accent) 45%, transparent);--glow:color-mix(in srgb, var(--accent) 30%, transparent)}
+}
+
+/* ---------- v2.2: antrenamentul de azi ---------- */
+.hero{position:relative;border-radius:20px;padding:18px 16px 16px;margin-bottom:12px;border:1px solid var(--line);overflow:hidden;
+  background:radial-gradient(130% 95% at 100% 0%, var(--glow) 0%, transparent 62%), linear-gradient(180deg,#23272D,#1B1E23)}
+.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.hero h2{font-size:27px;margin-top:5px;line-height:1.1}
+.hero .mus{margin-top:14px}
+.hero-stats{display:flex;gap:18px;margin:14px 0 6px;color:var(--muted);font-size:13px}
+.hero-stats b{color:var(--text);font-size:16px;margin-right:2px;font-variant-numeric:tabular-nums}
+.hero .btn.big{margin-top:10px;box-shadow:0 6px 18px -6px var(--glow)}
+.hero-done{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;padding:10px 10px 10px 14px;border-radius:12px;background:rgba(93,187,138,.12);color:var(--good);font-weight:700;font-size:14px}
+.pring{position:relative;width:64px;height:64px;flex:none}
+.pring svg{width:100%;height:100%;display:block}
+.pr-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5.5}
+.pr-fg{fill:none;stroke:var(--accent);stroke-width:5.5;stroke-linecap:round;transition:stroke-dasharray .45s ease}
+.pring span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11.5px;color:var(--muted);line-height:1.15;text-align:center}
+.pring em{font-style:normal;white-space:nowrap}
+.pring b{font-size:17px;color:var(--text)}
+.pring small{font-size:10.5px}
+.sec{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:22px 2px 10px;font-weight:700}
+.week{padding:13px 16px}
+
+/* grupe musculare */
+.mus{display:flex;flex-wrap:wrap;gap:6px}
+.mu{font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px;line-height:1;white-space:nowrap}
+.mu.p{background:var(--accent);color:#17120E}
+.mu.s{background:var(--anim-ms);color:var(--text)}
+
+/* rândul exercițiului */
+.ex-head{gap:12px;padding:10px 12px}
+.anim-thumb{width:62px;height:50px;border-radius:11px;background:var(--surface-2);flex:none;overflow:hidden;display:block}
+.anim-thumb svg{width:100%;height:100%;display:block}
+.ex-txt small.tgt{color:var(--text);opacity:.8;font-weight:600}
+.ex .ring{width:40px;height:40px;font-size:12px;border-width:2.5px}
+.ex.complete .anim-thumb{box-shadow:inset 0 0 0 2px var(--good)}
+.anim{margin-top:12px}
+.anim .mus{position:relative;padding:2px 10px 11px}
+.anim-btn{width:38px;min-height:34px;padding:0;font-size:12px;letter-spacing:-.05em}
+
+/* nutriție */
+.nut{display:flex;gap:16px;align-items:center}
+.kring{position:relative;width:122px;height:122px;flex:none}
+.kring svg{width:100%;height:100%;display:block}
+.kr-bg{fill:none;stroke:var(--surface-2);stroke-width:9}
+.kr-fg{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;transition:stroke-dasharray .45s ease}
+.kring div{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.15}
+.kring b{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.kring span{font-size:11.5px;color:var(--muted)}
+.kring small{font-size:11px}
+.macros{flex:1;min-width:0}
+.macros .bar{margin-bottom:10px}
+.macros .bar:last-child{margin-bottom:0}
+.macros .bar-l{font-size:12.5px}
+.macros .bar-l b{font-size:14px}
+.track i.mp{background:var(--good)} .track i.mc{background:#6FA8E6} .track i.mf{background:var(--warn)}
+.fine.pad0{margin:-2px 4px 14px}
+
+/* onboarding pe pași */
+.steps{display:flex;gap:6px;margin:0 0 16px}
+.steps span{flex:1;height:5px;border-radius:3px;background:var(--line);transition:background .3s}
+.steps span.on{background:var(--accent)} .steps span.done{background:var(--accent-dim)}
+.row2.wiz{margin-top:16px}
+.row2.wiz .btn{min-height:54px;font-size:16px}
+
+@media (max-width:359px){.nut{flex-direction:column;align-items:stretch}.kring{margin:0 auto}.hero-stats{gap:12px}}
 
 </style>
 </head>
@@ -880,7 +949,7 @@ const ANIM = (() => {
       pr: [['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 84, 70, 100, 2.5], ['lever', 100, 6, 'hand'], ['grip', 'hand']]},
     incline: {b: {hip: [92, 74], t: -140, hd: -128, foot: [119, 99], us: 0.65}, A: {hand: [73, 29]}, B: {hand: [77, 48]},
       pr: [['seat', 86, 79, 106, 79], ['seat', 89, 77, 62, 54], ['line', 96, 81, 96, 100, 2.5], ['db', 'hand']]},
-    pushup: {b: {hand: [55, 99], us: 0.85}, A: {hip: [77.6, 79.7], t: 203, th: 20, sh: 20, ft: 60}, B: {hip: [79.7, 89], t: 186, th: 8.5, sh: 8.5, ft: 55}, eb: -1,
+    pushup: {mir: true, b: {hand: [55, 99], us: 0.85}, A: {hip: [77.6, 79.7], t: 203, th: 20, sh: 20, ft: 60}, B: {hip: [79.7, 89], t: 186, th: 8.5, sh: 8.5, ft: 55}, eb: -1,
       pr: []},
     flye: {b: {hip: [68, 78], t: -98, hd: -92, foot: [92, 99]}, A: {hand: [57, 52]}, B: {hand: [91, 52]},
       pr: [['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 84, 70, 100, 2.5], ['grip', 'hand']]},
@@ -939,7 +1008,7 @@ const ANIM = (() => {
       pr: [['line', 40, 99, 88, 62, 3], ['pad', 'hip', 4.5, 3, 3], ['pad', 'ank', 3.2, 2, 3.5]]},
     calf: {b: {th: 90, sh: 90, t: -90, hr: [3, 31]}, A: {ank: [80, 95], ft: -23}, B: {ank: [83.5, 85.7], ft: 60},
       pr: [['box', 85, 92, 42, 8]]},
-    plank: {hold: true, b: {t: 192, th: 11, sh: 11, ft: 85, ua: 90, fa: 0}, A: {hip: [80.5, 85.5]}, B: {hip: [80.5, 86.3]},
+    plank: {hold: true, mir: true, b: {t: 192, th: 11, sh: 11, ft: 85, ua: 90, fa: 0}, A: {hip: [80.5, 85.5]}, B: {hip: [80.5, 86.3]},
       pr: [['mat', 40, 101, 132, 101]]},
     legraise: {b: {hand: [82, -12]}, A: {hip: [82, 50], t: -90, th: 90, sh: 90}, B: {hip: [86, 46], t: -98, th: -6, sh: -6},
       pr: [['line', 70, -12, 96, -12, 3], ['line', 96, -12, 96, 100, 2.5]]},
@@ -990,71 +1059,192 @@ const ANIM = (() => {
 
   const f1 = n => (Math.round(n * 10) / 10).toString();
   const pts = a => a.map(p => f1(p[0]) + ',' + f1(p[1])).join(' ');
-  const off = (a, d) => a.map(p => [p[0] + d[0], p[1] + d[1]]);
   const line = (a, w, st, op) => '<polyline points="' + pts(a) + '" fill="none" stroke="' + (st || 'currentColor') + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (op ? ' opacity="' + op + '"' : '') + '/>';
-  const circ = (c, r, fill, st, sw, op) => '<circle cx="' + f1(c[0]) + '" cy="' + f1(c[1]) + '" r="' + r + '" fill="' + fill + '"' + (st ? ' stroke="' + st + '" stroke-width="' + sw + '"' : '') + (op ? ' opacity="' + op + '"' : '') + '/>';
-  const EQ = 'var(--anim-eq)', WT = 'var(--accent)', WTD = 'var(--accent-dim)';
-  const GROUND = '<line x1="-60" y1="100.6" x2="220" y2="100.6" stroke="' + EQ + '" stroke-width="1.2"/>';
+  const circ = (c, r, fill, st, sw, op) => '<circle cx="' + f1(c[0]) + '" cy="' + f1(c[1]) + '" r="' + r + '" fill="' + fill + '"' + (st ? ' stroke="' + st + '" stroke-width="' + sw + '"' : '') + (op != null ? ' opacity="' + op + '"' : '') + '/>';
+  const poly = (a, fill, op) => '<polygon points="' + pts(a) + '" fill="' + fill + '" stroke="' + fill + '" stroke-width="0.8" stroke-linejoin="round"' + (op != null ? ' opacity="' + op + '"' : '') + '/>';
+  const EQ = 'var(--anim-eq)', PAD = 'var(--anim-pad)', WT = 'var(--accent)', WTD = 'var(--accent-dim)';
+  const SKIN = 'var(--anim-body)', SKIN2 = 'var(--anim-body2)', HAIR = 'var(--anim-hair)', MP = 'var(--anim-mp)', MS = 'var(--anim-ms)';
+  const GROUND = '<rect x="-60" y="100.6" width="280" height="30" fill="var(--anim-floor)"/><line x1="-60" y1="100.6" x2="220" y2="100.6" stroke="' + EQ + '" stroke-width="1"/>';
+
+  /* ---------- grupe musculare: p = principale, s = secundare ---------- */
+  const MN = {chest: 'Piept', abs: 'Abdomen', back: 'Spate', traps: 'Trapez', lowerback: 'Zona lombară', glutes: 'Fesieri', gmed: 'Fesier lateral',
+    shoulders: 'Umeri', reardelt: 'Umeri (spate)', biceps: 'Biceps', triceps: 'Triceps', forearms: 'Antebrațe', quads: 'Cvadriceps',
+    hamstrings: 'Ischiogambieri', calves: 'Gambe', hipflex: 'Flexorii șoldului'};
+  const MUS = {
+    bench: 'chest|triceps shoulders', dbbench: 'chest|triceps shoulders', chestpress: 'chest|triceps shoulders', incline: 'chest shoulders|triceps',
+    pushup: 'chest|triceps shoulders abs', flye: 'chest|shoulders', latpull: 'back|biceps reardelt', asstpull: 'back|biceps reardelt',
+    crow: 'back|biceps reardelt traps', dbrow: 'back|biceps reardelt', brow: 'back|biceps reardelt lowerback', facepull: 'reardelt traps|back',
+    ohp: 'shoulders|triceps traps abs', dbshoulder: 'shoulders|triceps', latraise: 'shoulders|traps', bicep: 'biceps|forearms', hammer: 'biceps forearms|',
+    tricep: 'triceps|', ohtri: 'triceps|', squat: 'quads glutes|hamstrings lowerback abs', goblet: 'quads glutes|abs', legpress: 'quads glutes|hamstrings',
+    rdl: 'hamstrings glutes|lowerback', deadlift: 'glutes hamstrings lowerback|quads back traps', hipthrust: 'glutes|hamstrings', glutebridge: 'glutes|hamstrings',
+    bulgarian: 'quads glutes|hamstrings', lunge: 'quads glutes|hamstrings calves', stepup: 'glutes quads|hamstrings', legext: 'quads|', legcurl: 'hamstrings|calves',
+    kickback: 'glutes|hamstrings', abduction: 'gmed|glutes', backext: 'lowerback glutes|hamstrings', calf: 'calves|', plank: 'abs|shoulders glutes',
+    legraise: 'abs|hipflex', cablecrunch: 'abs|'
+  };
+  const ONE = {dbrow: 'arm', kickback: 'leg', stepup: 'leg', bulgarian: 'leg'};
+  function muscles(id) { const m = (MUS[id] || '|').split('|'); return {p: m[0].split(' ').filter(Boolean), s: (m[1] || '').split(' ').filter(Boolean)}; }
+
+  /* profilul fiecărui segment: [poziția pe segment, grosime în față, grosime în spate] */
+  const PR = {
+    torso: [[0, 4.6, 6.6], [0.14, 5, 6.2], [0.42, 4.5, 4.6], [0.72, 6.2, 5.6], [0.9, 5.6, 5.4], [1, 4.4, 4.4]],
+    thigh: [[0, 5.4, 5.8], [0.3, 5.3, 5], [0.75, 4.2, 4], [1, 3.4, 3.4]],
+    shin: [[0, 3.3, 3.4], [0.28, 2.9, 4.4], [0.62, 2.4, 2.9], [1, 2, 2.1]],
+    uarm: [[0, 3.9, 3.9], [0.45, 3.5, 3.6], [1, 2.6, 2.6]],
+    farm: [[0, 2.7, 2.7], [0.3, 2.9, 2.7], [1, 1.9, 1.9]],
+    neck: [[0, 2.7, 2.7], [1, 2.3, 2.3]],
+    foot: [[0, 2.5, 1.8], [0.35, 2.1, 1.5], [1, 1.1, 1]]
+  };
+  /* "în față" = partea anterioară a corpului; trunchiul e orientat invers față de membre */
+  let MIR = 1;
+  function fr(p, q, sg) { const d = [q[0] - p[0], q[1] - p[1]], l = Math.hypot(d[0], d[1]) || 1, u = [d[0] / l, d[1] / l]; sg *= MIR; return {p, u, l, n: [sg * u[1], -sg * u[0]]}; }
+  const at = (F, t, o) => [F.p[0] + F.u[0] * F.l * t + F.n[0] * o, F.p[1] + F.u[1] * F.l * t + F.n[1] * o];
+  function rad(pr, t, side) {
+    for (let i = 1; i < pr.length; i++) if (t <= pr[i][0]) { const a = pr[i - 1], b = pr[i], k = (t - a[0]) / ((b[0] - a[0]) || 1); return a[side] + (b[side] - a[side]) * k; }
+    return pr[pr.length - 1][side];
+  }
+  function shape(F, pr) {
+    const A = [], B = [];
+    for (let i = 0; i <= 12; i++) { const t = i / 12; A.push(at(F, t, rad(pr, t, 1))); B.push(at(F, t, -rad(pr, t, 2))); }
+    return A.concat(B.reverse());
+  }
+  function belly(F, pr, side, t0, t1, depth) {
+    const A = [], B = [], sg = side === 1 ? 1 : -1;
+    for (let i = 0; i <= 10; i++) {
+      const t = t0 + (t1 - t0) * i / 10, r = rad(pr, t, side) - 0.25, k = Math.sin(Math.PI * i / 10);
+      A.push(at(F, t, sg * r)); B.push(at(F, t, sg * (r - r * depth * k)));
+    }
+    return A.concat(B.reverse());
+  }
+  const MDEF = {
+    chest: [['torso', 1, 0.46, 1, 1]], abs: [['torso', 1, 0.08, 0.56, 0.7]], back: [['torso', 2, 0.36, 0.95, 0.9]],
+    traps: [['torso', 2, 0.84, 1, 0.9], ['neck', 2, 0, 0.95, 0.85]], lowerback: [['torso', 2, 0.1, 0.44, 0.65]],
+    shoulders: [], reardelt: [['uarm', 2, 0, 0.42, 0.95]],
+    biceps: [['uarm', 1, 0.3, 0.92, 0.85]], triceps: [['uarm', 2, 0.28, 0.94, 0.85]], forearms: [['farm', 1, 0.05, 0.62, 0.8], ['farm', 2, 0.05, 0.62, 0.8]],
+    quads: [['thigh', 1, 0.08, 0.93, 0.85]], hamstrings: [['thigh', 2, 0.26, 0.92, 0.85]], calves: [['shin', 2, 0.06, 0.62, 0.85]], hipflex: [['thigh', 1, 0, 0.32, 0.8]]
+  };
+
+  /* un membru (braț sau picior) desenat cu volum și cu mușchii lui */
+  function limbSide(pts3, kind, mus, far) {
+    const body = far ? SKIN2 : SKIN, op = far ? 0.55 : 1;
+    let h = '';
+    if (kind === 'leg') {
+      const T = fr(pts3[0], pts3[1], 1), S = fr(pts3[1], pts3[2], 1), fd = [pts3[3][0] - pts3[2][0], pts3[3][1] - pts3[2][1]], fl = Math.hypot(fd[0], fd[1]) || 1;
+      const heel = [pts3[2][0] - fd[0] / fl * 2, pts3[2][1] - fd[1] / fl * 2], toe = [pts3[3][0] + fd[0] / fl * 0.8, pts3[3][1] + fd[1] / fl * 0.8];
+      h += poly(shape(fr(heel, toe, 1), PR.foot), body) + poly(shape(S, PR.shin), body) + circ(pts3[1], 3.6, body) + poly(shape(T, PR.thigh), body);
+      ['quads', 'hamstrings', 'calves', 'hipflex'].forEach(m => { const c = mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null; if (c) MDEF[m].forEach(d => { h += poly(belly(d[0] === 'thigh' ? T : S, PR[d[0]], d[1], d[2], d[3], d[4]), c, op); }); });
+    } else {
+      const U = fr(pts3[0], pts3[1], 1), F = fr(pts3[1], pts3[2], 1);
+      h += poly(shape(F, PR.farm), body) + circ(pts3[1], 2.6, body) + poly(shape(U, PR.uarm), body) + circ(pts3[0], 4.2, body);
+      const hd = [pts3[2][0] + F.u[0] * 1.6, pts3[2][1] + F.u[1] * 1.6]; h += circ(hd, 2.3, body);
+      const dc = mus.p.includes('shoulders') ? MP : mus.s.includes('shoulders') ? MS : null;
+      if (dc) { const A = [], B = []; for (let i = 0; i <= 8; i++) { const t = 0.42 * i / 8, k = 1 - Math.pow(i / 8, 2) * 0.75; A.push(at(U, t, (rad(PR.uarm, t, 1) - 0.2) * k)); B.push(at(U, t, -(rad(PR.uarm, t, 2) - 0.2) * k)); }
+        h += circ(pts3[0], 3.9, dc, null, 0, op) + poly(A.concat(B.reverse()), dc, op); }
+      ['reardelt', 'biceps', 'triceps', 'forearms'].forEach(m => { const c = mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null; if (c) MDEF[m].forEach(d => { h += poly(belly(d[0] === 'uarm' ? U : F, PR[d[0]], d[1], d[2], d[3], d[4]), c, op); }); });
+    }
+    return h;
+  }
 
   function ref(s, r) {
     return ({hand: s.arm1[2], hand2: (s.arm2 || s.arm1)[2], elbow: s.arm1[1], sh: s.sh, hip: s.hip, head: s.head, chest: s.chest,
       knee: s.leg1[1], ank: s.leg1[2], toe: s.leg1[3], knee2: (s.leg2 || s.leg1)[1], ank2: (s.leg2 || s.leg1)[2]})[r];
   }
+  function plate(q, r) { return circ(q, r, WTD, WT, 1.5, 0.95) + circ(q, r * 0.62, 'none', WT, 0.7, 0.55) + circ(q, 2.4, 'var(--anim-floor)', WT, 1.1) ; }
   function props(def, s, layer) {
     let h = '';
     (def.pr || []).forEach(p => {
       const k = p[0];
       if (layer === 'back') {
-        if (k === 'bench') h += line([[p[1], p[2]], [p[3], p[4]]], 5, EQ) + line([[p[1] + 4, p[2]], [p[1] + 4, 100]], 2.2, EQ) + line([[p[3] - 4, p[4]], [p[3] - 4, 100]], 2.2, EQ);
-        else if (k === 'seat' && typeof p[1] === 'number') h += line([[p[1], p[2]], [p[3], p[4]]], 5, EQ);
-        else if (k === 'seat') { const c = ref(s, p[1]); h += line([[c[0] - 7, c[1] + 4], [c[0] + 7, c[1] + 4]], 5, EQ); }
-        else if (k === 'mat') h += line([[p[1], p[2]], [p[3], p[4]]], 2.5, EQ);
+        if (k === 'bench') h += line([[p[1] + 4, p[2] + 2], [p[1] + 4, 100.6]], 2.4, EQ) + line([[p[3] - 4, p[4] + 2], [p[3] - 4, 100.6]], 2.4, EQ) + line([[p[1], p[2]], [p[3], p[4]]], 5.5, PAD);
+        else if (k === 'seat' && typeof p[1] === 'number') h += line([[p[1], p[2]], [p[3], p[4]]], 5.5, PAD);
+        else if (k === 'seat') { const c = ref(s, p[1]); h += line([[c[0] - 7, c[1] + 4.5], [c[0] + 7, c[1] + 4.5]], 5.5, PAD); }
+        else if (k === 'mat') h += line([[p[1], p[2]], [p[3], p[4]]], 2.6, PAD);
         else if (k === 'line') h += line([[p[1], p[2]], [p[3], p[4]]], p[5] || 2.5, EQ);
-        else if (k === 'box') h += '<rect x="' + p[1] + '" y="' + p[2] + '" width="' + p[3] + '" height="' + p[4] + '" rx="1.5" fill="' + EQ + '"/>';
-        else if (k === 'cable') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 1.1, EQ) + circ([p[1], p[2]], 2.4, 'none', EQ, 1.5); }
-        else if (k === 'lever') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 3.2, EQ) + circ([p[1], p[2]], 2.6, EQ); }
-        else if (k === 'pad') { const c = ref(s, p[1]); h += circ([c[0] + (p[3] || 0), c[1] + (p[4] || 0)], p[2], EQ); }
+        else if (k === 'box') h += '<rect x="' + p[1] + '" y="' + p[2] + '" width="' + p[3] + '" height="' + p[4] + '" rx="2" fill="' + PAD + '"/>';
+        else if (k === 'cable') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 0.9, EQ) + circ([p[1], p[2]], 2.6, 'var(--anim-floor)', EQ, 1.4); }
+        else if (k === 'lever') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 3.4, EQ) + circ([p[1], p[2]], 2.8, EQ); }
+        else if (k === 'pad') { const c = ref(s, p[1]); h += circ([c[0] + (p[3] || 0), c[1] + (p[4] || 0)], p[2], PAD); }
       } else if (layer === 'weight') {
-        if (k === 'plate') { const c = ref(s, p[1]), q = [c[0] + (p[3] || 0), c[1] + (p[4] || 0)]; h += circ(q, p[2], WTD, WT, 1.6, 0.92) + circ(q, 1.8, WT); }
+        if (k === 'plate') { const c = ref(s, p[1]); h += plate([c[0] + (p[3] || 0), c[1] + (p[4] || 0)], p[2]); }
         else if (k === 'platform') { const c = ref(s, p[1]), q = [c[0] + (p[4] || 0), c[1] + (p[5] || 0)], d = V(p[2], p[3] / 2); h += line([[q[0] - d[0], q[1] - d[1]], [q[0] + d[0], q[1] + d[1]]], 4, WT); }
       } else {
-        if (k === 'db') { const c = ref(s, p[1]); h += circ(c, p[2] || 3.6, WT); }
-        else if (k === 'dbv') { const c = ref(s, p[1]); h += '<rect x="' + f1(c[0] - 2) + '" y="' + f1(c[1] - 5.5) + '" width="4" height="11" rx="1.6" fill="' + WT + '"/>'; }
-        else if (k === 'grip') { const c = ref(s, p[1]); h += circ(c, 2.1, WT); }
+        if (k === 'db') { const c = ref(s, p[1]), r = p[2] || 3.8; h += circ(c, r, WT) + circ(c, r * 0.42, WTD); }
+        else if (k === 'dbv') { const c = ref(s, p[1]); h += '<rect x="' + f1(c[0] - 2.4) + '" y="' + f1(c[1] - 6) + '" width="4.8" height="12" rx="2" fill="' + WT + '"/>'; }
+        else if (k === 'grip') { const c = ref(s, p[1]); h += circ(c, 2.3, WT); }
       }
     });
     return h;
   }
+  function head(c, dirDeg, front) {
+    if (front) return circ([c[0], c[1] - 1.1], 5.9, HAIR) + circ([c[0], c[1] + 0.4], 5.3, SKIN) + circ([c[0] - 2, c[1] + 0.2], 0.65, HAIR) + circ([c[0] + 2, c[1] + 0.2], 0.65, HAIR);
+    const u = V(dirDeg, 1), n = [-u[1] * MIR, u[0] * MIR];
+    const hc = [c[0] + u[0] * 0.9 - n[0] * 1.2, c[1] + u[1] * 0.9 - n[1] * 1.2];
+    return circ(hc, 5.8, HAIR) + circ([c[0] + n[0] * 0.3, c[1] + n[1] * 0.3], 5.4, SKIN) +
+      circ([c[0] + n[0] * 5.3 - u[0] * 0.6, c[1] + n[1] * 5.3 - u[1] * 0.6], 1.2, SKIN) + circ([c[0] + n[0] * 3 + u[0] * 0.7, c[1] + n[1] * 3 + u[1] * 0.7], 0.65, HAIR);
+  }
 
-  function sideSVG(def, s) {
-    const BACK = 0.38, d = [-1.8, -1.2];
-    let h = '<g class="fig">' + props(def, s, 'back');
-    h += s.leg2 ? line(s.leg2, 4.4, null, BACK) : line(off(s.leg1, d), 4.4, null, BACK);
-    h += s.arm2 ? line(s.arm2, 3.8, null, BACK) : line(off(s.arm1, d), 3.8, null, BACK);
+  function sideSVG(def, s, id) {
+    MIR = def.mir ? -1 : 1;
+    const mus = muscles(id), none = {p: [], s: []}, one = ONE[id];
+    const T = fr(s.hip, s.sh, -1), hdDeg = Math.atan2(s.head[1] - s.sh[1], s.head[0] - s.sh[0]) / R;
+    const NK = fr(s.sh, [s.sh[0] + Math.cos(hdDeg * R) * (L.nk + 1.5), s.sh[1] + Math.sin(hdDeg * R) * (L.nk + 1.5)], -1);
+    const d = [-1.4, -1];
+    const offL = a => a.map(p => [p[0] + d[0], p[1] + d[1]]);
+    let h = '<g class="fig">';
+    const lowY = Math.max(s.leg1[2][1], s.leg1[3][1], (s.leg2 || s.leg1)[2][1]);
+    if (lowY > 92) h += '<ellipse cx="' + f1((s.leg1[2][0] + (s.leg2 || s.leg1)[2][0] + s.hip[0]) / 3) + '" cy="101.2" rx="20" ry="1.8" fill="#000" opacity=".28"/>';
+    h += props(def, s, 'back');
+    h += limbSide(s.leg2 || offL(s.leg1), 'leg', one === 'leg' ? none : mus, true);
+    h += limbSide(s.arm2 || offL(s.arm1), 'arm', one === 'arm' ? none : mus, true);
     h += props(def, s, 'weight');
-    h += line([s.hip, s.sh], 7, null) + line([s.sh, P_(s.sh, V(Math.atan2(s.head[1] - s.sh[1], s.head[0] - s.sh[0]) / R, L.nk))], 3.2, null);
-    h += circ(s.head, L.hr, 'currentColor');
-    h += line(s.leg1, 4.6, null) + line(s.arm1, 4, null);
+    /* trunchi, fesieri, gât, cap */
+    h += poly(shape(T, PR.torso), SKIN) + circ(s.hip, 5.6, SKIN) + poly(shape(NK, PR.neck), SKIN);
+    ['chest', 'abs', 'back', 'lowerback', 'traps'].forEach(m => { const c = mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null; if (c) MDEF[m].forEach(q => { h += poly(belly(q[0] === 'neck' ? NK : T, PR[q[0]], q[1], q[2], q[3], q[4]), c); }); });
+    const gc = mus.p.includes('glutes') ? MP : mus.s.includes('glutes') ? MS : null;
+    h += limbSide(s.leg1, 'leg', mus, false);
+    if (gc) {
+      const TH = fr(s.leg1[0], s.leg1[1], 1), o = [], inner = [];
+      for (let i = 0; i <= 6; i++) { const t = 0.24 - 0.24 * i / 6; o.push(at(T, t, -(rad(PR.torso, t, 2) - 0.3))); }
+      for (let i = 0; i <= 6; i++) { const t = 0.34 * i / 6; o.push(at(TH, t, -(rad(PR.thigh, t, 2) - 0.3))); }
+      inner.push(at(TH, 0.3, -1.4), [s.hip[0], s.hip[1]], at(T, 0.2, -1.6));
+      h += poly(o.concat(inner), gc);
+    }
+    h += head(s.head, hdDeg, false);
+    h += limbSide(s.arm1, 'arm', mus, false);
     return GROUND + h + props(def, s, 'front') + '</g>';
   }
 
   /* ---------- vedere frontală (ridicări laterale, abducții) ---------- */
-  function frontSVG(def, P) {
-    const cx = 80, sw = 10, hw = 6, BODY = 'currentColor';
-    let h = '<g class="fig">' + props(def, null, 'back');
-    const hands = [];
+  function frontSVG(def, P, id) {
+    MIR = 1;
+    const cx = 80, mus = muscles(id), col = m => mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null;
+    let h = '<g class="fig"><ellipse cx="80" cy="101.2" rx="18" ry="1.8" fill="#000" opacity=".28"/>' + props(def, null, 'back');
+    const sy = P.sy, hy = P.hy, hands = [];
+    /* picioare */
     [-1, 1].forEach(sg => {
-      const s0 = [cx + sg * sw, P.sy], a1 = 90 - sg * P.aa, a2 = a1 - sg * P.ef;
-      const e = P_(s0, V(a1, L.ua)), w = P_(e, V(a2, L.fa));
-      hands.push(w);
-      h += line([[cx + sg * hw, P.hy], [cx + sg * P.kx, P.ky], [cx + sg * P.fx, P.fy]], 4.6, BODY);
-      h += line([s0, e, w], 4, BODY);
-      if (def.pr.some(p => p[0] === 'kpad')) h += '<rect x="' + f1(cx + sg * (P.kx + 4.5) - 2) + '" y="' + f1(P.ky - 5) + '" width="4" height="10" rx="1.6" fill="' + WT + '"/>';
+      const hip = [cx + sg * 4.6, hy + 1], knee = [cx + sg * P.kx, P.ky], ft = [cx + sg * P.fx, P.fy];
+      const T = fr(hip, knee, 1), S = fr(knee, ft, 1);
+      h += '<ellipse cx="' + f1(ft[0] + sg * 1.5) + '" cy="' + f1(ft[1] + 0.6) + '" rx="3.6" ry="1.9" fill="' + SKIN + '"/>';
+      h += poly(shape(S, PR.shin), SKIN) + circ(knee, 3.4, SKIN) + poly(shape(T, PR.thigh), SKIN);
+      const out = sg < 0 ? 1 : 2;
+      if (col('gmed')) h += poly(belly(T, PR.thigh, out, 0, 0.42, 0.9), col('gmed'));
+      if (def.pr.some(p => p[0] === 'kpad')) h += '<rect x="' + f1(knee[0] + sg * 5.5 - 2.2) + '" y="' + f1(knee[1] - 5.5) + '" width="4.4" height="11" rx="2" fill="' + WT + '"/>';
     });
-    h += line([[cx - hw, P.hy], [cx + hw, P.hy]], 5, BODY) + line([[cx - sw, P.sy], [cx + sw, P.sy]], 5, BODY);
-    h += '<path d="M' + (cx - sw + 1) + ',' + P.sy + ' L' + (cx - hw) + ',' + P.hy + ' L' + (cx + hw) + ',' + P.hy + ' L' + (cx + sw - 1) + ',' + P.sy + 'Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>';
-    h += line([[cx, P.sy], [cx, P.sy - L.nk]], 3.2, BODY) + circ([cx, P.sy - L.nk - L.hr], L.hr, 'currentColor');
-    if (def.pr.some(p => p[0] === 'db2')) hands.forEach(w => { h += circ(w, 3.6, WT); });
+    /* trunchi */
+    const tw = (y0, y1, k) => y0 + (y1 - y0) * k;
+    const torso = [[cx - 2.6, sy - 2], [cx - 10.6, sy + 0.4], [cx - 9.4, tw(sy, hy, 0.3)], [cx - 6.6, tw(sy, hy, 0.68)], [cx - 8.2, hy], [cx - 6, hy + 4], [cx, hy + 5.5],
+      [cx + 6, hy + 4], [cx + 8.2, hy], [cx + 6.6, tw(sy, hy, 0.68)], [cx + 9.4, tw(sy, hy, 0.3)], [cx + 10.6, sy + 0.4], [cx + 2.6, sy - 2]];
+    h += poly(torso, SKIN) + poly([[cx - 2.4, sy - 1], [cx - 2.2, sy - 5], [cx + 2.2, sy - 5], [cx + 2.4, sy - 1]], SKIN);
+    if (col('traps')) h += poly([[cx - 2.6, sy - 3.4], [cx - 9.6, sy - 0.2], [cx - 5, sy + 1.6], [cx, sy + 0.6], [cx + 5, sy + 1.6], [cx + 9.6, sy - 0.2], [cx + 2.6, sy - 3.4]], col('traps'));
+    /* brațe */
+    [-1, 1].forEach(sg => {
+      const s0 = [cx + sg * 9.6, sy + 1.2], a1 = 90 - sg * P.aa, a2 = a1 - sg * P.ef;
+      const e = P_(s0, V(a1, L.ua)), w = P_(e, V(a2, L.fa)), U = fr(s0, e, 1), F = fr(e, w, 1);
+      hands.push(P_(w, V(a2, 1.6)));
+      h += poly(shape(F, PR.farm), SKIN) + circ(e, 2.6, SKIN) + poly(shape(U, PR.uarm), SKIN) + circ(s0, 4.4, SKIN) + circ(P_(w, V(a2, 1.6)), 2.3, SKIN);
+      if (col('shoulders')) h += poly(belly(U, PR.uarm, 1, 0, 0.4, 0.95), col('shoulders')) + poly(belly(U, PR.uarm, 2, 0, 0.4, 0.95), col('shoulders')) + circ(s0, 3.6, col('shoulders'));
+    });
+    h += head([cx, sy - L.nk - L.hr - 0.6], 0, true);
+    if (def.pr.some(p => p[0] === 'db2')) hands.forEach(w => { h += circ(w, 3.8, WT) + circ(w, 1.6, WTD); });
     return GROUND + h + '</g>';
   }
 
@@ -1066,13 +1256,13 @@ const ANIM = (() => {
   function svgInner(id, p) {
     const def = D[id]; if (!def) return '';
     const P = pose(def, ease(p));
-    return def.front ? frontSVG(def, P) : sideSVG(def, solve(P));
+    return def.front ? frontSVG(def, P, id) : sideSVG(def, solve(P), id);
   }
 
   /* ---------- redare în pagină ---------- */
   const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   let paused = reduce, frozenAt = 0.5, raf = 0, last = 0;
-  const DUR = 3400;
+  const DUR = 3600;
   function phase(now) { return paused ? frozenAt : (now % DUR) / DUR; }
   function frame(now) {
     raf = 0;
@@ -1085,9 +1275,10 @@ const ANIM = (() => {
     }
     if (!paused) raf = requestAnimationFrame(frame);
   }
-  const vbCache = {};
+  /* cadrul se strânge pe zona în care se mișcă silueta; calculat o singură dată pe exercițiu */
+  const vbCache = {}, thumbCache = {};
   function fit(svg, id) {
-    if (vbCache[id]) { svg.setAttribute('viewBox', vbCache[id]); return; }
+    if (vbCache[id]) { svg.setAttribute('viewBox', vbCache[id]); return true; }
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     [0, 0.2, 0.31, 0.42, 0.5].forEach(p => {
       svg.innerHTML = svgInner(id, p);
@@ -1095,19 +1286,27 @@ const ANIM = (() => {
       const b = g.getBBox(); if (!b.width) return;
       x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
     });
-    if (!(x1 > x0)) return;
-    const pad = 7; x0 -= pad; y0 -= pad; x1 += pad; y1 = Math.max(y1 + pad, 105);
+    if (!(x1 > x0)) return false;
+    const pad = 6; x0 -= pad; y0 -= pad; x1 += pad; y1 = Math.max(y1 + 2, 104);
     let w = x1 - x0; const h = y1 - y0;
     if (w < h * 1.3) { const nw = h * 1.3; x0 -= (nw - w) / 2; w = nw; }
     vbCache[id] = [x0, y0, w, h].map(n => n.toFixed(1)).join(' ');
     svg.setAttribute('viewBox', vbCache[id]);
+    return true;
   }
   function scan(force) {
+    document.querySelectorAll('.anim-thumb[data-thumb]').forEach(el => {
+      const svg = el.querySelector('svg'), id = el.dataset.thumb; if (!svg || svg.dataset.fit) return;
+      if (!fit(svg, id)) return;
+      svg.dataset.fit = 1;
+      svg.innerHTML = thumbCache[id] || (thumbCache[id] = svgInner(id, 0.5));
+    });
     document.querySelectorAll('.anim[data-anim]').forEach(el => {
       const svg = el.querySelector('svg'); if (!svg) return;
-      if (!svg.dataset.fit) { fit(svg, el.dataset.anim); svg.dataset.fit = 1; force = true; }
-      if (force || !svg.innerHTML) svg.innerHTML = svgInner(el.dataset.anim, phase(performance.now()));
-      const b = el.querySelector('.anim-btn'); if (b) b.textContent = paused ? 'Pornește' : 'Pauză';
+      let f = force;
+      if (!svg.dataset.fit && fit(svg, el.dataset.anim)) { svg.dataset.fit = 1; f = true; }
+      if (f || !svg.innerHTML) svg.innerHTML = svgInner(el.dataset.anim, phase(performance.now()));
+      const b = el.querySelector('.anim-btn'); if (b) { b.textContent = paused ? '▶' : '❚❚'; b.setAttribute('aria-label', paused ? 'Pornește animația' : 'Oprește animația'); }
     });
     last = 0;
     if (!raf && !paused) raf = requestAnimationFrame(frame);
@@ -1116,13 +1315,18 @@ const ANIM = (() => {
     if (paused) paused = false; else { frozenAt = phase(performance.now()); paused = true; if (raf) { cancelAnimationFrame(raf); raf = 0; } }
     scan(true);
   }
+  function legend(id) {
+    const m = muscles(id);
+    return '<div class="mus">' + m.p.map(k => '<span class="mu p">' + MN[k] + '</span>').join('') + m.s.map(k => '<span class="mu s">' + MN[k] + '</span>').join('') + '</div>';
+  }
   function html(id, name) {
     if (!D[id]) return '';
     return '<div class="anim" data-anim="' + id + '"><svg viewBox="' + VB + '" role="img" aria-label="Animație: ' + name.replace(/"/g, '') + '"></svg>' +
       (D[id].hold ? '<span class="anim-cap">Menține poziția nemișcat</span>' : '') +
-      '<button class="anim-btn" data-act="animtoggle" aria-label="Pornește sau oprește animația">Pauză</button></div>';
+      '<button class="anim-btn" data-act="animtoggle" aria-label="Oprește animația">❚❚</button>' + legend(id) + '</div>';
   }
-  return {D, VB, svgInner, html, scan, toggle, has: id => !!D[id]};
+  function thumb(id) { return D[id] ? '<span class="anim-thumb" data-thumb="' + id + '" aria-hidden="true"><svg viewBox="' + VB + '"></svg></span>' : ''; }
+  return {D, VB, MN, svgInner, html, thumb, scan, toggle, muscles, has: id => !!D[id]};
 })();
 
 if (typeof module !== 'undefined') module.exports = {ANIM};
@@ -1130,7 +1334,7 @@ if (typeof module !== 'undefined') module.exports = {ANIM};
 /* ============ APLICAȚIA: stare, ecrane, acțiuni ============ */
 
 const LS_KEY = 'fisa-antrenament.v2';
-const APP_VERSION = '2.1';
+const APP_VERSION = '2.2';
 const ACCENTS = {rust: ['#DB7440', '#7A3F1E'], teal: ['#4FB3A2', '#235B52'], violet: ['#A488E6', '#4E3C86'], rose: ['#E0708F', '#7E3550']};
 const GOALS = {masa: 'Masă musculară', ton: 'Tonifiere și formă', slab: 'Slăbire'};
 const FOCUS = {echilibrat: 'Echilibrat, tot corpul', inferior: 'Accent pe fesieri și picioare', superior: 'Accent pe partea superioară'};
@@ -1225,6 +1429,18 @@ function plates(done, total) {
 }
 
 /* ---------- ANTRENAMENT ---------- */
+function dayMuscles(day) {
+  const p = [], q = [];
+  day.ex.forEach(x => ANIM.muscles(x.id).p.forEach(k => { if (!p.includes(k)) p.push(k); }));
+  day.ex.forEach(x => ANIM.muscles(x.id).s.forEach(k => { if (!p.includes(k) && !q.includes(k)) q.push(k); }));
+  return {p, s: q};
+}
+function musChips(m, maxP, maxS) { return '<div class="mus">' + m.p.slice(0, maxP).map(k => '<span class="mu p">' + ANIM.MN[k] + '</span>').join('') + m.s.slice(0, maxS).map(k => '<span class="mu s">' + ANIM.MN[k] + '</span>').join('') + '</div>'; }
+function ring(done, total, label) {
+  const C = 2 * Math.PI * 22, fr = total ? clamp(done / total, 0, 1) : 0;
+  return '<div class="pring"><svg viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="22" class="pr-bg"/><circle cx="27" cy="27" r="22" class="pr-fg" stroke-dasharray="' + (fr * C).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 27 27)"' + (fr ? '' : ' opacity="0"') + '/></svg><span><em><b>' + done + '</b>/' + total + '</em><small>' + label + '</small></span></div>';
+}
+function sesDone(ses, day) { return ses ? day.ex.reduce((n, x) => n + Math.min(x.sets, okSets(ses, x.id).length), 0) : 0; }
 function vTrain(p) {
   const prog = program(p), today = TODAY();
   if (ui.day == null || ui.day >= prog.length) {
@@ -1232,22 +1448,28 @@ function vTrain(p) {
     const mine = p.sessions.filter(s => s.d === today && hasOk(s) && s.i < prog.length).pop();
     ui.day = mine ? mine.i : nextDay(p, prog, today);
   }
-  const nd = nextDay(p, prog, today), day = prog[ui.day], ses = findSession(p, today, ui.day);
-  const wk = weekDates(p, today);
-  let h = '<section class="card week"><div><b>' + wk + ' din ' + p.days + '</b> antrenamente săptămâna aceasta<small>' + (wk >= p.days ? 'Ținta săptămânii este atinsă.' : 'Program sugerat: ' + WEEKPLAN[p.days]) + '</small></div>' + plates(wk, p.days) + '</section>';
+  const nd = nextDay(p, prog, today), day = prog[ui.day], ses = findSession(p, today, ui.day), wk = weekDates(p, today);
+  const total = day.ex.reduce((n, x) => n + x.sets, 0), done = sesDone(ses, day);
+  const mins = Math.round(day.ex.reduce((n, x) => n + x.sets * (restFor(x.id) + 45), 0) / 60 + 8);
+  const nextEx = day.ex.find(x => !ses || okSets(ses, x.id).length < x.sets);
+  const status = ses && ses.done ? 'Încheiat azi' : done ? 'În desfășurare' : ui.day === nd ? 'Azi' : 'Ales de tine';
+  let h = '<section class="hero"><div class="hero-top"><div><div class="eyebrow">' + status + ' · ziua ' + (day.i + 1) + ' din ' + prog.length + '</div><h2>' + esc(day.name) + '</h2></div>' + ring(done, total, 'seturi') + '</div>' +
+    musChips(dayMuscles(day), 5, 2) +
+    '<div class="hero-stats"><span><b>' + day.ex.length + '</b> exerciții</span><span><b>' + total + '</b> seturi</span><span><b>~' + mins + '</b> minute</span></div>' +
+    (ses && ses.done ? '<div class="hero-done"><span>✓ ' + sesSetCount(ses) + ' seturi · ' + fmtK(sesVolume(ses)) + ' kg volum</span><button class="btn small ghost" data-act="reopen">Redeschide</button></div>'
+      : nextEx ? '<button class="btn big" data-act="start">' + (done ? 'Continuă: ' + esc(EX[nextEx.id].n) : 'Începe antrenamentul') + '</button>'
+      : '<button class="btn big" data-act="finish">Încheie antrenamentul</button>') + '</section>';
+  h += '<section class="card week"><div><b>' + wk + ' din ' + p.days + '</b> antrenamente săptămâna aceasta<small>' + (wk >= p.days ? 'Ținta săptămânii este atinsă.' : 'Program sugerat: ' + WEEKPLAN[p.days]) + '</small></div>' + plates(wk, p.days) + '</section>';
 
   const from = p.deload || p.created, weeks = {};
   p.sessions.forEach(s => { if (s.d > from && hasOk(s)) weeks[mondayOf(s.d)] = 1; });
   if (Object.keys(weeks).length >= 7) h += '<section class="card note warn"><b>E timpul pentru o săptămână ușoară</b><p>Ai strâns 7 săptămâni de antrenament. Săptămâna aceasta fă aceleași exerciții cu un set mai puțin și cu greutăți cu 10-20% mai mici. Corpul se reface și revii mai puternic.</p><button class="btn small" data-act="deload">Am înțeles, repornește numărătoarea</button></section>';
 
-  h += '<div class="chips">' + prog.map(d => '<button class="chip' + (d.i === ui.day ? ' on' : '') + '" data-act="day" data-i="' + d.i + '"><b>Ziua ' + (d.i + 1) + '</b><span>' + esc(d.name) + '</span>' + (d.i === nd ? '<i>urmează</i>' : '') + '</button>').join('') + '</div>';
-  h += '<div class="dayhead"><h2>' + esc(day.name) + '</h2><p>' + esc(day.sub) + ' · ' + day.ex.length + ' exerciții · aproximativ ' + Math.round(day.ex.reduce((n, x) => n + x.sets * (restFor(x.id) + 45), 0) / 60 + 8) + ' min</p></div>';
-  if (!p.sessions.some(hasOk)) h += '<section class="card note"><b>Cum funcționează</b><p>Începe cu 5-8 minute de încălzire ușoară (bandă, bicicletă). Apasă pe un exercițiu ca să vezi cum se face, scrie greutatea și repetările, apoi bifează setul: pornește singur cronometrul de pauză.</p></section>';
-  if (ses && ses.done) h += '<section class="card note good"><b>Antrenament încheiat</b><p>' + sesSetCount(ses) + ' seturi · ' + fmtK(sesVolume(ses)) + ' kg volum total.</p><button class="btn small ghost" data-act="reopen">Redeschide ședința</button></section>';
+  h += '<h3 class="sec">Zilele programului</h3><div class="chips">' + prog.map(d => '<button class="chip' + (d.i === ui.day ? ' on' : '') + '" data-act="day" data-i="' + d.i + '"><b>Ziua ' + (d.i + 1) + '</b><span>' + esc(d.name) + '</span>' + (d.i === nd ? '<i>urmează</i>' : '') + '</button>').join('') + '</div>';
+  if (!p.sessions.some(hasOk)) h += '<section class="card note"><b>Cum funcționează</b><p>Începe cu 5-8 minute de încălzire ușoară (bandă, bicicletă). Apasă pe un exercițiu: vezi mișcarea animată și mușchii lucrați, scrii greutatea și repetările, apoi bifezi setul. Cronometrul de pauză pornește singur.</p></section>';
+  h += '<h3 class="sec">Exercițiile zilei</h3>' + day.ex.map(ex => vExercise(p, ex, ses, today)).join('');
 
-  h += day.ex.map(ex => vExercise(p, ex, ses, today)).join('');
-
-  if (ses && hasOk(ses) && !ses.done) h += '<button class="btn big" data-act="finish">Încheie antrenamentul</button>';
+  if (ses && hasOk(ses) && !ses.done && nextEx) h += '<button class="btn big ghost" data-act="finish">Încheie antrenamentul</button>';
   if (targets(p).goal === 'slab') h += '<section class="card note"><b>Pentru slăbire</b><p>Greutățile rămân la fel de grele ca la masă musculară: ele îți păstrează mușchii. Adaugă 8.000-10.000 de pași pe zi și, dacă vrei, 20-30 de minute de mers alert după antrenament.</p></section>';
   return h;
 }
@@ -1257,8 +1479,8 @@ function vExercise(p, ex, ses, today) {
   const n = Math.max(ex.sets, rows.length), open = ui.open === ex.id;
   const target = ex.sets + ' × ' + ex.reps + (e.k === 't' ? ' sec' : UNI[ex.id] ? ' pe parte' : '');
   let h = '<section class="ex' + (open ? ' open' : '') + (done >= ex.sets ? ' complete' : '') + '" id="ex-' + ex.id + '">' +
-    '<button class="ex-head" data-act="ex" data-id="' + ex.id + '"><span class="ring">' + (done >= ex.sets ? '✓' : done + '/' + ex.sets) + '</span>' +
-    '<span class="ex-txt"><b>' + esc(e.n) + '</b><small>' + esc(e.m) + ' · ' + target + '</small></span><span class="chev">›</span></button>';
+    '<button class="ex-head" data-act="ex" data-id="' + ex.id + '" aria-expanded="' + open + '">' + ANIM.thumb(ex.id) +
+    '<span class="ex-txt"><b>' + esc(e.n) + '</b><small>' + esc(e.m) + '</small><small class="tgt">' + target + '</small></span><span class="ring">' + (done >= ex.sets ? '✓' : done + '/' + ex.sets) + '</span></button>';
   if (!open) return h + '</section>';
   const sg = suggest(p, ex, today);
   h += '<div class="ex-body">' + ANIM.html(ex.id, e.n) + '<p class="sug">' + esc(sg.text) + '</p><div class="sets">';
@@ -1310,12 +1532,14 @@ function releaseWake() { try { if (wake) wake.release(); } catch (e) {} wake = n
 function foodDay(p, d) { const f = p.food[d] || (p.food[d] = {}); f.pick = f.pick || {}; f.eat = f.eat || {}; return f; }
 function vFood(p) {
   const today = TODAY(), plan = planDay(p, today), t = plan.t, f = p.food[today] || {}, eat = f.eat || {};
-  let ek = 0, ep = 0;
-  plan.meals.forEach(m => { if (eat[m.slot]) { ek += m.k; ep += m.p; } });
-  const glasses = Math.round(t.water / 0.25), w = f.water || 0;
-  let h = '<section class="card"><div class="bar"><div class="bar-l"><span>Calorii</span><span><b>' + fmtK(ek) + '</b> / ' + fmtK(t.kcal) + ' kcal</span></div><div class="track"><i style="width:' + clamp(ek / t.kcal * 100, 0, 100) + '%"></i></div></div>' +
-    '<div class="bar"><div class="bar-l"><span>Proteine</span><span><b>' + ep + '</b> / ' + t.prot + ' g</span></div><div class="track"><i class="alt" style="width:' + clamp(ep / t.prot * 100, 0, 100) + '%"></i></div></div>' +
-    '<p class="fine">Meniul complet de azi: ' + fmtK(plan.tot.k) + ' kcal · ' + plan.tot.p + ' g proteine · ' + plan.tot.c + ' g carbohidrați · ' + plan.tot.f + ' g grăsimi. Porțiile sunt calculate pentru tine.</p></section>';
+  let ek = 0, ep = 0, ec = 0, ef = 0;
+  plan.meals.forEach(m => { if (eat[m.slot]) { ek += m.k; ep += m.p; ec += m.c; ef += m.f; } });
+  const glasses = Math.round(t.water / 0.25), w = f.water || 0, C = 2 * Math.PI * 40, fr = clamp(ek / t.kcal, 0, 1);
+  const mac = (lbl, v, tg, cls) => '<div class="bar"><div class="bar-l"><span>' + lbl + '</span><span><b>' + v + '</b> / ' + tg + ' g</span></div><div class="track"><i class="' + cls + '" style="width:' + clamp(v / tg * 100, 0, 100) + '%"></i></div></div>';
+  let h = '<section class="card nut"><div class="kring"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" class="kr-bg"/><circle cx="50" cy="50" r="40" class="kr-fg" stroke-dasharray="' + (fr * C).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 50 50)"/></svg>' +
+    '<div><b>' + fmtK(Math.max(0, t.kcal - ek)) + '</b><span>kcal rămase</span><small>din ' + fmtK(t.kcal) + '</small></div></div>' +
+    '<div class="macros">' + mac('Proteine', ep, t.prot, 'mp') + mac('Carbohidrați', ec, t.carb, 'mc') + mac('Grăsimi', ef, t.fat, 'mf') + '</div></section>' +
+    '<p class="fine pad0">Meniul de azi are în total ' + fmtK(plan.tot.k) + ' kcal și ' + plan.tot.p + ' g proteine, cu porții calculate pentru tine. Bifează fiecare masă după ce o mănânci.</p>';
   if (t.note) h += '<section class="card note warn"><p>' + esc(t.note) + '</p></section>';
   h += '<section class="card water"><div><b>Apă</b><small>' + fmtN(w * 0.25) + ' din ' + fmtN(t.water) + ' litri · un pahar = 250 ml</small></div><div class="stepper"><button data-act="water" data-d="-1" aria-label="Scade un pahar">−</button><span>' + w + '<small>/' + glasses + '</small></span><button data-act="water" data-d="1" aria-label="Adaugă un pahar">+</button></div></section>';
   h += '<div class="row2"><button class="btn" data-act="shuffle">Amestecă tot meniul</button><button class="btn ghost" data-act="shop">Lista de ingrediente</button></div>';
@@ -1418,40 +1642,57 @@ function vMe(p) {
 function opts(name, list, d) {
   return '<div class="opts">' + list.map(o => '<label class="opt"><input type="radio" data-in="form" name="' + name + '" value="' + o[0] + '"' + (String(d[name]) === String(o[0]) ? ' checked' : '') + '><span><b>' + o[1] + '</b>' + (o[2] ? '<small>' + o[2] + '</small>' : '') + '</span></label>').join('') + '</div>';
 }
+const STEPS = ['Despre tine', 'Obiectivul tău', 'Antrenament', 'Preferințe'];
+function stepErr(d, step) {
+  const age = num(d.age), hh = num(d.h), w = num(d.w);
+  if (step === 0 || step < 0) {
+    if (!String(d.name || '').trim()) return 'Scrie un prenume.';
+    if (!d.sex) return 'Alege genul: este folosit la calculul caloriilor.';
+    if (!age || age < 16 || age > 85) return 'Vârsta trebuie să fie între 16 și 85 de ani.';
+    if (!hh || hh < 130 || hh > 220) return 'Înălțimea trebuie să fie între 130 și 220 cm.';
+    if (!w || w < 35 || w > 250) return 'Greutatea trebuie să fie între 35 și 250 kg.';
+    if (!d.act) return 'Alege nivelul de activitate din afara sălii.';
+  }
+  if ((step === 1 || step < 0) && !d.goal) return 'Alege un obiectiv.';
+  if (step === 2 || step < 0) {
+    if (!d.level) return 'Alege experiența la sală.';
+    if (!d.days) return 'Alege numărul de zile de antrenament.';
+    if (!d.focus) return 'Alege pe ce pui accentul.';
+  }
+  return '';
+}
 function vForm() {
-  const f = ui.form, d = f.d, first = !Object.keys(S.profiles).length;
+  const f = ui.form, d = f.d, first = !Object.keys(S.profiles).length, wiz = f.mode !== 'edit', step = f.step || 0;
   const rec = d.sex === 'f' ? 'inferior' : d.sex === 'm' ? 'echilibrat' : '';
   const tag = k => (rec === k ? 'recomandat pentru tine' : '');
-  let h = '<header class="top"><div><div class="eyebrow">' + (f.mode === 'edit' ? 'Modifică profilul' : first ? 'Bine ai venit' : 'Profil nou') + '</div><h1>' + (f.mode === 'edit' ? esc(d.name || '') : 'Fișa de antrenament') + '</h1></div></header>';
-  if (f.mode !== 'edit') h += '<p class="lead">Spune-mi câteva lucruri despre tine și îți construiesc planul de antrenament și meniul, cu porții calculate pe măsura ta.</p>';
-  h += '<form id="pform" novalidate><section class="card"><h3>Despre tine</h3>' +
+  const sec = [
+    '<section class="card"><h3>Despre tine</h3>' +
     '<label class="fld">Prenume<input class="in" data-in="form" name="name" maxlength="20" autocomplete="off" value="' + esc(d.name || '') + '" placeholder="ex. Valentin"></label>' +
     '<div class="fld"><span>Gen</span>' + opts('sex', [['m', 'Bărbat'], ['f', 'Femeie']], d) + '</div>' +
     '<div class="grid3"><label class="fld">Vârstă<input class="in" data-in="form" name="age" inputmode="numeric" autocomplete="off" value="' + esc(d.age || '') + '" placeholder="ani"></label><label class="fld">Înălțime<input class="in" data-in="form" name="h" inputmode="numeric" autocomplete="off" value="' + esc(d.h || '') + '" placeholder="cm"></label><label class="fld">Greutate<input class="in" data-in="form" name="w" inputmode="decimal" autocomplete="off" value="' + esc(d.w || '') + '" placeholder="kg"></label></div>' +
-    '<div class="fld"><span>Activitatea ta în afara sălii</span>' + opts('act', [['sed', 'Sedentar', 'birou, mașină'], ['mod', 'Moderat', 'mult mers pe jos'], ['act', 'Activ', 'muncă fizică']], d) + '</div></section>';
-  h += '<section class="card"><h3>Obiectiv</h3>' + opts('goal', [['masa', 'Masă musculară', 'mai mult mușchi și forță, cu surplus caloric'], ['ton', 'Tonifiere și formă', 'corp mai ferm și definit, la aceeași greutate'], ['slab', 'Slăbire', 'mai puțină grăsime, cu mușchii păstrați']], d) + '</section>';
-  h += '<section class="card"><h3>Antrenament</h3><div class="fld"><span>Experiență la sală</span>' + opts('level', [['beg', 'Începător', 'sub un an de antrenament constant'], ['int', 'Intermediar', 'peste un an, tehnică sigură']], d) + '</div>' +
+    '<div class="fld"><span>Activitatea ta în afara sălii</span>' + opts('act', [['sed', 'Sedentar', 'birou, mașină'], ['mod', 'Moderat', 'mult mers pe jos'], ['act', 'Activ', 'muncă fizică']], d) + '</div></section>',
+    '<section class="card"><h3>Obiectiv</h3>' + opts('goal', [['masa', 'Masă musculară', 'mai mult mușchi și forță, cu surplus caloric'], ['ton', 'Tonifiere și formă', 'corp mai ferm și definit, la aceeași greutate'], ['slab', 'Slăbire', 'mai puțină grăsime, cu mușchii păstrați']], d) + '</section>',
+    '<section class="card"><h3>Antrenament</h3><div class="fld"><span>Experiență la sală</span>' + opts('level', [['beg', 'Începător', 'sub un an de antrenament constant'], ['int', 'Intermediar', 'peste un an, tehnică sigură']], d) + '</div>' +
     '<div class="fld"><span>Zile de antrenament pe săptămână</span>' + opts('days', [[3, '3 zile'], [4, '4 zile'], [5, '5 zile']], d) + '<small class="hint">Pentru început, 3 sau 4 zile sunt ideale. Contează să poți veni în fiecare săptămână.</small></div>' +
-    '<div class="fld"><span>Pe ce pui accentul</span>' + opts('focus', [['echilibrat', 'Echilibrat', tag('echilibrat') || 'tot corpul, în mod egal'], ['inferior', 'Fesieri și picioare', tag('inferior') || 'mai mult volum pe partea de jos'], ['superior', 'Partea superioară', 'piept, spate, umeri și brațe']], d) + '<small class="hint">Poți alege orice variantă, indiferent de gen. Regulile de antrenament sunt aceleași pentru toți.</small></div></section>';
-  h += '<section class="card"><h3>Preferințe</h3><div class="fld"><span>Mese pe zi</span>' + opts('meals', [[0, 'Automat'], [3, '3'], [4, '4'], [5, '5'], [6, '6']], d) + '</div>' +
-    '<div class="fld"><span>Culoarea profilului</span><div class="opts sw">' + Object.keys(ACCENTS).map(k => '<label class="opt swatch"><input type="radio" data-in="form" name="accent" value="' + k + '"' + (d.accent === k ? ' checked' : '') + '><span style="--c:' + ACCENTS[k][0] + '" aria-label="' + k + '"></span></label>').join('') + '</div></div></section>';
+    '<div class="fld"><span>Pe ce pui accentul</span>' + opts('focus', [['echilibrat', 'Echilibrat', tag('echilibrat') || 'tot corpul, în mod egal'], ['inferior', 'Fesieri și picioare', tag('inferior') || 'mai mult volum pe partea de jos'], ['superior', 'Partea superioară', tag('superior') || 'piept, spate, umeri și brațe']], d) + '<small class="hint">Poți alege orice variantă, indiferent de gen. Regulile de antrenament sunt aceleași pentru toți.</small></div></section>',
+    '<section class="card"><h3>Preferințe</h3><div class="fld"><span>Mese pe zi</span>' + opts('meals', [[0, 'Automat'], [3, '3'], [4, '4'], [5, '5'], [6, '6']], d) + '<small class="hint">Automat alege 4-6 mese după câte calorii ai de mâncat.</small></div>' +
+    '<div class="fld"><span>Culoarea profilului</span><div class="opts sw">' + Object.keys(ACCENTS).map(k => '<label class="opt swatch"><input type="radio" data-in="form" name="accent" value="' + k + '"' + (d.accent === k ? ' checked' : '') + '><span style="--c:' + ACCENTS[k][0] + '" aria-label="' + k + '"></span></label>').join('') + '</div></div></section>'
+  ];
+  let h = '<header class="top"><div><div class="eyebrow">' + (!wiz ? 'Modifică profilul' : first ? 'Bine ai venit' : 'Profil nou') + '</div><h1>' + (!wiz ? esc(d.name || '') : first && step === 0 ? 'Fișa de antrenament' : STEPS[step]) + '</h1></div></header>';
+  if (wiz) {
+    h += '<div class="steps" aria-label="Pasul ' + (step + 1) + ' din 4">' + STEPS.map((x, i) => '<span class="' + (i < step ? 'done' : i === step ? 'on' : '') + '"></span>').join('') + '</div>';
+    if (step === 0) h += '<p class="lead">Spune-mi câteva lucruri despre tine și îți construiesc planul de antrenament și meniul, cu porții calculate pe măsura ta.</p>';
+  }
+  h += '<form id="pform" novalidate>' + (wiz ? sec[step] : sec.join(''));
   if (f.err) h += '<p class="advice warn" id="ferr">' + esc(f.err) + '</p>';
-  h += '<button type="submit" class="btn big">' + (f.mode === 'edit' ? 'Salvează modificările' : 'Construiește planul') + '</button>' + (first ? '' : '<button type="button" class="btn ghost big" data-act="cancelform">Renunță</button>') + '</form>';
+  if (wiz) h += '<div class="row2 wiz">' + (step > 0 ? '<button type="button" class="btn ghost" data-act="fback">Înapoi</button>' : first ? '<span></span>' : '<button type="button" class="btn ghost" data-act="cancelform">Renunță</button>') +
+    (step < 3 ? '<button type="button" class="btn" data-act="fnext">Continuă</button>' : '<button type="submit" class="btn">Construiește planul</button>') + '</div></form>';
+  else h += '<button type="submit" class="btn big">Salvează modificările</button><button type="button" class="btn ghost big" data-act="cancelform">Renunță</button></form>';
   return h;
 }
 function submitForm() {
   const f = ui.form, d = f.d, age = num(d.age), hh = num(d.h), w = num(d.w), name = String(d.name || '').trim();
-  let err = '';
-  if (!name) err = 'Scrie un prenume.';
-  else if (!d.sex) err = 'Alege genul: este folosit la calculul caloriilor.';
-  else if (!age || age < 16 || age > 85) err = 'Vârsta trebuie să fie între 16 și 85 de ani.';
-  else if (!hh || hh < 130 || hh > 220) err = 'Înălțimea trebuie să fie între 130 și 220 cm.';
-  else if (!w || w < 35 || w > 250) err = 'Greutatea trebuie să fie între 35 și 250 kg.';
-  else if (!d.act) err = 'Alege nivelul de activitate din afara sălii.';
-  else if (!d.goal) err = 'Alege un obiectiv.';
-  else if (!d.level) err = 'Alege experiența la sală.';
-  else if (!d.days) err = 'Alege numărul de zile de antrenament.';
-  else if (!d.focus) err = 'Alege pe ce pui accentul.';
+  const err = stepErr(d, -1);
   if (err) { f.err = err; render(); const el = $('#ferr'); if (el) el.scrollIntoView({block: 'center'}); return; }
   const today = TODAY(), vals = {name, sex: d.sex, age: Math.round(age), h: Math.round(hh), w, act: d.act, goal: d.goal, level: d.level, days: +d.days, focus: d.focus, meals: +d.meals || 0, accent: d.accent || 'rust'};
   let p, isNew = f.mode !== 'edit';
@@ -1482,6 +1723,12 @@ function curDay() { const p = P(), prog = program(p); return prog[Math.min(ui.da
 const ACT = {
   tab(el) { ui.tab = el.dataset.tab; render(); window.scrollTo(0, 0); },
   day(el) { ui.day = +el.dataset.i; ui.open = null; rerender(); },
+  start() {
+    const p = P(), day = curDay(), ses = findSession(p, TODAY(), day.i), nx = day.ex.find(x => !ses || okSets(ses, x.id).length < x.sets);
+    if (!nx) return;
+    ui.open = nx.id; rerender();
+    const c = $('#ex-' + nx.id); if (c) window.scrollTo(0, window.scrollY + c.getBoundingClientRect().top - 12);
+  },
   ex(el) { ui.open = ui.open === el.dataset.id ? null : el.dataset.id; rerender(); const c = $('#ex-' + el.dataset.id); if (c && ui.open) { const r = c.getBoundingClientRect(); if (r.top < 0 || r.top > window.innerHeight * 0.6) window.scrollTo(0, window.scrollY + r.top - 80); } },
   chk(el) {
     const p = P(), today = TODAY(), day = curDay(), id = el.dataset.id, j = +el.dataset.j, ex = day.ex.find(x => x.id === id), e = EX[id];
@@ -1564,6 +1811,12 @@ const ACT = {
   newprofile() { const used = Object.values(S.profiles).map(o => o.accent), free = Object.keys(ACCENTS).find(k => used.indexOf(k) < 0) || 'rust'; closeSheet(); ui.form = {mode: 'new', d: {accent: free, meals: 0}}; render(); window.scrollTo(0, 0); },
   edit() { const p = P(); ui.form = {mode: 'edit', touched: true, d: {name: p.name, sex: p.sex, age: p.age, h: p.h, w: fmtN(curWeight(p)), act: p.act, goal: p.goal, level: p.level, days: p.days, focus: p.focus, meals: p.meals || 0, accent: p.accent}}; render(); window.scrollTo(0, 0); },
   cancelform() { ui.form = null; render(); window.scrollTo(0, 0); },
+  fnext() {
+    const f = ui.form, err = stepErr(f.d, f.step || 0);
+    if (err) { f.err = err; render(); const el = $('#ferr'); if (el) el.scrollIntoView({block: 'center'}); return; }
+    f.err = ''; f.step = Math.min(3, (f.step || 0) + 1); render(); window.scrollTo(0, 0);
+  },
+  fback() { const f = ui.form; f.err = ''; f.step = Math.max(0, (f.step || 0) - 1); render(); window.scrollTo(0, 0); },
   delprofile() { const p = P(); if (!confirm('Ștergi profilul „' + p.name + '” cu tot istoricul lui? Nu se poate anula.')) return; delete S.profiles[p.id]; S.active = Object.keys(S.profiles)[0] || null; ui.day = null; ui.tab = 'train'; save(); render(); window.scrollTo(0, 0); },
   osave() {
     const p = P(), k = num($('#o-k').value), pr = num($('#o-p').value);
@@ -1629,7 +1882,7 @@ document.addEventListener('change', e => {
     rerender();
   }
 });
-document.addEventListener('submit', e => { if (e.target.id === 'pform') { e.preventDefault(); submitForm(); } });
+document.addEventListener('submit', e => { if (e.target.id !== 'pform') return; e.preventDefault(); if (ui.form && ui.form.mode !== 'edit' && (ui.form.step || 0) < 3) ACT.fnext(); else submitForm(); });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') return;
   if (ui.lastDate !== ymd()) { ui.lastDate = ymd(); ui.day = null; if (!ui.form) rerender(); }

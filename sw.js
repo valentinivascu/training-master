@@ -1,6 +1,6 @@
 /* Fișa de Antrenament: funcționare fără internet.
    La fiecare versiune nouă schimbă numărul de mai jos, ca telefoanele să ia fișierele noi. */
-const CACHE = 'fisa-antrenament-2.1';
+const CACHE = 'fisa-antrenament-2.2';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
