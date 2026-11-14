@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fișa de Antrenament</title>
+<meta name="description" content="Plan de antrenament, meniu cu porții calculate și jurnal de progres, pe profilul tău.">
+<meta name="theme-color" content="#141619">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fișa">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{
+  --bg:#141619; --surface:#1D2025; --surface-2:#272B32; --line:#353A43;
+  --text:#EFEBE3; --muted:#959CA7; --good:#5DBB8A; --warn:#E0B552; --danger:#E0736B;
+  --accent:#DB7440; --accent-dim:#7A3F1E;
+  --r:14px; --tab-h:62px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+body.noscroll{overflow:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+[hidden]{display:none!important}
+h1,h2,h3,h4,p{margin:0}
+small{font-size:12.5px;color:var(--muted);font-weight:400}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+#app{max-width:560px;margin:0 auto;padding:0 16px calc(var(--tab-h) + 96px + env(safe-area-inset-bottom))}
+#banner{background:#3A2E14;color:#F3DFA6;font-size:13px;padding:10px 16px calc(10px);padding-top:calc(10px + env(safe-area-inset-top));text-align:center}
+
+.top{display:flex;justify-content:space-between;align-items:flex-end;padding:calc(18px + env(safe-area-inset-top)) 0 14px}
+.eyebrow{color:var(--accent);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:29px;font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-top:3px;text-wrap:balance}
+h2{font-size:21px;font-weight:800;letter-spacing:-.01em}
+h3{font-size:16px;font-weight:700;margin-bottom:10px}
+h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 6px}
+.lead{color:var(--muted);margin:0 0 16px;font-size:15px}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--accent-dim);border:2px solid var(--accent);font-weight:800;font-size:17px;flex:none}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card.note{border-left:3px solid var(--accent)}
+.card.note p{color:var(--muted);font-size:14px;margin-top:4px}
+.card.note.warn{border-left-color:var(--warn)} .card.note.good{border-left-color:var(--good)}
+.card.note .btn{margin-top:10px}
+.fine{font-size:13px;color:var(--muted);line-height:1.5}
+.fine.pad{padding:8px 4px 0}
+.kv{color:var(--muted);font-size:14px;margin-bottom:4px}
+
+/* butoane */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 18px;border-radius:12px;background:var(--accent);color:#15110D;font-weight:700;font-size:15px;text-decoration:none;white-space:nowrap}
+.btn:active{filter:brightness(.88)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.small{min-height:38px;padding:0 13px;font-size:13.5px;border-radius:10px}
+.btn.big{width:100%;min-height:54px;font-size:16px;margin-top:8px}
+.btn.danger{color:var(--danger)}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:12px 0}
+.row2 .btn{padding:6px 10px;white-space:normal;text-align:center;line-height:1.2}
+.icon{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);font-size:20px;color:var(--muted);flex:none}
+
+/* săptămâna */
+.week{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14.5px}
+.week small{display:block;margin-top:2px}
+.week b{font-size:17px}
+.plates{display:flex;gap:5px;flex:none}
+.plate{width:22px;height:22px;border-radius:50%;border:3px solid var(--line);position:relative}
+.plate::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--bg)}
+.plate.on{border-color:var(--accent);background:var(--accent-dim)}
+
+/* zile */
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 14px;padding:2px 16px 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-width:112px;text-align:left;padding:10px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:1px}
+.chip b{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.chip span{font-size:14px;font-weight:600}
+.chip i{font-style:normal;font-size:11px;color:var(--accent);font-weight:700}
+.chip.on{background:var(--accent-dim);border-color:var(--accent)}
+.chip.on b,.chip.on i{color:var(--text)}
+.dayhead{margin:4px 0 12px}
+.dayhead p{color:var(--muted);font-size:13.5px;margin-top:2px}
+
+/* exerciții */
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.ex.open{border-color:var(--accent)}
+.ex-head{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;text-align:left}
+.ring{flex:none;width:44px;height:44px;border-radius:50%;border:3px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.ex.complete .ring{border-color:var(--good);background:rgba(93,187,138,.14);color:var(--good);font-size:18px}
+.ex-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ex-txt b{font-size:15.5px;line-height:1.25}
+.chev{color:var(--muted);font-size:22px;transition:transform .15s}
+.ex.open .chev{transform:rotate(90deg)}
+.ex-body{padding:2px 14px 16px;border-top:1px solid var(--line)}
+.sug{font-size:13.5px;color:var(--text);background:var(--surface-2);border-radius:10px;padding:10px 12px;margin:12px 0}
+.sets{display:flex;flex-direction:column;gap:8px}
+.set{display:flex;align-items:center;gap:8px}
+.sn{width:18px;text-align:center;font-size:13px;color:var(--muted);font-weight:700;flex:none}
+.unit{font-size:12.5px;color:var(--muted);flex:none}
+.in{width:100%;min-width:0;height:48px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);padding:0 12px;font-size:17px;font-variant-numeric:tabular-nums}
+.set .in{text-align:center;padding:0 6px}
+.in::placeholder{color:#6A717C}
+.in:focus{outline:none;border-color:var(--accent)}
+.chk{flex:none;width:48px;height:48px;border-radius:11px;border:2px solid var(--line);font-size:20px;color:var(--line)}
+.set.ok .chk{background:var(--good);border-color:var(--good);color:#0E1A13}
+.set.ok .in{border-color:rgba(93,187,138,.5);color:var(--good)}
+.ex-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+
+details.how{margin-top:12px;border-top:1px solid var(--line);padding-top:4px}
+details.how summary{list-style:none;padding:10px 0;font-weight:700;font-size:14px;cursor:pointer;display:flex;justify-content:space-between}
+details.how summary::-webkit-details-marker{display:none}
+details.how summary::after{content:"+";color:var(--muted);font-size:18px;line-height:1}
+details.how[open] summary::after{content:"−"}
+details.how p,details.how li{font-size:14px;line-height:1.55}
+details.how p{margin-bottom:8px;color:var(--muted)}
+details.how p b{color:var(--text)}
+details.how ol,details.how ul{margin:0;padding-left:20px}
+details.how li{margin-bottom:5px}
+details.how ul li{color:#E9B9AC}
+details.how ul li b{color:var(--text)}
+.card details.how ul li{color:var(--muted)}
+.en{white-space:nowrap}
+.tip{background:var(--surface-2);border-left:3px solid var(--accent);border-radius:8px;padding:9px 12px;margin-top:10px;color:var(--text)!important}
+.rest{margin-top:10px}
+
+/* cronometru */
+#timer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tab-h) + 10px + env(safe-area-inset-bottom));width:min(528px,calc(100% - 24px));z-index:30;background:var(--surface-2);border:1px solid var(--accent);border-radius:14px;display:flex;align-items:center;gap:6px;padding:8px 8px 8px 16px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#timer-fill{position:absolute;left:0;top:0;bottom:0;background:var(--accent-dim);opacity:.55;transition:width .25s linear}
+#timer-t{position:relative;flex:1;font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+#timer button{position:relative;min-width:48px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:13.5px;font-weight:700;padding:0 10px}
+#timer.fin{border-color:var(--good)} #timer.fin #timer-fill{background:var(--good);opacity:.25}
+
+/* nutriție */
+.bar{margin-bottom:12px}
+.bar-l{display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted);margin-bottom:5px}
+.bar-l b{color:var(--text);font-size:15px}
+.track{height:9px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.track i{display:block;height:100%;border-radius:5px;background:var(--accent);transition:width .3s}
+.track i.alt{background:var(--good)}
+.water{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.water small{display:block}
+.stepper{display:flex;align-items:center;gap:6px;flex:none}
+.stepper button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);font-size:22px}
+.stepper span{min-width:48px;text-align:center;font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+.meal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px}
+.meal.open{border-color:var(--accent)}
+.meal-head{display:flex;align-items:center;gap:10px;padding:12px}
+.mchk{flex:none;width:44px;height:44px;border-radius:12px;border:2px solid var(--line);font-size:19px;color:var(--line)}
+.mchk.on{background:var(--good);border-color:var(--good);color:#0E1A13}
+.meal-txt{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:3px}
+.meal-txt small{text-transform:uppercase;letter-spacing:.04em;font-size:11px;font-weight:700;color:var(--accent)}
+.meal-txt b{font-size:15px;line-height:1.3}
+.meal.eaten .meal-txt b{color:var(--muted)}
+.meal-body{padding:0 14px 14px;border-top:1px solid var(--line)}
+.ingr{margin:12px 0;padding:0;list-style:none}
+.ingr li{padding:8px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.ingr li:last-child{border-bottom:0}
+.prep{font-size:14px;line-height:1.55;margin-bottom:8px}
+
+/* progres */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stats div,.tgrid div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
+.stats b,.tgrid b{display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.stats span,.tgrid span{font-size:11.5px;color:var(--muted)}
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}
+.tgrid div{background:var(--surface-2);padding:10px 4px}
+.tgrid b{font-size:16px}
+.bwrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px}
+.bwrow label,.fld{display:block;font-size:12.5px;color:var(--muted)}
+.bwrow .in,.fld .in{margin-top:5px}
+.bwrow .btn{height:48px}
+.spark{width:100%;height:56px;margin:6px 0}
+.advice{border-radius:10px;padding:11px 12px;font-size:14px;background:var(--surface-2);border-left:3px solid var(--muted);margin:8px 0}
+.advice.good{border-left-color:var(--good)} .advice.warn{border-left-color:var(--warn)}
+.advice .btn{margin-top:10px}
+.list{list-style:none;margin:8px 0 0;padding:0}
+.list li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.list li:last-child{border-bottom:0}
+.list span{min-width:0}
+.list small{display:block}
+.list b{flex:none;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.list.tap li{cursor:pointer;min-height:52px}
+.list.tap b{color:var(--accent)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+.hist{border-bottom:1px solid var(--line)}
+.hist:last-child{border-bottom:0}
+.hist-head{width:100%;display:flex;justify-content:space-between;gap:10px;padding:12px 0;text-align:left;font-size:14px}
+.hist-head b{flex:none;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.hist-body{padding:0 0 12px}
+.hist-body p{font-size:13.5px;color:var(--muted);margin-bottom:8px}
+.hist-body p b{color:var(--text)}
+.plan{margin:8px 0;padding:0;list-style:none;counter-reset:d}
+.plan li{counter-increment:d;display:flex;flex-direction:column;padding:9px 0 9px 40px;position:relative;border-bottom:1px solid var(--line)}
+.plan li:last-child{border-bottom:0}
+.plan li::before{content:counter(d);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);display:grid;place-items:center;font-size:13px;font-weight:800}
+.plan span{font-size:13px;color:var(--muted)}
+
+/* formular */
+.fld{margin-bottom:14px}
+.fld>span{display:block;margin-bottom:6px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{flex:1 1 30%;min-width:88px;position:relative}
+.opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.opt span{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:50px;height:100%;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text)}
+.opt span b{font-size:14.5px;font-weight:600}
+.opt span small{font-size:11.5px;line-height:1.3}
+.opt input:checked+span{border-color:var(--accent);background:var(--accent-dim)}
+.opt input:checked+span small{color:var(--text)}
+.opt input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.card>.opts .opt{flex-basis:100%}
+.opts.sw .opt{flex:none;min-width:0;width:48px}
+.swatch span{min-height:48px;padding:0;background:var(--c)!important;border:3px solid transparent}
+.swatch input:checked+span{border-color:var(--text)}
+.hint{display:block;margin-top:7px}
+
+/* bara de jos */
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(20,22,25,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+#tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:var(--tab-h)}
+#tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);font-size:11px;font-weight:600}
+#tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#tabs button.on{color:var(--accent)}
+
+/* foi */
+#sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
+#sheet-in{width:100%;max-width:560px;max-height:86vh;overflow-y:auto;background:var(--surface);border-radius:20px 20px 0 0;border-top:1px solid var(--line);padding:22px 18px calc(20px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+#sheet-in h3{font-size:20px;font-weight:800;margin-bottom:8px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tab-h) + 76px + env(safe-area-inset-bottom));z-index:50;background:var(--text);color:#15171A;font-size:14px;font-weight:600;padding:10px 16px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+
+@media (max-width:359px){.tgrid{grid-template-columns:repeat(2,1fr)}.bwrow{grid-template-columns:1fr 1fr}.bwrow .btn{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+</style>
+</head>
+<body>
+<div id="banner" hidden>Salvarea nu funcționează în acest mod de navigare (fereastră privată?). Datele se pierd când închizi pagina.</div>
+<main id="app"></main>
+
+<div id="timer" hidden>
+  <div id="timer-fill"></div>
+  <span id="timer-t" aria-live="polite"></span>
+  <button data-act="tminus" aria-label="Scade 15 secunde">−15</button>
+  <button data-act="tplus" aria-label="Adaugă 15 secunde">+15</button>
+  <button data-act="tskip">Sari</button>
+</div>
+
+<nav id="tabs" hidden aria-label="Secțiuni"><div>
+  <button data-act="tab" data-tab="train"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/></svg>Antrenament</button>
+  <button data-act="tab" data-tab="food"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M4.5 3v4.5a2.5 2.5 0 0 0 5 0V3M7 11v10M17 3c-2 1.5-3 4-3 7h3zm0 7v11"/></svg>Nutriție</button>
+  <button data-act="tab" data-tab="prog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>Progres</button>
+  <button data-act="tab" data-tab="me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6.5 8-6.5s8 2.500 8 6.500"/></svg>Profil</button>
+</div></nav>
+
+<div id="sheet" hidden data-act="sheetbg"><div id="sheet-in" role="dialog" aria-modal="true"></div></div>
+<div id="toast" hidden role="status"></div>
+
+<script>
+/* ============ DATE: exerciții, programe, rețete ============ */
+
+/* k: 'c' = compus partea superioară, 'l' = compus partea inferioară, 'i' = izolare, 't' = pe timp
+   bw: true = se poate face fără greutate adăugată */
+const EX = {
+  /* ---------- PIEPT ---------- */
+  bench: {n:'Împins la piept cu bara', en:'Bench Press', m:'Piept', k:'c', eq:'Bancă orizontală + bară',
+    s:['Întinde-te pe bancă cu tălpile ferm pe podea și omoplații trași spre spate și în jos.',
+       'Prinde bara puțin mai lat decât umerii și coboar-o controlat până atinge ușor pieptul, la nivelul sternului.',
+       'Împinge bara în sus până brațele sunt aproape întinse, fără să blochezi brusc coatele.',
+       'Inspiră la coborâre, expiră la împingere.'],
+    b:['Bara săltată de pe piept: pierzi controlul și crește riscul de accidentare.','Șoldul ridicat de pe bancă în timpul împingerii.'],
+    tip:'La primele ședințe lucrează doar cu bara goală (20 kg) și roagă un antrenor din sală să îți verifice poziția.',
+    alt:['dbbench','chestpress','pushup']},
+  dbbench: {n:'Împins la piept cu gantere', en:'Dumbbell Bench Press', m:'Piept', k:'c', eq:'Bancă orizontală + gantere',
+    s:['Șezi pe bancă cu ganterele pe coapse, apoi lasă-te pe spate aducându-le la nivelul pieptului.',
+       'Împinge ganterele în sus și ușor spre interior, fără să le lovești una de alta.',
+       'Coboară controlat până când coatele ajung puțin sub nivelul băncii.'],
+    b:['Coatele deschise la 90° față de corp: ține-le la aproximativ 45°.','Coborâre prea rapidă, fără control.'],
+    tip:'Notează greutatea unei singure gantere.', alt:['bench','chestpress','pushup']},
+  chestpress: {n:'Împins la piept la aparat', en:'Chest Press Machine', m:'Piept', k:'c', eq:'Aparat chest press',
+    s:['Reglează scaunul astfel încât mânerele să fie la nivelul pieptului.',
+       'Ține spatele lipit de spătar și împinge mânerele înainte până brațele sunt aproape întinse.',
+       'Revino lent, fără să lași plăcile de greutate să se atingă între repetări.'],
+    b:['Umerii ridicați spre urechi.','Spatele desprins de spătar ca să ajuți împingerea.'],
+    tip:'Cel mai simplu exercițiu de piept pentru început: aparatul ghidează mișcarea.', alt:['dbbench','bench','pushup']},
+  incline: {n:'Împins înclinat cu gantere', en:'Incline Dumbbell Press', m:'Piept superior', k:'c', eq:'Bancă înclinată 30-45° + gantere',
+    s:['Reglează banca la 30-45° și adu ganterele la nivelul pieptului.',
+       'Împinge ganterele în sus și ușor spre interior.',
+       'Coboară controlat până simți o întindere ușoară în piept.'],
+    b:['Bancă prea ridicată: exercițiul devine unul pentru umeri.','Spatele arcuit excesiv.'],
+    tip:'Notează greutatea unei singure gantere.', alt:['chestpress','dbbench','pushup']},
+  pushup: {n:'Flotări', en:'Push-up', m:'Piept, triceps', k:'c', bw:true, eq:'Fără echipament (sau o bancă)',
+    s:['Palmele puțin mai late decât umerii, corpul drept de la cap la călcâie.',
+       'Coboară pieptul spre podea cu coatele la aproximativ 45° față de corp.',
+       'Împinge înapoi până brațele sunt întinse.'],
+    b:['Șoldul lăsat în jos sau ridicat prea sus.','Capul împins înainte.'],
+    tip:'Prea greu? Pune palmele pe o bancă sau sprijină-te pe genunchi. Lasă câmpul de kg gol.', alt:['chestpress','dbbench']},
+  flye: {n:'Fluturări la aparat sau la cablu', en:'Pec Deck / Cable Fly', m:'Piept', k:'i', eq:'Aparat pec deck sau cabluri',
+    s:['Brațele deschise lateral, coatele ușor îndoite.',
+       'Adu brațele în față ca într-o îmbrățișare, strângând pieptul la final.',
+       'Revino lent până simți întinderea în piept.'],
+    b:['Coatele care se îndoaie și se întind: unghiul rămâne fix.','Greutate prea mare, mișcare din umeri.'],
+    tip:'', alt:['incline','chestpress']},
+
+  /* ---------- SPATE ---------- */
+  latpull: {n:'Tracțiuni la helcometru', en:'Lat Pulldown', m:'Spate (dorsali)', k:'c', eq:'Helcometru cu bară lată',
+    s:['Fixează coapsele sub suport și prinde bara mai lat decât umerii.',
+       'Trage bara spre partea de sus a pieptului, cu pieptul ușor împins înainte.',
+       'Gândește-te că tragi cu coatele spre șolduri, nu cu mâinile.',
+       'Revino controlat până brațele sunt întinse.'],
+    b:['Balans din trunchi ca să tragi bara.','Bara trasă în spatele gâtului: riscant pentru umeri.'],
+    tip:'', alt:['asstpull','crow','dbrow']},
+  asstpull: {n:'Tracțiuni asistate la aparat', en:'Assisted Pull-up', m:'Spate (dorsali)', k:'c', eq:'Aparat de tracțiuni asistate',
+    s:['Alege contragreutatea, urcă pe platformă și prinde mânerele late.',
+       'Trage-te în sus până bărbia trece de mâini, cu pieptul înainte.',
+       'Coboară lent până brațele sunt întinse.'],
+    b:['Mișcare pe jumătate, fără întindere completă jos.','Umerii ridicați spre urechi.'],
+    tip:'Notează contragreutatea aleasă. Aici progresul înseamnă o contragreutate MAI MICĂ.', alt:['latpull','crow']},
+  crow: {n:'Ramat la cablu din șezut', en:'Seated Cable Row', m:'Spate (mijloc)', k:'c', eq:'Aparat de ramat cu cablu',
+    s:['Șezi cu genunchii ușor îndoiți și spatele drept.',
+       'Trage mânerul spre abdomen, cu coatele pe lângă corp, apropiind omoplații.',
+       'Revino controlat până brațele sunt întinse, fără să rotunjești spatele.'],
+    b:['Legănatul trunchiului înainte și înapoi.','Umerii ridicați spre urechi.'],
+    tip:'', alt:['dbrow','latpull','brow']},
+  dbrow: {n:'Ramat cu gantera, un braț', en:'One-Arm Dumbbell Row', m:'Spate', k:'c', eq:'Bancă + ganteră',
+    s:['Sprijină un genunchi și o palmă pe bancă, cu spatele drept și paralel cu podeaua.',
+       'Trage gantera spre șold, cu cotul aproape de corp.',
+       'Coboară controlat până brațul este întins. Fă toate repetările, apoi schimbă brațul.'],
+    b:['Trunchiul care se rotește ca să ridice greutatea.','Gantera trasă spre umăr în loc de șold.'],
+    tip:'', alt:['crow','latpull','brow']},
+  brow: {n:'Ramat cu bara, aplecat', en:'Barbell Row', m:'Spate', k:'c', eq:'Bară',
+    s:['Apleacă trunchiul la aproximativ 45°, cu genunchii ușor îndoiți și spatele drept.',
+       'Trage bara spre partea de jos a abdomenului, cu coatele aproape de corp.',
+       'Coboară controlat până brațele sunt întinse.'],
+    b:['Spatele rotunjit.','Trunchiul ridicat la fiecare repetare ca să ajuți mișcarea.'],
+    tip:'Dacă simți zona lombară, treci la ramatul la cablu sau cu gantera.', alt:['crow','dbrow']},
+  facepull: {n:'Face pull la cablu', en:'Face Pull', m:'Umeri posteriori, spate sus', k:'i', eq:'Cablu cu frânghie, la nivelul feței',
+    s:['Prinde frânghia cu ambele mâini și fă un pas în spate.',
+       'Trage frânghia spre față, despărțind capetele, cu coatele la nivelul umerilor.',
+       'Ține o secundă, apoi revino controlat.'],
+    b:['Greutate prea mare: mișcarea devine scurtă și smucită.','Trunchiul lăsat pe spate.'],
+    tip:'Foarte bun pentru postură și sănătatea umerilor. Nu îl sări.', alt:['latraise']},
+
+  /* ---------- UMERI ---------- */
+  ohp: {n:'Împins deasupra capului cu bara', en:'Overhead Press', m:'Umeri', k:'c', eq:'Bară + suport',
+    s:['Stai în picioare cu bara la nivelul claviculelor, prinsă puțin mai lat decât umerii.',
+       'Strânge abdomenul și fesierii pentru stabilitate.',
+       'Împinge bara vertical până brațele sunt întinse, trecând capul ușor în față la final.',
+       'Coboară controlat înapoi la nivelul claviculelor.'],
+    b:['Spatele arcuit excesiv.','Bara împinsă în față în loc de vertical.'],
+    tip:'', alt:['dbshoulder']},
+  dbshoulder: {n:'Împins cu gantere din șezut', en:'Dumbbell Shoulder Press', m:'Umeri', k:'c', eq:'Bancă cu spătar + gantere',
+    s:['Șezi cu spatele sprijinit și ganterele la nivelul umerilor, cu palmele spre înainte.',
+       'Împinge ganterele deasupra capului până brațele sunt aproape întinse.',
+       'Coboară controlat până la nivelul urechilor.'],
+    b:['Spatele desprins de spătar.','Coborâre prea scurtă.'],
+    tip:'Notează greutatea unei singure gantere.', alt:['ohp']},
+  latraise: {n:'Ridicări laterale cu gantere', en:'Lateral Raise', m:'Umeri (lateral)', k:'i', eq:'Gantere ușoare',
+    s:['Stai în picioare cu ganterele pe lângă corp și coatele ușor îndoite.',
+       'Ridică brațele lateral până la nivelul umerilor.',
+       'Coboară lent, în 2-3 secunde.'],
+    b:['Greutate prea mare și balans din corp.','Brațele ridicate peste nivelul umerilor.'],
+    tip:'Aici greutățile mici sunt normale: 2-6 kg pe ganteră la început.', alt:['facepull']},
+
+  /* ---------- BRAȚE ---------- */
+  bicep: {n:'Flexii pentru biceps cu gantere', en:'Dumbbell Curl', m:'Biceps', k:'i', eq:'Gantere',
+    s:['Stai în picioare cu brațele întinse și coatele lipite de corp.',
+       'Îndoaie coatele și ridică ganterele spre umeri, fără să miști coatele din loc.',
+       'Coboară controlat până brațele sunt complet întinse.'],
+    b:['Balans din spate ca să arunci greutatea în sus.'], tip:'', alt:['hammer']},
+  hammer: {n:'Flexii ciocan', en:'Hammer Curl', m:'Biceps, antebraț', k:'i', eq:'Gantere',
+    s:['Ține ganterele cu palmele față în față, ca pe un ciocan.',
+       'Îndoaie coatele și ridică ganterele spre umeri, cu coatele fixe pe lângă corp.',
+       'Coboară controlat.'],
+    b:['Balans din corp.'], tip:'', alt:['bicep']},
+  tricep: {n:'Extensii pentru triceps la cablu', en:'Triceps Pushdown', m:'Triceps', k:'i', eq:'Cablu sus, cu bară sau frânghie',
+    s:['Prinde bara sau frânghia cu coatele lipite de corp, îndoite la 90°.',
+       'Întinde brațele complet în jos, fără să miști coatele.',
+       'Revino controlat până la 90°.'],
+    b:['Coatele depărtate de corp.','Trunchiul aplecat peste bară ca să împingi cu greutatea corpului.'], tip:'', alt:['ohtri']},
+  ohtri: {n:'Extensii triceps deasupra capului, la cablu', en:'Overhead Cable Triceps Extension', m:'Triceps', k:'i', eq:'Cablu jos, cu frânghie',
+    s:['Cu spatele la aparat, ține frânghia în spatele capului, cu coatele îndreptate înainte.',
+       'Întinde brațele deasupra capului, fără să depărtezi coatele.',
+       'Revino lent până simți întinderea în triceps.'],
+    b:['Coatele care se deschid lateral.','Spatele arcuit.'], tip:'', alt:['tricep']},
+
+  /* ---------- PICIOARE & FESIERI ---------- */
+  squat: {n:'Genuflexiuni cu bara', en:'Back Squat', m:'Cvadriceps, fesieri', k:'l', eq:'Rack + bară',
+    s:['Așază bara pe partea de sus a spatelui (nu pe gât), cu picioarele la lățimea umerilor.',
+       'Coboară împingând șoldul în spate și îndoind genunchii, ca și cum te-ai așeza pe un scaun.',
+       'Coboară până când coapsele sunt cel puțin paralele cu podeaua, cu genunchii pe direcția vârfurilor.',
+       'Ridică-te împingând în toată talpa, cu spatele drept.'],
+    b:['Genunchii care cad spre interior la ridicare.','Călcâiele ridicate de pe podea.'],
+    tip:'Învață mișcarea cu bara goală sau cu varianta goblet. Montează barele de siguranță ale rack-ului.',
+    alt:['goblet','legpress']},
+  goblet: {n:'Genuflexiuni goblet', en:'Goblet Squat', m:'Cvadriceps, fesieri', k:'l', eq:'O ganteră sau un kettlebell',
+    s:['Ține gantera vertical la piept, cu coatele sub ea.',
+       'Coboară între genunchi, cu pieptul sus și călcâiele pe podea.',
+       'Ridică-te împingând în toată talpa.'],
+    b:['Trunchiul aplecat mult înainte.','Genunchii care cad spre interior.'],
+    tip:'Cea mai bună variantă pentru a învăța genuflexiunea.', alt:['squat','legpress']},
+  legpress: {n:'Presă pentru picioare', en:'Leg Press', m:'Cvadriceps, fesieri', k:'l', eq:'Aparat leg press',
+    s:['Așază tălpile pe platformă la lățimea umerilor, cu spatele și șoldul lipite de scaun.',
+       'Coboară platforma controlat până când genunchii ajung la aproximativ 90°.',
+       'Împinge înapoi fără să blochezi genunchii la final.'],
+    b:['Genunchii blocați complet sus.','Șoldul care se ridică de pe scaun în punctul de jos.'],
+    tip:'Tălpile mai sus pe platformă mută efortul spre fesieri; mai jos, spre cvadriceps.', alt:['goblet','squat']},
+  rdl: {n:'Îndreptări românești', en:'Romanian Deadlift', m:'Ischiogambieri, fesieri', k:'l', eq:'Bară sau gantere',
+    s:['Ține bara în fața coapselor, cu genunchii ușor îndoiți.',
+       'Împinge șoldul în spate și coboară bara lipită de picioare, cu spatele drept.',
+       'Oprește-te când simți o întindere puternică în spatele coapselor, de obicei sub genunchi.',
+       'Revino împingând șoldul înainte și strângând fesierii.'],
+    b:['Spatele rotunjit.','Genunchii îndoiți prea mult: exercițiul devine genuflexiune.'],
+    tip:'', alt:['backext','legcurl','hipthrust']},
+  deadlift: {n:'Îndreptări clasice', en:'Deadlift', m:'Spate, fesieri, picioare', k:'l', eq:'Bară cu discuri',
+    s:['Stai cu bara deasupra mijlocului tălpii, cu picioarele la lățimea șoldului.',
+       'Prinde bara în afara picioarelor, cu spatele drept, pieptul sus și umerii puțin în fața barei.',
+       'Ridică bara lipită de corp, întinzând în același timp genunchii și șoldul.',
+       'Coboară controlat pe același traseu.'],
+    b:['Spatele rotunjit: cea mai importantă greșeală de evitat.','Bara depărtată de corp.'],
+    tip:'Exercițiu tehnic. Nu te grăbi cu greutatea și cere unui antrenor să te vadă la început.',
+    alt:['rdl','hipthrust','backext']},
+  hipthrust: {n:'Hip thrust', en:'Hip Thrust', m:'Fesieri', k:'l', eq:'Bancă + bară (cu burete) sau aparat dedicat',
+    s:['Sprijină partea de sus a spatelui pe bancă, cu bara peste șold și tălpile pe podea.',
+       'Împinge șoldul în sus până când trunchiul este paralel cu podeaua.',
+       'Strânge fesierii o secundă sus, cu bărbia în piept.',
+       'Coboară controlat.'],
+    b:['Spatele arcuit în loc de fesieri strânși.','Tălpile prea departe sau prea aproape: sus, gambele trebuie să fie verticale.'],
+    tip:'Folosește un burete sau un prosop pe bară. Dacă sala are aparat de hip thrust, este mai comod.',
+    alt:['glutebridge','backext','rdl']},
+  glutebridge: {n:'Podul fesier', en:'Glute Bridge', m:'Fesieri', k:'l', bw:true, eq:'Saltea (opțional o ganteră pe șold)',
+    s:['Întinde-te pe spate cu genunchii îndoiți și tălpile aproape de șezut.',
+       'Împinge șoldul în sus până când corpul este drept de la umeri la genunchi.',
+       'Strânge fesierii două secunde, apoi coboară.'],
+    b:['Împingere din zona lombară.','Tălpile prea departe de șezut.'], tip:'', alt:['hipthrust','backext']},
+  bulgarian: {n:'Fandări bulgărești', en:'Bulgarian Split Squat', m:'Fesieri, cvadriceps', k:'l', bw:true, eq:'Bancă + gantere',
+    s:['Sprijină laba piciorului din spate pe bancă, cu celălalt picior la un pas mare în față.',
+       'Coboară genunchiul din spate spre podea, cu trunchiul ușor aplecat înainte.',
+       'Împinge în călcâiul piciorului din față ca să te ridici. Termină repetările, apoi schimbă piciorul.'],
+    b:['Piciorul din față prea aproape de bancă.','Genunchiul din față care cade spre interior.'],
+    tip:'Începe fără greutăți, până prinzi echilibrul. Notează greutatea unei gantere.', alt:['lunge','stepup','legpress']},
+  lunge: {n:'Fandări din mers', en:'Walking Lunge', m:'Fesieri, cvadriceps', k:'l', bw:true, eq:'Gantere + spațiu liber',
+    s:['Fă un pas mare în față și coboară până când ambii genunchi ajung la aproximativ 90°.',
+       'Împinge în piciorul din față și adu piciorul din spate direct în pasul următor.',
+       'Ține trunchiul drept și privirea înainte.'],
+    b:['Pași prea scurți.','Genunchiul din spate lovit de podea.'], tip:'Notează greutatea unei gantere.', alt:['bulgarian','stepup']},
+  stepup: {n:'Urcări pe bancă', en:'Step-up', m:'Fesieri, cvadriceps', k:'l', bw:true, eq:'Bancă sau cutie + gantere',
+    s:['Pune toată talpa unui picior pe bancă.',
+       'Urcă împingând doar în piciorul de sus, fără avânt din piciorul de jos.',
+       'Coboară lent, în 2-3 secunde. Termină repetările, apoi schimbă piciorul.'],
+    b:['Avânt luat din piciorul de jos.','Coborâre prin cădere.'], tip:'', alt:['bulgarian','lunge']},
+  legext: {n:'Extensii pentru picioare', en:'Leg Extension', m:'Cvadriceps', k:'i', eq:'Aparat leg extension',
+    s:['Reglează aparatul astfel încât genunchii să fie în dreptul axului, cu rola pe glezne.',
+       'Întinde genunchii complet și ține o secundă sus.',
+       'Coboară lent.'],
+    b:['Mișcare smucită, cu avânt.'], tip:'', alt:['goblet','legpress']},
+  legcurl: {n:'Flexii pentru picioare', en:'Leg Curl', m:'Ischiogambieri', k:'i', eq:'Aparat leg curl (culcat sau șezând)',
+    s:['Așază-te în aparat cu rola deasupra călcâielor.',
+       'Îndoaie genunchii și adu călcâiele spre șezut.',
+       'Revino lent până picioarele sunt aproape întinse.'],
+    b:['Șoldul ridicat de pe suport.'], tip:'', alt:['rdl','backext']},
+  kickback: {n:'Extensii pentru fesieri la cablu', en:'Cable Glute Kickback', m:'Fesieri', k:'i', eq:'Cablu jos + manșetă de gleznă',
+    s:['Prinde manșeta de gleznă și sprijină-te cu mâinile de aparat, cu trunchiul ușor aplecat.',
+       'Împinge piciorul în spate și puțin în lateral, strângând fesierul.',
+       'Revino lent. Termină repetările, apoi schimbă piciorul.'],
+    b:['Spatele arcuit ca să ridici piciorul mai sus.','Balans din corp.'], tip:'', alt:['glutebridge','abduction']},
+  abduction: {n:'Abducții la aparat', en:'Hip Abduction Machine', m:'Fesieri (lateral)', k:'i', eq:'Aparat de abducții',
+    s:['Șezi cu spatele sprijinit și genunchii pe interiorul pernelor.',
+       'Depărtează genunchii cât poți de mult și ține o secundă.',
+       'Revino lent, fără să lași plăcile să se atingă.'],
+    b:['Mișcare scurtă și rapidă.'], tip:'Ușor aplecat înainte simți mai bine fesierii.', alt:['kickback']},
+  backext: {n:'Hiperextensii', en:'Back Extension', m:'Fesieri, ischiogambieri, lombari', k:'l', bw:true, eq:'Banca de hiperextensii (45°)',
+    s:['Reglează suportul sub șold, astfel încât să te poți apleca liber.',
+       'Coboară trunchiul cu spatele drept.',
+       'Ridică-te strângând fesierii, până când corpul este în linie dreaptă.'],
+    b:['Ridicare peste linia corpului, cu spatele arcuit.'],
+    tip:'Pentru fesieri: bărbia în piept și partea de sus a spatelui ușor rotunjită. Poți ține un disc la piept.', alt:['rdl','glutebridge']},
+  calf: {n:'Ridicări pe vârfuri', en:'Calf Raise', m:'Gambe', k:'i', eq:'Aparat pentru gambe sau o treaptă',
+    s:['Stai cu vârfurile pe marginea platformei.',
+       'Ridică-te pe vârfuri cât de sus poți și ține o secundă.',
+       'Coboară lent sub nivelul platformei.'],
+    b:['Mișcare rapidă și scurtă.'], tip:'', alt:[]},
+
+  /* ---------- ABDOMEN ---------- */
+  plank: {n:'Plank (scândura)', en:'Plank', m:'Abdomen', k:'t', eq:'Saltea',
+    s:['Sprijină-te pe antebrațe și pe vârfurile picioarelor, cu corpul drept de la cap la călcâie.',
+       'Strânge abdomenul și fesierii.',
+       'Respiră normal și menține poziția.'],
+    b:['Șoldul lăsat în jos: apasă pe zona lombară.','Șezutul ridicat prea sus.'], tip:'', alt:['legraise','cablecrunch']},
+  legraise: {n:'Ridicări de picioare', en:'Leg Raise', m:'Abdomen', k:'i', bw:true, eq:'Bară de tracțiuni, scaun roman sau saltea',
+    s:['Atârnat de bară sau întins pe saltea, ține picioarele apropiate.',
+       'Ridică picioarele controlat, îndoind genunchii dacă este prea greu.',
+       'Coboară lent, fără balans.'],
+    b:['Balans din corp.','Zona lombară desprinsă de saltea.'], tip:'Lasă câmpul de kg gol.', alt:['plank','cablecrunch']},
+  cablecrunch: {n:'Abdomene la cablu', en:'Cable Crunch', m:'Abdomen', k:'i', eq:'Cablu sus, cu frânghie',
+    s:['În genunchi, cu fața la aparat, ține frânghia lângă cap.',
+       'Rotunjește spatele și adu coatele spre genunchi, strângând abdomenul.',
+       'Revino lent.'],
+    b:['Tragere din brațe sau din șold.'], tip:'', alt:['legraise','plank']}
+};
+
+/* Zile de antrenament: [exercițiu, seturi, repetări] */
+const BLOCKS = {
+  UA:  {n:'Superior A', s:'Piept · Spate · Umeri · Brațe', e:[['bench',3,'8-10'],['latpull',3,'8-10'],['ohp',3,'8-10'],['crow',3,'10-12'],['latraise',3,'12-15'],['bicep',3,'10-12'],['tricep',3,'10-12']]},
+  UB:  {n:'Superior B', s:'Piept · Spate · Umeri · Brațe', e:[['incline',3,'8-10'],['dbrow',3,'8-10'],['dbshoulder',3,'10-12'],['flye',3,'12-15'],['facepull',3,'12-15'],['hammer',3,'10-12'],['ohtri',3,'10-12']]},
+  LA:  {n:'Inferior A', s:'Picioare · Fesieri · Abdomen', e:[['squat',3,'8-10'],['rdl',3,'8-10'],['legpress',3,'10-12'],['legcurl',3,'10-12'],['calf',3,'12-15'],['plank',3,'30-45']]},
+  LB:  {n:'Inferior B', s:'Picioare · Fesieri · Abdomen', e:[['deadlift',3,'6-8'],['bulgarian',3,'8-10'],['hipthrust',3,'10-12'],['legext',3,'12-15'],['calf',3,'12-15'],['legraise',3,'10-12']]},
+  FA:  {n:'Tot corpul A', s:'Genuflexiuni · Împins · Tras', e:[['squat',3,'8-10'],['bench',3,'8-10'],['crow',3,'10-12'],['legcurl',3,'10-12'],['latraise',3,'12-15'],['plank',3,'30-45']]},
+  FB:  {n:'Tot corpul B', s:'Ischio · Umeri · Spate', e:[['rdl',3,'8-10'],['dbshoulder',3,'8-10'],['latpull',3,'8-10'],['legpress',3,'10-12'],['incline',3,'10-12'],['bicep',2,'10-12'],['tricep',2,'10-12']]},
+  FC:  {n:'Tot corpul C', s:'Fesieri · Piept · Spate', e:[['hipthrust',3,'10-12'],['dbbench',3,'8-10'],['dbrow',3,'8-10'],['bulgarian',3,'8-10'],['facepull',3,'12-15'],['legraise',3,'10-12']]},
+  PUSH:{n:'Împins', s:'Piept · Umeri · Triceps', e:[['bench',3,'8-10'],['dbshoulder',3,'8-10'],['incline',3,'10-12'],['latraise',3,'12-15'],['flye',3,'12-15'],['tricep',3,'10-12'],['ohtri',2,'10-12']]},
+  PULL:{n:'Tras', s:'Spate · Biceps · Abdomen', e:[['latpull',3,'8-10'],['brow',3,'8-10'],['crow',3,'10-12'],['facepull',3,'12-15'],['bicep',3,'10-12'],['hammer',3,'10-12'],['cablecrunch',3,'12-15']]},
+  SA:  {n:'Umeri și brațe', s:'Umeri · Biceps · Triceps · Abdomen', e:[['ohp',3,'8-10'],['latraise',4,'12-15'],['facepull',3,'12-15'],['bicep',3,'10-12'],['tricep',3,'10-12'],['hammer',2,'10-12'],['ohtri',2,'10-12'],['cablecrunch',3,'12-15']]},
+  GA:  {n:'Fesieri și ischio', s:'Fesieri · Spatele coapsei', e:[['hipthrust',4,'8-10'],['rdl',3,'8-10'],['bulgarian',3,'8-10'],['legcurl',3,'10-12'],['kickback',3,'12-15'],['abduction',3,'15-20']]},
+  GB:  {n:'Cvadriceps și fesieri', s:'Fața coapsei · Fesieri · Abdomen', e:[['squat',3,'8-10'],['legpress',3,'10-12'],['lunge',3,'10-12'],['legext',3,'12-15'],['abduction',3,'15-20'],['calf',3,'12-15'],['plank',3,'30-45']]},
+  GC:  {n:'Fesieri complet', s:'Fesieri · Abdomen', e:[['hipthrust',3,'12-15'],['stepup',3,'10-12'],['backext',3,'12-15'],['goblet',3,'10-12'],['kickback',3,'12-15'],['legraise',3,'10-12']]},
+  UL:  {n:'Superior complet', s:'Spate · Umeri · Piept · Brațe', e:[['latpull',3,'8-10'],['dbshoulder',3,'8-10'],['crow',3,'10-12'],['incline',3,'10-12'],['latraise',3,'12-15'],['tricep',2,'10-12'],['bicep',2,'10-12']]},
+  UL2: {n:'Superior și abdomen', s:'Spate · Piept · Umeri · Abdomen', e:[['asstpull',3,'6-10'],['chestpress',3,'10-12'],['dbrow',3,'8-10'],['latraise',3,'12-15'],['facepull',3,'12-15'],['plank',3,'30-45']]},
+  MX:  {n:'Fesieri și superior', s:'Fesieri · Spate · Piept', e:[['hipthrust',3,'12-15'],['backext',3,'12-15'],['kickback',3,'12-15'],['asstpull',3,'6-10'],['chestpress',3,'10-12'],['dbrow',3,'8-10'],['plank',3,'30-45']]}
+};
+
+/* Program = accent × număr de zile pe săptămână */
+const PROGRAMS = {
+  echilibrat: {3:['FA','FB','FC'], 4:['UA','LA','UB','LB'], 5:['UA','LA','PUSH','PULL','LB']},
+  inferior:   {3:['GA','UL','GB'], 4:['GA','UL','GB','MX'], 5:['GA','UL','GB','UL2','GC']},
+  superior:   {3:['UA','LA','UB'], 4:['UA','LA','UB','SA'], 5:['PUSH','PULL','LA','UA','SA']}
+};
+const WEEKPLAN = {3:'Luni · Miercuri · Vineri', 4:'Luni · Marți · Joi · Vineri', 5:'Luni · Marți · Miercuri · Vineri · Sâmbătă'};
+
+/* ---------- INGREDIENTE: valori la 100 g (kcal, proteine, carbohidrați, grăsimi) ----------
+   u = greutatea unei bucăți, one/many = denumirea la bucată, st = pasul de rotunjire, ml = lichid */
+const ING = {
+  ou:{one:'ou',many:'ouă',u:55,k:143,p:12.6,c:0.7,f:9.5},
+  albus:{one:'albuș',many:'albușuri',u:33,k:52,p:11,c:0.7,f:0.2},
+  ovaz:{n:'fulgi de ovăz',k:372,p:13.5,c:59,f:7},
+  lapte:{n:'lapte 1,5%',ml:1,k:47,p:3.4,c:4.9,f:1.5},
+  kefir:{n:'kefir sau lapte bătut',ml:1,k:50,p:3.4,c:4.5,f:1.8},
+  banana:{one:'banană',many:'banane',u:120,st:0.5,k:89,p:1.1,c:23,f:0.3},
+  mar:{one:'măr',many:'mere',u:150,st:0.5,k:52,p:0.3,c:14,f:0.2},
+  fruct:{n:'fruct la alegere (portocală, pară, kiwi)',k:55,p:0.7,c:13,f:0.2},
+  fructepad:{n:'fructe de pădure',k:50,p:1,c:12,f:0.3},
+  iaurtgr:{n:'iaurt grecesc 2%',k:73,p:9,c:4,f:2},
+  skyr:{n:'skyr natur',k:63,p:11,c:4,f:0.2},
+  cottage:{n:'brânză cottage',k:98,p:11,c:3.4,f:4.3},
+  branzavaci:{n:'brânză de vaci slabă',k:85,p:13,c:3.5,f:2},
+  telemea:{n:'telemea light',k:180,p:17,c:1,f:12},
+  cascaval:{n:'cașcaval',k:350,p:25,c:1,f:27},
+  parmezan:{n:'parmezan ras',k:392,p:36,c:3,f:26},
+  paine:{one:'felie de pâine integrală',many:'felii de pâine integrală',u:35,k:245,p:9,c:44,f:3},
+  rondele:{one:'rondea de orez expandat',many:'rondele de orez expandat',u:9,k:385,p:8,c:81,f:3},
+  crackers:{n:'crackers integrali',k:420,p:10,c:65,f:12},
+  granola:{n:'granola fără zahăr adăugat',k:420,p:10,c:64,f:13},
+  miere:{n:'miere',k:304,p:0.3,c:82,f:0},
+  unarahide:{n:'unt de arahide',k:590,p:25,c:16,f:50},
+  nuci:{n:'nuci',k:654,p:15,c:14,f:65},
+  migdale:{n:'migdale',k:579,p:21,c:22,f:50},
+  chia:{n:'semințe de chia',k:486,p:17,c:42,f:31},
+  avocado:{n:'avocado',k:160,p:2,c:9,f:15},
+  hummus:{n:'hummus',k:230,p:7,c:14,f:16},
+  ulei:{n:'ulei de măsline',k:884,p:0,c:0,f:100},
+  curcanfel:{n:'piept de curcan feliat',k:105,p:20,c:2,f:2},
+  pui:{n:'piept de pui (cântărit crud)',k:110,p:23,c:0,f:2},
+  curcan:{n:'piept de curcan (cântărit crud)',k:107,p:24,c:0,f:1.5},
+  pulpe:{n:'pulpe de pui dezosate, fără piele (crude)',k:120,p:19.5,c:0,f:4.5},
+  curcantoc:{n:'carne tocată de curcan',k:150,p:20,c:0,f:8},
+  vita:{n:'mușchi de vită slab (crud)',k:140,p:21.5,c:0,f:6},
+  somon:{n:'file de somon (crud)',k:200,p:20,c:0,f:13},
+  pestealb:{n:'file de cod sau merluciu (crud)',k:82,p:18,c:0,f:0.7},
+  ton:{n:'ton în suc propriu, scurs',k:110,p:25,c:0,f:1},
+  creveti:{n:'creveți decorticați',k:90,p:19,c:0.5,f:1},
+  orez:{n:'orez (cântărit crud)',k:355,p:7,c:78,f:0.7},
+  paste:{n:'paste integrale (cântărite crude)',k:350,p:13,c:66,f:2.5},
+  quinoa:{n:'quinoa (cântărită crudă)',k:368,p:14,c:64,f:6},
+  cartofi:{n:'cartofi',k:77,p:2,c:17,f:0.1},
+  cartofid:{n:'cartofi dulci',k:86,p:1.6,c:20,f:0.1},
+  legume:{n:'legume (broccoli, ardei, dovlecel, ciuperci)',k:35,p:2.5,c:5,f:0.3},
+  salata:{n:'salată (verde, roșii, castraveți)',k:18,p:1,c:3,f:0.2},
+  sosrosii:{n:'sos de roșii simplu (pasată)',k:35,p:1.5,c:6,f:0.3},
+  baton:{one:'baton proteic',many:'batoane proteice',u:55,k:360,p:33,c:33,f:11},
+  pudra:{one:'măsură de pudră proteică (30 g)',many:'măsuri de pudră proteică (30 g)',u:30,st:0.5,k:390,p:78,c:7,f:6}
+};
+
+/* Mesele zilei. Rol ingredient: p = sursa de proteine, c = sursa de carbohidrați,
+   f = grăsimi/extra (se ajustează cu porția), x = cantitate fixă (legume etc.) */
+const SLOTS = {m1:'Mic dejun', m2:'Gustare', m3:'Prânz', m4:'Gustare înainte de sală', m5:'Cină', m6:'Seara'};
+const SLOTSETS = {
+  3:[['m1',.30],['m3',.38],['m5',.32]],
+  4:[['m1',.26],['m3',.32],['m4',.14],['m5',.28]],
+  5:[['m1',.23],['m2',.11],['m3',.29],['m4',.12],['m5',.25]],
+  6:[['m1',.21],['m2',.10],['m3',.27],['m4',.11],['m5',.23],['m6',.08]]
+};
+
+const RECIPES = {
+  m1:[
+    {n:'Omletă cu terci de ovăz și banană', i:[['ou',110,'p'],['albus',66,'p'],['ovaz',60,'c'],['lapte',200,'x'],['banana',120,'c'],['ulei',5,'f']],
+     prep:'Bate ouăle cu albușurile și un praf de sare. Gătește omleta 3-4 minute la foc mediu, în tigaie antiaderentă unsă cu uleiul. Fierbe ovăzul în lapte 3-5 minute, amestecând, și pune banana felii deasupra.'},
+    {n:'Clătite din ovăz cu iaurt și fructe', i:[['ovaz',60,'c'],['ou',110,'p'],['iaurtgr',150,'p'],['fructepad',80,'x'],['miere',10,'f']],
+     prep:'Mixează în blender ovăzul cu ouăle și 2-3 linguri de apă. Coace clătite mici în tigaie antiaderentă, fără ulei, 1-2 minute pe fiecare parte. Servește cu iaurtul, fructele și mierea.'},
+    {n:'Terci de ovăz cu proteină și unt de arahide', i:[['ovaz',70,'c'],['lapte',250,'x'],['pudra',30,'p'],['unarahide',15,'f'],['banana',120,'c']],
+     prep:'Fierbe ovăzul în lapte 4-5 minute. Ia-l de pe foc, lasă-l un minut și abia apoi amestecă pudra proteică (nu se fierbe). Adaugă untul de arahide și banana felii.'},
+    {n:'Sandviș cu curcan și cașcaval, cu iaurt', i:[['paine',70,'c'],['curcanfel',80,'p'],['cascaval',30,'f'],['salata',100,'x'],['iaurtgr',150,'p']],
+     prep:'Prăjește pâinea în toaster și pune curcanul, cașcavalul și legumele feliate. Iaurtul se mănâncă alături, simplu.'},
+    {n:'Ouă jumări cu avocado pe pâine prăjită', i:[['ou',110,'p'],['albus',66,'p'],['paine',70,'c'],['avocado',50,'f'],['salata',100,'x']],
+     prep:'Gătește ouăle la foc mic, în tigaie antiaderentă fără ulei, amestecând 2-3 minute până se leagă. Zdrobește avocado cu furculița pe pâinea prăjită și pune ouăle deasupra. Roșii alături.'},
+    {n:'Bol cu skyr, granola și fructe', i:[['skyr',250,'p'],['granola',40,'c'],['banana',120,'c'],['fructepad',100,'x'],['nuci',10,'f']],
+     prep:'Fără gătit: pune skyr-ul într-un bol și adaugă granola, banana felii, fructele de pădure și nucile.'},
+    {n:'Omletă cu legume și telemea', i:[['ou',165,'p'],['legume',150,'x'],['telemea',30,'f'],['paine',70,'c']],
+     prep:'Călește 3-4 minute ciuperci, ardei sau spanac în tigaie antiaderentă, cu o lingură de apă. Toarnă ouăle bătute, presară telemeaua și gătește acoperit 3 minute. Servește cu pâine prăjită.'},
+    {n:'Budincă de chia cu iaurt și banană', i:[['chia',30,'f'],['lapte',200,'x'],['iaurtgr',200,'p'],['banana',120,'c'],['miere',10,'c']],
+     prep:'De seara: amestecă semințele de chia cu laptele și lasă la frigider peste noapte. Dimineața adaugă iaurtul, banana felii și mierea.'}
+  ],
+  m2:[
+    {n:'Iaurt grecesc cu fructe și nuci', i:[['iaurtgr',200,'p'],['fructepad',100,'c'],['nuci',15,'f']], prep:'Fără gătit: amestecă totul într-un bol.'},
+    {n:'Brânză cottage cu măr și miere', i:[['cottage',180,'p'],['mar',150,'c'],['miere',10,'f']], prep:'Taie mărul cubulețe, pune-l peste brânză și adaugă mierea. Merge și cu scorțișoară.'},
+    {n:'Baton proteic și un fruct', i:[['baton',55,'p'],['fruct',150,'c']], prep:'Varianta pentru zilele aglomerate. Alege un baton cu cel puțin 15 g de proteine.'},
+    {n:'Pâine cu unt de arahide, banană și kefir', i:[['paine',35,'c'],['unarahide',15,'f'],['banana',120,'c'],['kefir',250,'p']], prep:'Întinde untul de arahide pe pâinea prăjită și pune banana felii deasupra. Kefirul se bea alături.'},
+    {n:'Telemea light cu roșii și crackers', i:[['telemea',80,'p'],['salata',150,'x'],['crackers',20,'c']], prep:'Taie telemeaua cuburi și servește-o cu roșii, castraveți și crackers.'},
+    {n:'Măr copt cu scorțișoară și iaurt', i:[['mar',150,'c'],['iaurtgr',200,'p'],['miere',10,'f']], prep:'Taie mărul felii, presară scorțișoară și coace-l 15 minute la 180°C (sau 3 minute la microunde). Servește cu iaurtul și mierea.'},
+    {n:'Hummus cu legume crude, ou fiert și crackers', i:[['hummus',50,'f'],['salata',150,'x'],['crackers',25,'c'],['ou',55,'p']], prep:'Fierbe oul 8-9 minute. Taie morcov și castravete bastonașe și servește-le cu hummus și crackers.'},
+    {n:'Ouă fierte și un fruct', i:[['ou',110,'p'],['fruct',150,'c']], prep:'Fierbe ouăle 8-9 minute din momentul în care apa clocotește. Se pot pregăti din timp și ține la frigider 3-4 zile.'}
+  ],
+  m3:[
+    {n:'Piept de pui la cuptor cu orez și legume', i:[['pui',180,'p'],['orez',75,'c'],['legume',200,'x'],['ulei',10,'f']],
+     prep:'Condimentează puiul cu sare, piper, boia și usturoi. Coace-l la 200°C timp de 20-25 de minute (sau la grătar, 5-6 minute pe fiecare parte). Fierbe orezul 15 minute în apă cu sare (o parte orez, două părți apă). Legumele se coc în aceeași tavă, stropite cu uleiul.'},
+    {n:'Piept de curcan la cuptor cu cartofi copți și salată', i:[['curcan',180,'p'],['cartofi',300,'c'],['salata',150,'x'],['ulei',10,'f']],
+     prep:'Taie cartofii felii groase, cu tot cu coajă, și coace-i 35-40 de minute la 200°C. Curcanul condimentat intră în cuptor în ultimele 20-25 de minute. Salata se drege cu uleiul și zeamă de lămâie.'},
+    {n:'Vită la tigaie cu quinoa și legume', i:[['vita',160,'p'],['quinoa',70,'c'],['legume',200,'x'],['ulei',10,'f']],
+     prep:'Clătește quinoa și fierbe-o 15 minute (o parte quinoa, două părți apă). Rumenește vita 2-3 minute pe fiecare parte, în tigaie încinsă cu jumătate din ulei, apoi las-o 5 minute să se odihnească. Legumele se călesc 5 minute în restul de ulei.'},
+    {n:'Somon la cuptor cu orez și broccoli', i:[['somon',150,'p'],['orez',70,'c'],['legume',200,'x']],
+     prep:'Pune somonul în tavă cu sare, piper și felii de lămâie și coace-l 12-15 minute la 200°C, fără ulei (are grăsimea lui). Fierbe orezul 15 minute. Broccoli se gătește la abur sau se fierbe 4-5 minute.'},
+    {n:'Pulpe de pui dezosate la cuptor cu cartofi natur', i:[['pulpe',180,'p'],['cartofi',300,'c'],['salata',150,'x'],['ulei',5,'f']],
+     prep:'Condimentează pulpele (fără piele) și coace-le 30 de minute la 200°C. Fierbe cartofii 20 de minute în apă cu sare și presară pătrunjel. Salată de varză cu uleiul și oțet.'},
+    {n:'Tocăniță de curcan cu orez și ardei', i:[['curcantoc',160,'p'],['orez',75,'c'],['legume',150,'x'],['sosrosii',100,'x'],['ulei',5,'f']],
+     prep:'Rumenește carnea 5 minute în ulei, adaugă ardeiul tăiat cuburi și sosul de roșii și fierbe 10-12 minute la foc mic. Servește peste orezul fiert.'},
+    {n:'Cod la cuptor cu cartofi și salată', i:[['pestealb',220,'p'],['cartofi',300,'c'],['salata',150,'x'],['ulei',10,'f']],
+     prep:'Pune peștele în tavă cu sare, piper, lămâie și jumătate din ulei și coace-l 12-15 minute la 200°C. Cartofii se coc 35-40 de minute. Salata se drege cu restul de ulei.'},
+    {n:'Paste integrale cu pui și sos de roșii', i:[['pui',170,'p'],['paste',75,'c'],['sosrosii',150,'x'],['parmezan',10,'f'],['ulei',5,'f']],
+     prep:'Fierbe pastele după timpul de pe pachet. Taie puiul cuburi și rumenește-l 6-7 minute în ulei, apoi adaugă sosul de roșii, usturoi și busuioc și fierbe 5 minute. Amestecă pastele în sos și presară parmezanul.'}
+  ],
+  m4:[
+    {n:'Shake proteic cu banană', i:[['pudra',30,'p'],['banana',120,'c'],['lapte',250,'x']], prep:'Mixează totul în blender sau în shaker (banana se poate mânca separat). Ideal cu 45-60 de minute înainte de sală.'},
+    {n:'Iaurt grecesc cu ovăz și miere', i:[['iaurtgr',200,'p'],['ovaz',30,'c'],['miere',10,'c']], prep:'Amestecă ovăzul crud în iaurt și lasă 5 minute să se înmoaie. Adaugă mierea.'},
+    {n:'Sandviș cu piept de curcan', i:[['paine',70,'c'],['curcanfel',70,'p'],['salata',50,'x']], prep:'Două felii de pâine, curcan, frunze de salată și roșie. Se poate lua la pachet.'},
+    {n:'Baton proteic și banană', i:[['baton',55,'p'],['banana',120,'c']], prep:'Varianta de pus în geanta de sală.'},
+    {n:'Brânză cottage cu fruct', i:[['cottage',180,'p'],['fruct',150,'c']], prep:'Taie fructul cuburi și amestecă-l cu brânza.'},
+    {n:'Ovăz rapid cu proteină', i:[['ovaz',40,'c'],['pudra',20,'p'],['fructepad',50,'x']], prep:'Toarnă apă fierbinte peste ovăz și lasă 3 minute. Amestecă pudra proteică și adaugă fructele.'},
+    {n:'Skyr cu banană și migdale', i:[['skyr',200,'p'],['banana',120,'c'],['migdale',10,'f']], prep:'Fără gătit: banana felii și migdalele peste skyr.'},
+    {n:'Rondele de orez cu brânză de vaci și miere', i:[['branzavaci',150,'p'],['rondele',27,'c'],['miere',10,'c']], prep:'Întinde brânza pe rondele și stropește cu miere.'}
+  ],
+  m5:[
+    {n:'Somon la cuptor cu cartofi dulci și salată', i:[['somon',140,'p'],['cartofid',250,'c'],['salata',150,'x']],
+     prep:'Taie cartofii dulci cuburi și coace-i 25-30 de minute la 200°C. Somonul, cu sare, piper și lămâie, intră în cuptor în ultimele 12-15 minute. Salata se drege cu lămâie.'},
+    {n:'Piept de pui la cuptor cu cartofi dulci și legume', i:[['pui',170,'p'],['cartofid',250,'c'],['legume',200,'x'],['ulei',5,'f']],
+     prep:'Pune în aceeași tavă puiul condimentat, cartofii dulci cuburi și legumele, stropește cu uleiul și coace 25 de minute la 200°C.'},
+    {n:'Salată de paste integrale cu ton', i:[['ton',140,'p'],['paste',70,'c'],['salata',150,'x'],['ulei',10,'f']],
+     prep:'Fierbe pastele și răcește-le sub jet de apă. Amestecă-le cu tonul scurs, roșii, castraveți, uleiul și zeamă de lămâie. Se poate pregăti din timp.'},
+    {n:'Chiftele de curcan la cuptor cu piure', i:[['curcantoc',160,'p'],['cartofi',300,'c'],['lapte',50,'x'],['salata',100,'x']],
+     prep:'Amestecă carnea cu usturoi, pătrunjel, sare și piper, formează chiftele și coace-le 18-20 de minute la 200°C, pe hârtie de copt (nu se prăjesc). Fierbe cartofii și pasează-i cu laptele cald, fără unt.'},
+    {n:'Cod cu lămâie, quinoa și broccoli', i:[['pestealb',200,'p'],['quinoa',65,'c'],['legume',200,'x'],['ulei',10,'f']],
+     prep:'Coace peștele 12-15 minute la 200°C, cu lămâie și uleiul. Fierbe quinoa 15 minute. Broccoli se gătește la abur 4-5 minute.'},
+    {n:'Pui la grătar cu cartofi natur și salată de castraveți', i:[['pui',170,'p'],['cartofi',280,'c'],['salata',150,'x'],['iaurtgr',50,'x'],['ulei',5,'f']],
+     prep:'Gătește puiul la grătar sau în tigaie-grill, 5-6 minute pe fiecare parte. Fierbe cartofii 20 de minute. Amestecă castraveții feliați cu iaurtul, usturoi și mărar.'},
+    {n:'Vită la cuptor cu orez și legume', i:[['vita',150,'p'],['orez',65,'c'],['legume',200,'x'],['ulei',5,'f']],
+     prep:'Rumenește vita un minut pe fiecare parte în tigaie, apoi dă-o 8-10 minute la cuptor, la 200°C. Orezul fierbe 15 minute. Legumele se coc în tavă, cu uleiul.'},
+    {n:'Creveți cu usturoi și paste integrale', i:[['creveti',180,'p'],['paste',70,'c'],['salata',100,'x'],['ulei',10,'f']],
+     prep:'Fierbe pastele. Călește creveții 2-3 minute în ulei cu usturoi, până devin roz, și amestecă-i cu pastele și pătrunjel. Salată alături.'}
+  ],
+  m6:[
+    {n:'Brânză de vaci cu miere', i:[['branzavaci',200,'p'],['miere',10,'c']], prep:'Fără gătit. Proteina din brânză se digeră lent, potrivit pentru seară.'},
+    {n:'Iaurt grecesc cu fructe și nuci', i:[['iaurtgr',200,'p'],['fructepad',50,'c'],['nuci',10,'f']], prep:'Fără gătit: amestecă totul și presară scorțișoară.'},
+    {n:'Skyr cu fructe de pădure și migdale', i:[['skyr',200,'p'],['fructepad',50,'c'],['migdale',15,'f']], prep:'Fără gătit.'},
+    {n:'Brânză cottage cu fructe de pădure', i:[['cottage',180,'p'],['fructepad',80,'c']], prep:'Fără gătit.'},
+    {n:'Kefir cu banană și migdale', i:[['kefir',300,'p'],['banana',60,'c'],['migdale',15,'f']], prep:'Kefirul se bea ca atare, cu banana și migdalele alături.'},
+    {n:'Ouă fierte cu roșii și pâine', i:[['ou',110,'p'],['salata',100,'x'],['paine',35,'c']], prep:'Fierbe ouăle 8-9 minute. Servește-le cu roșii și o felie de pâine prăjită.'},
+    {n:'Telemea light cu roșii și pâine', i:[['telemea',70,'p'],['salata',150,'x'],['paine',35,'c']], prep:'Fără gătit: telemea, roșii, castraveți și o felie de pâine.'},
+    {n:'Shake proteic de seară', i:[['pudra',30,'p'],['lapte',250,'c']], prep:'Amestecă pudra în lapte, în shaker.'}
+  ]
+};
+
+if (typeof module !== 'undefined') module.exports = {EX, BLOCKS, PROGRAMS, WEEKPLAN, ING, SLOTS, SLOTSETS, RECIPES};
+
+/* ============ CALCULE: ținte nutriționale, program, porții, progresie ============ */
+
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const num = v => { const n = parseFloat(String(v == null ? '' : v).replace(',', '.')); return isFinite(n) ? n : null; };
+
+function ymd(d) {
+  d = d || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function parseYmd(s) { const a = s.split('-').map(Number); return new Date(a[0], a[1] - 1, a[2]); }
+function daysBetween(a, b) { return Math.round((parseYmd(b) - parseYmd(a)) / 86400000); }
+function mondayOf(s) { const d = parseYmd(s); const wd = d.getDay(); d.setDate(d.getDate() + (wd === 0 ? -6 : 1 - wd)); return ymd(d); }
+
+/* Greutatea curentă = ultima cântărire */
+function curWeight(p) { return p.bw && p.bw.length ? p.bw[p.bw.length - 1].w : p.w; }
+
+/* Ținte zilnice: Mifflin-St Jeor + nivel de activitate + obiectiv */
+function targets(p) {
+  const w = curWeight(p);
+  const bmr = 10 * w + 6.25 * p.h - 5 * p.age + (p.sex === 'f' ? -161 : 5);
+  const af = ({sed: 1.4, mod: 1.55, act: 1.7}[p.act] || 1.55) + (p.days - 4) * 0.025;
+  const tdee = bmr * af;
+  const bmi = w / Math.pow(p.h / 100, 2);
+  let goal = p.goal, note = '';
+  if (goal === 'slab' && bmi < 18.5) { goal = 'ton'; note = 'Greutatea ta este deja sub intervalul sănătos pentru înălțime, așa că am calculat calorii de menținere, nu de slăbire.'; }
+  else if (goal === 'slab' && p.age < 18) { goal = 'ton'; note = 'Sub 18 ani nu recomandăm deficit caloric. Am calculat calorii de menținere.'; }
+  const floor = Math.max(bmr * 1.05, p.sex === 'f' ? 1300 : 1600);
+  let kcal = goal === 'masa' ? tdee * 1.12 : goal === 'slab' ? Math.max(tdee * 0.82, floor) : tdee;
+  kcal = Math.round(kcal / 50) * 50;
+  /* proteinele se raportează la o greutate de referință, ca să nu iasă exagerate la greutăți mari */
+  const refW = Math.min(w, 25 * Math.pow(p.h / 100, 2));
+  let prot = refW * (goal === 'ton' ? 1.8 : 2.0);
+  prot = Math.round(Math.min(prot, kcal * 0.35 / 4) / 5) * 5;
+  const auto = {kcal, prot};
+  if (p.kcalO) kcal = goal === 'slab' || p.goal === 'slab' ? Math.max(p.kcalO, Math.round(floor / 50) * 50) : p.kcalO;
+  if (p.protO) prot = p.protO;
+  const fat = Math.round(Math.max(0.8 * refW, kcal * 0.25 / 9));
+  const carb = Math.max(0, Math.round((kcal - prot * 4 - fat * 9) / 4));
+  const water = Math.round(w * 0.035 * 4) / 4;
+  return {bmr: Math.round(bmr), tdee: Math.round(tdee), kcal, prot, fat, carb, water, bmi, goal, note, auto, floor: Math.round(floor / 50) * 50};
+}
+
+function mealCount(p, kcal) { return p.meals || (kcal < 1900 ? 4 : kcal < 2500 ? 5 : 6); }
+
+/* Programul profilului: zile + exerciții (cu înlocuirile alese și seturi în plus la nivel intermediar) */
+function program(p) {
+  const keys = (PROGRAMS[p.focus] || PROGRAMS.echilibrat)[p.days] || PROGRAMS.echilibrat[4];
+  return keys.map((k, i) => {
+    const b = BLOCKS[k];
+    return {i, k, name: b.n, sub: b.s, ex: b.e.map((e, j) => {
+      const sw = p.swaps && p.swaps[k + ':' + e[0]];
+      return {base: e[0], id: sw && EX[sw] ? sw : e[0], sets: e[1] + (p.level === 'int' && j < 2 ? 1 : 0), reps: e[2]};
+    })};
+  });
+}
+
+function repRange(reps) { const m = String(reps).match(/(\d+)\D+(\d+)/); return m ? [+m[1], +m[2]] : [+reps || 0, +reps || 0]; }
+function restFor(id) { const k = EX[id].k; return k === 'i' ? 75 : k === 't' ? 60 : 120; }
+function e1rm(w, r) { return w * (1 + r / 30); }
+function okSets(ses, id) { return ((ses && ses.sets && ses.sets[id]) || []).filter(s => s && s.ok); }
+
+/* Ultima ședință (înainte de `before`) în care exercițiul a fost făcut */
+function lastPerf(p, id, before) {
+  const ss = p.sessions || [];
+  for (let i = ss.length - 1; i >= 0; i--) {
+    if (before && ss[i].d >= before) continue;
+    const s = okSets(ss[i], id);
+    if (s.length) return {d: ss[i].d, sets: s};
+  }
+  return null;
+}
+
+/* Progresie dublă: întâi repetări până la capătul intervalului, apoi greutate */
+function suggest(p, ex, today) {
+  const e = EX[ex.id], last = lastPerf(p, ex.id, today), rr = repRange(ex.reps);
+  if (!last) {
+    if (e.k === 't') return {text: 'Prima dată: ține poziția cât poți corect, chiar dacă sunt mai puțin de ' + rr[0] + ' secunde.'};
+    return {text: 'Prima dată: alege o greutate cu care termini seturile simțind că mai puteai face 2-3 repetări.'};
+  }
+  const top = last.sets.reduce((a, b) => (b.w > a.w ? b : a), last.sets[0]);
+  if (e.k === 't') {
+    const best = Math.max.apply(null, last.sets.map(s => s.r));
+    return {w: 0, r: Math.min(rr[1] + 15, best + 5), last, text: 'Data trecută: ' + last.sets.map(s => s.r + ' s').join(' · ') + '. Azi încearcă +5 secunde.'};
+  }
+  const lastTxt = last.sets.map(s => (s.w ? fmtN(s.w) + ' kg × ' : '') + s.r).join(' · ');
+  const allTop = last.sets.length >= Math.min(ex.sets, 2) && last.sets.every(s => s.r >= rr[1]);
+  if (allTop && top.w > 0) {
+    const inc = e.k === 'l' ? 5 : e.k === 'c' ? 2.5 : 0;
+    if (ex.id === 'asstpull') return {w: Math.max(0, top.w - 5), r: rr[0], last, text: 'Data trecută: ' + lastTxt + '. Ai atins maximul de repetări: scade contragreutatea cu un pas.'};
+    if (inc) return {w: top.w + inc, r: rr[0], last, text: 'Data trecută: ' + lastTxt + '. Ai atins ' + rr[1] + ' repetări la toate seturile: urcă la ' + fmtN(top.w + inc) + ' kg.'};
+    return {w: top.w, r: rr[0], up: true, last, text: 'Data trecută: ' + lastTxt + '. Ai atins maximul de repetări: treci la următoarea greutate disponibilă.'};
+  }
+  const minR = Math.min.apply(null, last.sets.map(s => s.r));
+  return {w: top.w, r: Math.min(rr[1], minR + 1), last, text: 'Data trecută: ' + lastTxt + '. Păstrează greutatea și încearcă o repetare în plus.'};
+}
+
+function fmtN(n) { return (Math.round(n * 100) / 100).toString().replace('.', ','); }
+
+/* ---------- NUTRIȚIE: porții calculate pe ținta fiecărei mese ---------- */
+function mac(id, g) { const a = ING[id]; return {k: a.k * g / 100, p: a.p * g / 100, c: a.c * g / 100, f: a.f * g / 100}; }
+function roundQty(id, g) {
+  const a = ING[id];
+  if (a.u) { const st = a.st || 1; return Math.max(st, Math.round(g / a.u / st) * st) * a.u; }
+  const step = a.ml ? (g < 100 ? 10 : 50) : (g < 40 ? 5 : 10);
+  return Math.max(step, Math.round(g / step) * step);
+}
+function qtyText(it) {
+  const a = ING[it.id];
+  if (a.u) {
+    const n = Math.round(it.g / a.u * 2) / 2, whole = Math.floor(n), half = n - whole > 0;
+    const q = (whole ? whole : '') + (half ? '½' : '');
+    return q + ' ' + (n <= 1 ? a.one : a.many);
+  }
+  return it.g + (a.ml ? ' ml ' : ' g ') + a.n;
+}
+
+function solveMeal(rc, K, Pt) {
+  const base = rc.i.reduce((s, x) => s + mac(x[0], x[1]).k, 0);
+  const s0 = clamp(K / base, 0.5, 1.8);
+  const fix = {k: 0, p: 0}, gp = {k: 0, p: 0}, gc = {k: 0, p: 0};
+  rc.i.forEach(x => {
+    const m = mac(x[0], x[2] === 'f' ? x[1] * s0 : x[1]);
+    const t = x[2] === 'p' ? gp : x[2] === 'c' ? gc : fix;
+    t.k += m.k; t.p += m.p;
+  });
+  const LO = 0.4, HI = 2.3, CLO = 0.25, CHI = 3.2;
+  let sp = 1, sc = 1;
+  if (gp.k > 0 && gc.k > 0) {
+    const det = gp.p * gc.k - gc.p * gp.k;
+    if (Math.abs(det) > 1e-6) sp = ((Pt - fix.p) * gc.k - gc.p * (K - fix.k)) / det;
+    sp = clamp(sp, LO, HI);
+    sc = clamp((K - fix.k - sp * gp.k) / gc.k, CLO, CHI);
+    sp = clamp((K - fix.k - sc * gc.k) / gp.k, LO, HI);
+  } else if (gp.k > 0) sp = clamp((K - fix.k) / gp.k, LO, HI);
+  else if (gc.k > 0) sc = clamp((K - fix.k) / gc.k, CLO, CHI);
+  const items = rc.i.map(x => ({id: x[0], g: roundQty(x[0], x[1] * (x[2] === 'p' ? sp : x[2] === 'c' ? sc : x[2] === 'f' ? s0 : 1))}));
+  const tot = {k: 0, p: 0, c: 0, f: 0};
+  items.forEach(it => { const m = mac(it.id, it.g); tot.k += m.k; tot.p += m.p; tot.c += m.c; tot.f += m.f; });
+  return {name: rc.n, prep: rc.prep, items, k: Math.round(tot.k), p: Math.round(tot.p), c: Math.round(tot.c), f: Math.round(tot.f)};
+}
+
+function hashStr(s) { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+function pickIdx(p, date, slot) {
+  const f = p.food && p.food[date];
+  if (f && f.pick && f.pick[slot] != null && RECIPES[slot][f.pick[slot]]) return f.pick[slot];
+  return hashStr(date + slot + p.id) % RECIPES[slot].length;
+}
+
+/* Meniul unei zile: fiecare masă primește o parte din calorii și proteine; două treceri de corecție
+   aduc totalul zilei cât mai aproape de țintă */
+function planDay(p, date, t) {
+  t = t || targets(p);
+  const set = SLOTSETS[mealCount(p, t.kcal)];
+  const mainShare = set.filter(s => /m[135]/.test(s[0])).reduce((a, s) => a + s[1], 0);
+  let extra = 0, kf = 1, meals = [], tot = null;
+  for (let pass = 0; pass < 4; pass++) {
+    meals = set.map(s => {
+      const rc = RECIPES[s[0]][pickIdx(p, date, s[0])];
+      const main = /m[135]/.test(s[0]);
+      const m = solveMeal(rc, t.kcal * s[1] * kf, t.prot * s[1] + (main ? extra * s[1] / mainShare : 0));
+      m.slot = s[0]; m.idx = pickIdx(p, date, s[0]);
+      return m;
+    });
+    tot = meals.reduce((a, m) => ({k: a.k + m.k, p: a.p + m.p, c: a.c + m.c, f: a.f + m.f}), {k: 0, p: 0, c: 0, f: 0});
+    const dp = t.prot - tot.p, dk = t.kcal / tot.k;
+    if (Math.abs(dp) < 5 && Math.abs(dk - 1) < 0.02) break;
+    extra += dp; kf = clamp(kf * dk, 0.85, 1.15);
+  }
+  return {meals, tot, t};
+}
+
+if (typeof module !== 'undefined') module.exports = {targets, program, planDay, solveMeal, suggest, qtyText, mealCount, ymd, mondayOf, repRange};
+
+/* ============ APLICAȚIA: stare, ecrane, acțiuni ============ */
+
+const LS_KEY = 'fisa-antrenament.v2';
+const APP_VERSION = '2.0';
+const ACCENTS = {rust: ['#DB7440', '#7A3F1E'], teal: ['#4FB3A2', '#235B52'], violet: ['#A488E6', '#4E3C86'], rose: ['#E0708F', '#7E3550']};
+const GOALS = {masa: 'Masă musculară', ton: 'Tonifiere și formă', slab: 'Slăbire'};
+const FOCUS = {echilibrat: 'Echilibrat, tot corpul', inferior: 'Accent pe fesieri și picioare', superior: 'Accent pe partea superioară'};
+const UNI = {bulgarian: 1, lunge: 1, stepup: 1, kickback: 1, dbrow: 1};
+
+let S = null, storageOK = true;
+try { const raw = localStorage.getItem(LS_KEY); if (raw) S = JSON.parse(raw); } catch (e) { storageOK = false; }
+if (!S || typeof S !== 'object' || !S.profiles) S = {v: 2, active: null, profiles: {}};
+if (!S.profiles[S.active]) S.active = Object.keys(S.profiles)[0] || null;
+
+function save() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+  catch (e) { storageOK = false; const b = $('#banner'); if (b) b.hidden = false; }
+}
+
+const $ = (s, r) => (r || document).querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const P = () => S.profiles[S.active] || null;
+const TODAY = () => ymd();
+const fmtD = (s, o) => parseYmd(s).toLocaleDateString('ro-RO', o || {day: 'numeric', month: 'short'});
+const fmtK = n => Math.round(n).toLocaleString('ro-RO');
+const ui = {tab: 'train', day: null, open: null, meal: null, form: null, hist: null, lastDate: ymd()};
+
+function normProfile(p) {
+  p.swaps = p.swaps || {}; p.sessions = p.sessions || []; p.bw = p.bw || []; p.food = p.food || {};
+  const keys = Object.keys(p.food).sort();
+  keys.slice(0, Math.max(0, keys.length - 45)).forEach(k => delete p.food[k]);
+  return p;
+}
+Object.values(S.profiles).forEach(normProfile);
+
+/* ---------- ședințe ---------- */
+const hasOk = s => Object.keys(s.sets || {}).some(id => okSets(s, id).length);
+function findSession(p, d, i) { return p.sessions.find(s => s.d === d && s.i === i) || null; }
+function ensureSession(p, d, day) {
+  let s = findSession(p, d, day.i);
+  if (!s) { s = {d, i: day.i, k: day.k, n: day.name, sets: {}}; p.sessions.push(s); p.sessions.sort((a, b) => (a.d < b.d ? -1 : a.d > b.d ? 1 : 0)); }
+  return s;
+}
+function nextDay(p, prog, today) {
+  const ss = p.sessions;
+  const cur = ss.filter(s => s.d === today && !s.done && hasOk(s)).pop();
+  if (cur) return cur.i % prog.length;
+  for (let i = ss.length - 1; i >= 0; i--) if (hasOk(ss[i])) return (ss[i].i + 1) % prog.length;
+  return 0;
+}
+function sesVolume(s) { let v = 0; Object.keys(s.sets).forEach(id => { if (EX[id] && EX[id].k !== 't') okSets(s, id).forEach(x => { v += (x.w || 0) * x.r; }); }); return v; }
+function sesSetCount(s) { return Object.keys(s.sets).reduce((n, id) => n + okSets(s, id).length, 0); }
+function weekDates(p, today) {
+  const mon = mondayOf(today), set = {};
+  p.sessions.forEach(s => { if (hasOk(s) && mondayOf(s.d) === mon) set[s.d] = 1; });
+  return Object.keys(set).length;
+}
+function bestBefore(p, id, before) {
+  let best = 0;
+  p.sessions.forEach(s => { if (s.d < before) okSets(s, id).forEach(x => { best = Math.max(best, EX[id].k === 't' ? x.r : e1rm(x.w || 0, x.r)); }); });
+  return best;
+}
+
+/* ---------- afișare ---------- */
+function applyAccent(p) {
+  const a = ACCENTS[p && p.accent] || ACCENTS.rust;
+  document.documentElement.style.setProperty('--accent', a[0]);
+  document.documentElement.style.setProperty('--accent-dim', a[1]);
+}
+function render() {
+  const p = P(), app = $('#app');
+  $('#banner').hidden = storageOK;
+  if (!p || ui.form) {
+    if (!ui.form) ui.form = {mode: 'new', d: {accent: 'rust', meals: 0}};
+    applyAccent(ui.form.d);
+    $('#tabs').hidden = true;
+    app.innerHTML = vForm();
+    return;
+  }
+  applyAccent(p);
+  $('#tabs').hidden = false;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
+  const title = {train: 'Antrenament', food: 'Nutriție', prog: 'Progres', me: 'Profil'}[ui.tab];
+  const dateTxt = new Date().toLocaleDateString('ro-RO', {weekday: 'long', day: 'numeric', month: 'long'});
+  app.innerHTML = '<header class="top"><div><div class="eyebrow">' + esc(dateTxt) + '</div><h1>' + title + '</h1></div>' +
+    '<button class="avatar" data-act="profiles" aria-label="Schimbă profilul">' + esc(p.name.charAt(0).toUpperCase()) + '</button></header>' +
+    (ui.tab === 'train' ? vTrain(p) : ui.tab === 'food' ? vFood(p) : ui.tab === 'prog' ? vProg(p) : vMe(p));
+}
+function rerender() { const y = window.scrollY; render(); window.scrollTo(0, y); }
+
+function plates(done, total) {
+  let h = '<div class="plates">';
+  for (let i = 0; i < Math.max(total, done); i++) h += '<span class="plate' + (i < done ? ' on' : '') + '"></span>';
+  return h + '</div>';
+}
+
+/* ---------- ANTRENAMENT ---------- */
+function vTrain(p) {
+  const prog = program(p), today = TODAY();
+  if (ui.day == null || ui.day >= prog.length) {
+    /* dacă azi s-a lucrat deja, rămâi pe ziua de azi; altfel arată ziua care urmează în rotație */
+    const mine = p.sessions.filter(s => s.d === today && hasOk(s) && s.i < prog.length).pop();
+    ui.day = mine ? mine.i : nextDay(p, prog, today);
+  }
+  const nd = nextDay(p, prog, today), day = prog[ui.day], ses = findSession(p, today, ui.day);
+  const wk = weekDates(p, today);
+  let h = '<section class="card week"><div><b>' + wk + ' din ' + p.days + '</b> antrenamente săptămâna aceasta<small>' + (wk >= p.days ? 'Ținta săptămânii este atinsă.' : 'Program sugerat: ' + WEEKPLAN[p.days]) + '</small></div>' + plates(wk, p.days) + '</section>';
+
+  const from = p.deload || p.created, weeks = {};
+  p.sessions.forEach(s => { if (s.d > from && hasOk(s)) weeks[mondayOf(s.d)] = 1; });
+  if (Object.keys(weeks).length >= 7) h += '<section class="card note warn"><b>E timpul pentru o săptămână ușoară</b><p>Ai strâns 7 săptămâni de antrenament. Săptămâna aceasta fă aceleași exerciții cu un set mai puțin și cu greutăți cu 10-20% mai mici. Corpul se reface și revii mai puternic.</p><button class="btn small" data-act="deload">Am înțeles, repornește numărătoarea</button></section>';
+
+  h += '<div class="chips">' + prog.map(d => '<button class="chip' + (d.i === ui.day ? ' on' : '') + '" data-act="day" data-i="' + d.i + '"><b>Ziua ' + (d.i + 1) + '</b><span>' + esc(d.name) + '</span>' + (d.i === nd ? '<i>urmează</i>' : '') + '</button>').join('') + '</div>';
+  h += '<div class="dayhead"><h2>' + esc(day.name) + '</h2><p>' + esc(day.sub) + ' · ' + day.ex.length + ' exerciții · aproximativ ' + Math.round(day.ex.reduce((n, x) => n + x.sets * (restFor(x.id) + 45), 0) / 60 + 8) + ' min</p></div>';
+  if (!p.sessions.some(hasOk)) h += '<section class="card note"><b>Cum funcționează</b><p>Începe cu 5-8 minute de încălzire ușoară (bandă, bicicletă). Apasă pe un exercițiu ca să vezi cum se face, scrie greutatea și repetările, apoi bifează setul: pornește singur cronometrul de pauză.</p></section>';
+  if (ses && ses.done) h += '<section class="card note good"><b>Antrenament încheiat</b><p>' + sesSetCount(ses) + ' seturi · ' + fmtK(sesVolume(ses)) + ' kg volum total.</p><button class="btn small ghost" data-act="reopen">Redeschide ședința</button></section>';
+
+  h += day.ex.map(ex => vExercise(p, ex, ses, today)).join('');
+
+  if (ses && hasOk(ses) && !ses.done) h += '<button class="btn big" data-act="finish">Încheie antrenamentul</button>';
+  if (targets(p).goal === 'slab') h += '<section class="card note"><b>Pentru slăbire</b><p>Greutățile rămân la fel de grele ca la masă musculară: ele îți păstrează mușchii. Adaugă 8.000-10.000 de pași pe zi și, dacă vrei, 20-30 de minute de mers alert după antrenament.</p></section>';
+  return h;
+}
+
+function vExercise(p, ex, ses, today) {
+  const e = EX[ex.id], rows = (ses && ses.sets[ex.id]) || [], done = rows.filter(s => s && s.ok).length;
+  const n = Math.max(ex.sets, rows.length), open = ui.open === ex.id;
+  const target = ex.sets + ' × ' + ex.reps + (e.k === 't' ? ' sec' : UNI[ex.id] ? ' pe parte' : '');
+  let h = '<section class="ex' + (open ? ' open' : '') + (done >= ex.sets ? ' complete' : '') + '" id="ex-' + ex.id + '">' +
+    '<button class="ex-head" data-act="ex" data-id="' + ex.id + '"><span class="ring">' + (done >= ex.sets ? '✓' : done + '/' + ex.sets) + '</span>' +
+    '<span class="ex-txt"><b>' + esc(e.n) + '</b><small>' + esc(e.m) + ' · ' + target + '</small></span><span class="chev">›</span></button>';
+  if (!open) return h + '</section>';
+  const sg = suggest(p, ex, today);
+  h += '<div class="ex-body"><p class="sug">' + esc(sg.text) + '</p><div class="sets">';
+  for (let j = 0; j < n; j++) {
+    const r = rows[j] || {}, ok = r.ok ? ' ok' : '';
+    const attrs = ' data-in="set" data-id="' + ex.id + '" data-j="' + j + '"';
+    if (e.k === 't') h += '<div class="set' + ok + '"><span class="sn">' + (j + 1) + '</span><input class="in"' + attrs + ' data-f="r" inputmode="numeric" autocomplete="off" aria-label="Secunde, setul ' + (j + 1) + '" value="' + (r.r != null ? r.r : '') + '" placeholder="' + (sg.r || 30) + '"><span class="unit">sec</span><button class="chk" data-act="chk" data-id="' + ex.id + '" data-j="' + j + '" aria-label="Set făcut">✓</button></div>';
+    else h += '<div class="set' + ok + '"><span class="sn">' + (j + 1) + '</span><input class="in"' + attrs + ' data-f="w" inputmode="decimal" autocomplete="off" aria-label="Greutate în kg, setul ' + (j + 1) + '" value="' + (r.w != null ? fmtN(r.w) : '') + '" placeholder="' + (sg.w != null ? fmtN(sg.w) : e.bw ? '0' : 'kg') + '"><span class="unit">kg ×</span><input class="in"' + attrs + ' data-f="r" inputmode="numeric" autocomplete="off" aria-label="Repetări, setul ' + (j + 1) + '" value="' + (r.r != null ? r.r : '') + '" placeholder="' + (sg.r || repRange(ex.reps)[0]) + '"><span class="unit">rep</span><button class="chk" data-act="chk" data-id="' + ex.id + '" data-j="' + j + '" aria-label="Set făcut">✓</button></div>';
+  }
+  h += '</div><div class="ex-actions"><button class="btn small ghost" data-act="addset" data-id="' + ex.id + '">+ Set</button>' +
+    (rows.length > ex.sets && !(rows[rows.length - 1] || {}).ok ? '<button class="btn small ghost" data-act="delset" data-id="' + ex.id + '">− Set</button>' : '') +
+    (EX[ex.base].alt.length ? '<button class="btn small ghost" data-act="swap" data-base="' + ex.base + '" data-id="' + ex.id + '">Înlocuiește</button>' : '') +
+    '<a class="btn small ghost" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=' + encodeURIComponent(e.en + ' proper form tutorial') + '">Video ↗</a></div>' +
+    '<details class="how"' + (sg.last ? '' : ' open') + '><summary>Cum se execută</summary><p class="eq"><b>Ai nevoie de:</b> ' + esc(e.eq) + ' <span class="en">(' + esc(e.en) + ')</span></p><ol>' + e.s.map(x => '<li>' + esc(x) + '</li>').join('') + '</ol>' +
+    '<h4>Greșeli frecvente</h4><ul>' + e.b.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' + (e.tip ? '<p class="tip">' + esc(e.tip) + '</p>' : '') +
+    '<p class="rest">Pauză între seturi: ' + (restFor(ex.id) >= 120 ? '2 minute' : restFor(ex.id) + ' de secunde') + '.</p></details></div></section>';
+  return h;
+}
+
+/* ---------- cronometru de pauză ---------- */
+let timer = null, actx = null, wake = null;
+function primeAudio() { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch (e) {} }
+function beep() {
+  try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+  try {
+    if (!actx) return;
+    [0, 0.28].forEach(dt => { const o = actx.createOscillator(), g = actx.createGain(), t0 = actx.currentTime + dt; o.frequency.value = 880; o.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(0.3, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.22); o.start(t0); o.stop(t0 + 0.24); });
+  } catch (e) {}
+}
+function startTimer(sec) { stopTimer(); timer = {end: Date.now() + sec * 1000, total: sec}; timer.int = setInterval(tick, 250); tick(); }
+function stopTimer() { if (timer) clearInterval(timer.int); timer = null; const b = $('#timer'); if (b) { b.hidden = true; b.classList.remove('fin'); } }
+function tick() {
+  const bar = $('#timer'); if (!timer || !bar) return;
+  const left = Math.ceil((timer.end - Date.now()) / 1000);
+  bar.hidden = false;
+  if (left <= 0) {
+    if (!timer.fin) { timer.fin = Date.now(); beep(); bar.classList.add('fin'); $('#timer-t').textContent = 'Gata, următorul set!'; $('#timer-fill').style.width = '100%'; }
+    else if (Date.now() - timer.fin > 8000) stopTimer();
+    return;
+  }
+  bar.classList.remove('fin');
+  $('#timer-t').textContent = 'Pauză ' + Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+  $('#timer-fill').style.width = clamp(100 - left / timer.total * 100, 0, 100) + '%';
+}
+function keepAwake() { try { if (navigator.wakeLock && !wake) navigator.wakeLock.request('screen').then(w => { wake = w; w.addEventListener('release', () => { wake = null; }); }).catch(() => {}); } catch (e) {} }
+function releaseWake() { try { if (wake) wake.release(); } catch (e) {} wake = null; }
+
+/* ---------- NUTRIȚIE ---------- */
+function foodDay(p, d) { const f = p.food[d] || (p.food[d] = {}); f.pick = f.pick || {}; f.eat = f.eat || {}; return f; }
+function vFood(p) {
+  const today = TODAY(), plan = planDay(p, today), t = plan.t, f = p.food[today] || {}, eat = f.eat || {};
+  let ek = 0, ep = 0;
+  plan.meals.forEach(m => { if (eat[m.slot]) { ek += m.k; ep += m.p; } });
+  const glasses = Math.round(t.water / 0.25), w = f.water || 0;
+  let h = '<section class="card"><div class="bar"><div class="bar-l"><span>Calorii</span><span><b>' + fmtK(ek) + '</b> / ' + fmtK(t.kcal) + ' kcal</span></div><div class="track"><i style="width:' + clamp(ek / t.kcal * 100, 0, 100) + '%"></i></div></div>' +
+    '<div class="bar"><div class="bar-l"><span>Proteine</span><span><b>' + ep + '</b> / ' + t.prot + ' g</span></div><div class="track"><i class="alt" style="width:' + clamp(ep / t.prot * 100, 0, 100) + '%"></i></div></div>' +
+    '<p class="fine">Meniul complet de azi: ' + fmtK(plan.tot.k) + ' kcal · ' + plan.tot.p + ' g proteine · ' + plan.tot.c + ' g carbohidrați · ' + plan.tot.f + ' g grăsimi. Porțiile sunt calculate pentru tine.</p></section>';
+  if (t.note) h += '<section class="card note warn"><p>' + esc(t.note) + '</p></section>';
+  h += '<section class="card water"><div><b>Apă</b><small>' + fmtN(w * 0.25) + ' din ' + fmtN(t.water) + ' litri · un pahar = 250 ml</small></div><div class="stepper"><button data-act="water" data-d="-1" aria-label="Scade un pahar">−</button><span>' + w + '<small>/' + glasses + '</small></span><button data-act="water" data-d="1" aria-label="Adaugă un pahar">+</button></div></section>';
+  h += '<div class="row2"><button class="btn" data-act="shuffle">Amestecă tot meniul</button><button class="btn ghost" data-act="shop">Lista de ingrediente</button></div>';
+  h += plan.meals.map(m => {
+    const on = !!eat[m.slot], open = ui.meal === m.slot;
+    return '<section class="meal' + (on ? ' eaten' : '') + (open ? ' open' : '') + '"><div class="meal-head"><button class="mchk' + (on ? ' on' : '') + '" data-act="eat" data-slot="' + m.slot + '" aria-label="Am mâncat">✓</button>' +
+      '<button class="meal-txt" data-act="meal" data-slot="' + m.slot + '"><small>' + SLOTS[m.slot] + ' · ' + m.k + ' kcal · ' + m.p + ' g proteine</small><b>' + esc(m.name) + '</b></button>' +
+      '<button class="icon" data-act="reroll" data-slot="' + m.slot + '" aria-label="Altă rețetă">↻</button></div>' +
+      (open ? '<div class="meal-body"><ul class="ingr">' + m.items.map(it => '<li>' + esc(qtyText(it)) + '</li>').join('') + '</ul><p class="prep">' + esc(m.prep) + '</p><p class="fine">' + m.c + ' g carbohidrați · ' + m.f + ' g grăsimi</p></div>' : '') + '</section>';
+  }).join('');
+  h += '<p class="fine pad">Valorile sunt estimări (±10%). Carnea, peștele, orezul, pastele și quinoa se cântăresc crude. Sare, condimente, lămâie și verdețuri după gust.</p>';
+  return h;
+}
+
+/* ---------- PROGRES ---------- */
+function spark(vals) {
+  if (vals.length < 2) return '';
+  const mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals), sp = mx - mn || 1, W = 300, H = 56;
+  const pts = vals.map((v, i) => [(i / (vals.length - 1)) * (W - 12) + 6, H - 8 - ((v - mn) / sp) * (H - 16)]);
+  const l = pts[pts.length - 1];
+  return '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Evoluție"><polyline fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="' + pts.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ') + '"/><circle cx="' + l[0].toFixed(1) + '" cy="' + l[1].toFixed(1) + '" r="4.5" fill="var(--accent)"/></svg>';
+}
+function bwAdvice(p) {
+  const b = p.bw; if (b.length < 2) return null;
+  const last = b[b.length - 1]; let first = b[0];
+  for (let i = 0; i < b.length; i++) if (daysBetween(b[i].d, last.d) <= 35) { first = b[i]; break; }
+  const days = daysBetween(first.d, last.d);
+  if (days < 10) return {cls: '', text: 'Am nevoie de cântăriri întinse pe cel puțin 10 zile ca să calculez ritmul. Cântărește-te dimineața, pe nemâncate, de 2-3 ori pe săptămână.'};
+  const kg = (last.w - first.w) / (days / 7), rate = kg / first.w * 100, t = targets(p), g = t.goal;
+  const r = 'Ritm: ' + (kg >= 0 ? '+' : '−') + fmtN(Math.abs(Math.round(kg * 100) / 100)) + ' kg pe săptămână. ';
+  let cls = 'good', text, adj = 0;
+  if (g === 'masa') {
+    if (rate < 0.1) { cls = 'warn'; adj = 150; text = 'Prea lent pentru masă musculară: adaugă 150 kcal pe zi.'; }
+    else if (rate > 0.6) { cls = 'warn'; adj = -150; text = 'Prea rapid: o parte din creștere este grăsime. Scade 150 kcal pe zi.'; }
+    else text = 'Este ritmul bun pentru masă musculară cu puțină grăsime. Continuă așa.';
+  } else if (g === 'slab') {
+    if (rate > -0.25) { cls = 'warn'; adj = -100; text = 'Slăbești prea lent: scade 100 kcal pe zi sau adaugă 2.000 de pași zilnic.'; }
+    else if (rate < -1) { cls = 'warn'; adj = 150; text = 'Prea rapid: riști să pierzi mușchi și energie. Adaugă 150 kcal pe zi.'; }
+    else text = 'Este ritmul sănătos de slăbire. Continuă așa.';
+  } else {
+    if (rate > 0.3) { cls = 'warn'; adj = -100; text = 'Greutatea urcă: scade 100 kcal pe zi dacă vrei să rămâi la aceeași greutate.'; }
+    else if (rate < -0.3) { cls = 'warn'; adj = 100; text = 'Greutatea scade: adaugă 100 kcal pe zi ca să ai energie pentru antrenamente.'; }
+    else text = 'Greutate stabilă, exact ce trebuie. Urmărește talia și greutățile din sală, nu doar cântarul.';
+  }
+  let nk = adj ? t.kcal + adj : 0;
+  if (adj < 0 && g === 'slab' && nk < t.floor) { nk = 0; text = 'Slăbești lent, dar ești deja la pragul minim de calorii. Nu mânca mai puțin: adaugă pași și mișcare.'; }
+  return {cls, text: r + text, nk, cur: t.kcal};
+}
+function vProg(p) {
+  const today = TODAY(), wk = weekDates(p, today), done = p.sessions.filter(hasOk);
+  let streak = 0; const wkSet = {}; done.forEach(s => { wkSet[mondayOf(s.d)] = 1; });
+  const d0 = parseYmd(mondayOf(today)); if (!wkSet[ymd(d0)]) d0.setDate(d0.getDate() - 7);
+  while (wkSet[ymd(d0)]) { streak++; d0.setDate(d0.getDate() - 7); }
+  let h = '<div class="stats"><div><b>' + wk + '/' + p.days + '</b><span>săptămâna aceasta</span></div><div><b>' + done.length + '</b><span>antrenamente în total</span></div><div><b>' + streak + '</b><span>săptămâni la rând</span></div></div>';
+
+  const adv = bwAdvice(p), last = p.bw[p.bw.length - 1];
+  h += '<section class="card"><h3>Greutate corporală</h3><div class="bwrow"><label>Greutate (kg)<input class="in" id="bw-w" inputmode="decimal" autocomplete="off" placeholder="' + (last ? fmtN(last.w) : '70,5') + '"></label><label>Talie (cm), opțional<input class="in" id="bw-c" inputmode="decimal" autocomplete="off" placeholder="' + (last && last.c ? fmtN(last.c) : '—') + '"></label><button class="btn" data-act="bwsave">Salvează</button></div>' +
+    spark(p.bw.slice(-14).map(x => x.w)) + (adv ? '<div class="advice ' + adv.cls + '"><p>' + esc(adv.text) + '</p>' + (adv.nk ? '<button class="btn small" data-act="applykcal" data-k="' + adv.nk + '">Aplică: ' + fmtK(adv.cur) + ' → ' + fmtK(adv.nk) + ' kcal</button>' : '') + '</div>' : '<p class="fine">Cântărește-te dimineața, pe nemâncate, de 2-3 ori pe săptămână. După două săptămâni îți spun dacă trebuie ajustate caloriile.</p>') +
+    '<ul class="list">' + p.bw.slice(-5).reverse().map(x => '<li><span>' + fmtD(x.d, {day: 'numeric', month: 'short', year: 'numeric'}) + '</span><b>' + fmtN(x.w) + ' kg' + (x.c ? ' · talie ' + fmtN(x.c) + ' cm' : '') + '</b></li>').join('') + '</ul></section>';
+
+  const pr = {};
+  done.forEach(s => Object.keys(s.sets).forEach(id => { if (!EX[id]) return; okSets(s, id).forEach(x => { const v = EX[id].k === 't' ? x.r : e1rm(x.w || 0, x.r); if (!pr[id] || v > pr[id].v) pr[id] = {v, w: x.w, r: x.r, d: s.d}; }); }));
+  const ids = Object.keys(pr);
+  h += '<section class="card"><h3>Recorduri personale</h3>' + (ids.length ? '<ul class="list tap">' + ids.map(id => '<li data-act="exhist" data-id="' + id + '"><span>' + esc(EX[id].n) + '<small>' + fmtD(pr[id].d) + '</small></span><b>' + (EX[id].k === 't' ? pr[id].r + ' sec' : (pr[id].w ? fmtN(pr[id].w) + ' kg × ' : '') + pr[id].r) + ' ›</b></li>').join('') + '</ul>' : '<p class="fine">Aici apar cele mai bune seturi ale tale la fiecare exercițiu, după primul antrenament.</p>') + '</section>';
+
+  h += '<section class="card"><h3>Istoric antrenamente</h3>' + (done.length ? done.slice(-30).reverse().map(s => {
+    const key = s.d + '|' + s.i, open = ui.hist === key;
+    return '<div class="hist' + (open ? ' open' : '') + '"><button class="hist-head" data-act="hist" data-k="' + key + '"><span>' + fmtD(s.d, {weekday: 'short', day: 'numeric', month: 'short'}) + ' · ' + esc(s.n || 'Antrenament') + '</span><b>' + sesSetCount(s) + ' seturi · ' + fmtK(sesVolume(s)) + ' kg</b></button>' +
+      (open ? '<div class="hist-body">' + Object.keys(s.sets).filter(id => EX[id] && okSets(s, id).length).map(id => '<p><b>' + esc(EX[id].n) + '</b><br>' + okSets(s, id).map(x => EX[id].k === 't' ? x.r + ' s' : (x.w ? fmtN(x.w) + ' kg × ' : '') + x.r).join(' · ') + '</p>').join('') + '<button class="btn small ghost danger" data-act="delses" data-k="' + key + '">Șterge ședința</button></div>' : '') + '</div>';
+  }).join('') : '<p class="fine">Niciun antrenament salvat încă.</p>') + '</section>';
+  return h;
+}
+
+/* ---------- PROFIL ---------- */
+function vMe(p) {
+  const t = targets(p), prog = program(p), others = Object.values(S.profiles);
+  let h = '<section class="card"><h3>' + esc(p.name) + '</h3><p class="kv">' + (p.sex === 'f' ? 'Femeie' : 'Bărbat') + ' · ' + p.age + ' ani · ' + p.h + ' cm · ' + fmtN(curWeight(p)) + ' kg</p>' +
+    '<p class="kv">' + GOALS[p.goal] + ' · ' + (p.level === 'int' ? 'intermediar' : 'începător') + ' · ' + p.days + ' zile pe săptămână</p>' +
+    '<div class="tgrid"><div><b>' + fmtK(t.kcal) + '</b><span>kcal</span></div><div><b>' + t.prot + ' g</b><span>proteine</span></div><div><b>' + t.carb + ' g</b><span>carbohidrați</span></div><div><b>' + t.fat + ' g</b><span>grăsimi</span></div></div>' +
+    (t.note ? '<p class="advice warn">' + esc(t.note) + '</p>' : '') +
+    '<details class="how"><summary>Cum am calculat</summary><p>Metabolism de bază (formula Mifflin-St Jeor): <b>' + fmtK(t.bmr) + ' kcal</b>. Cu activitatea zilnică și ' + p.days + ' antrenamente pe săptămână consumi aproximativ <b>' + fmtK(t.tdee) + ' kcal</b> pe zi.</p><p>' +
+    (t.goal === 'masa' ? 'Pentru masă musculară am adăugat un surplus de 12%.' : t.goal === 'slab' ? 'Pentru slăbire am aplicat un deficit de cel mult 18%, fără să cobor sub pragul de siguranță de ' + fmtK(t.floor) + ' kcal.' : 'Pentru tonifiere rămâi la calorii de menținere: slăbești grăsime și pui mușchi în același timp, mai lent, dar fără foame.') +
+    ' Proteine: ' + (t.goal === 'ton' ? '1,8' : '2') + ' g pe kilogram de greutate.</p><p>Formula diferă între bărbați și femei doar la metabolismul de bază. Regulile de antrenament sunt aceleași.</p></details>' +
+    '<button class="btn" data-act="edit">Modifică profilul</button></section>';
+
+  h += '<section class="card"><h3>Planul tău de antrenament</h3><p class="kv">' + FOCUS[p.focus] + '</p><ol class="plan">' + prog.map(d => '<li><b>' + esc(d.name) + '</b><span>' + esc(d.sub) + '</span></li>').join('') + '</ol><p class="fine">Program sugerat: ' + WEEKPLAN[p.days] + '. Lasă cel puțin o zi de pauză după două zile de antrenament la rând.</p>' +
+    '<details class="how"><summary>Regulile planului</summary><ul><li><b>Progresie:</b> păstrezi greutatea până faci numărul maxim de repetări la toate seturile, apoi urci greutatea și reiei de la numărul minim.</li><li><b>Efort:</b> fiecare set se termină când mai aveai 1-3 repetări în rezervă, cu tehnică curată.</li><li><b>Pauze:</b> 2 minute la exercițiile mari, 60-90 de secunde la cele mici.</li><li><b>Săptămâna ușoară:</b> la 6-8 săptămâni, o săptămână cu mai puține seturi și greutăți mai mici.</li><li><b>Somn:</b> 7-9 ore. Mușchiul crește la odihnă, nu în sală.</li></ul></details></section>';
+
+  h += '<section class="card"><h3>Ținte personalizate</h3><p class="fine">Lasă gol ca să folosești valorile calculate (' + fmtK(t.auto.kcal) + ' kcal, ' + t.auto.prot + ' g proteine).</p><div class="bwrow"><label>Calorii pe zi<input class="in" id="o-k" inputmode="numeric" autocomplete="off" value="' + (p.kcalO || '') + '" placeholder="' + t.auto.kcal + '"></label><label>Proteine (g)<input class="in" id="o-p" inputmode="numeric" autocomplete="off" value="' + (p.protO || '') + '" placeholder="' + t.auto.prot + '"></label><button class="btn" data-act="osave">Salvează</button></div></section>';
+
+  h += '<section class="card"><h3>Cine folosește aplicația</h3><ul class="list tap">' + others.map(o => '<li data-act="switch" data-id="' + o.id + '"><span><i class="dot" style="background:' + (ACCENTS[o.accent] || ACCENTS.rust)[0] + '"></i>' + esc(o.name) + '<small>' + GOALS[o.goal] + '</small></span><b>' + (o.id === p.id ? 'activ' : 'Alege ›') + '</b></li>').join('') + '</ul><div class="row2"><button class="btn ghost" data-act="newprofile">Adaugă profil</button><button class="btn ghost danger" data-act="delprofile">Șterge profilul</button></div><p class="fine">Fiecare profil are propriul plan, meniu și istoric. Pe telefonul fiecăruia, aplicația pornește cu profilul lui.</p></section>';
+
+  h += '<section class="card"><h3>Datele tale</h3><p class="fine">Totul se salvează doar pe acest telefon, în aplicație. Nu se trimite nimic pe internet. Fă din când în când o copie de siguranță, mai ales înainte să schimbi telefonul.</p><div class="row2"><button class="btn ghost" data-act="export">Salvează o copie</button><button class="btn ghost" data-act="import">Restaurează</button></div><input type="file" id="imp" accept="application/json,.json" hidden>' +
+    '<details class="how"><summary>Cum pun aplicația pe ecranul telefonului</summary><p><b>iPhone:</b> deschide adresa aplicației în Safari, apasă butonul de partajare (pătratul cu săgeată) și alege „Adaugă pe ecranul principal”.</p><p><b>Android:</b> deschide adresa în Chrome, apasă meniul cu trei puncte și alege „Instalează aplicația” sau „Adaugă pe ecranul principal”.</p><p>După instalare merge și fără internet. Folosește mereu pictograma de pe ecran: acolo sunt salvate datele.</p></details></section>';
+  h += '<p class="fine pad">Fișa de Antrenament ' + APP_VERSION + '. Recomandările sunt generale, pentru adulți sănătoși. Dacă ești însărcinată, ai o problemă medicală sau o accidentare, cere întâi sfatul medicului.</p>';
+  return h;
+}
+
+/* ---------- FORMULAR PROFIL ---------- */
+function opts(name, list, d) {
+  return '<div class="opts">' + list.map(o => '<label class="opt"><input type="radio" data-in="form" name="' + name + '" value="' + o[0] + '"' + (String(d[name]) === String(o[0]) ? ' checked' : '') + '><span><b>' + o[1] + '</b>' + (o[2] ? '<small>' + o[2] + '</small>' : '') + '</span></label>').join('') + '</div>';
+}
+function vForm() {
+  const f = ui.form, d = f.d, first = !Object.keys(S.profiles).length;
+  const rec = d.sex === 'f' ? 'inferior' : d.sex === 'm' ? 'echilibrat' : '';
+  const tag = k => (rec === k ? 'recomandat pentru tine' : '');
+  let h = '<header class="top"><div><div class="eyebrow">' + (f.mode === 'edit' ? 'Modifică profilul' : first ? 'Bine ai venit' : 'Profil nou') + '</div><h1>' + (f.mode === 'edit' ? esc(d.name || '') : 'Fișa de antrenament') + '</h1></div></header>';
+  if (f.mode !== 'edit') h += '<p class="lead">Spune-mi câteva lucruri despre tine și îți construiesc planul de antrenament și meniul, cu porții calculate pe măsura ta.</p>';
+  h += '<form id="pform" novalidate><section class="card"><h3>Despre tine</h3>' +
+    '<label class="fld">Prenume<input class="in" data-in="form" name="name" maxlength="20" autocomplete="off" value="' + esc(d.name || '') + '" placeholder="ex. Valentin"></label>' +
+    '<div class="fld"><span>Gen</span>' + opts('sex', [['m', 'Bărbat'], ['f', 'Femeie']], d) + '</div>' +
+    '<div class="grid3"><label class="fld">Vârstă<input class="in" data-in="form" name="age" inputmode="numeric" autocomplete="off" value="' + esc(d.age || '') + '" placeholder="ani"></label><label class="fld">Înălțime<input class="in" data-in="form" name="h" inputmode="numeric" autocomplete="off" value="' + esc(d.h || '') + '" placeholder="cm"></label><label class="fld">Greutate<input class="in" data-in="form" name="w" inputmode="decimal" autocomplete="off" value="' + esc(d.w || '') + '" placeholder="kg"></label></div>' +
+    '<div class="fld"><span>Activitatea ta în afara sălii</span>' + opts('act', [['sed', 'Sedentar', 'birou, mașină'], ['mod', 'Moderat', 'mult mers pe jos'], ['act', 'Activ', 'muncă fizică']], d) + '</div></section>';
+  h += '<section class="card"><h3>Obiectiv</h3>' + opts('goal', [['masa', 'Masă musculară', 'mai mult mușchi și forță, cu surplus caloric'], ['ton', 'Tonifiere și formă', 'corp mai ferm și definit, la aceeași greutate'], ['slab', 'Slăbire', 'mai puțină grăsime, cu mușchii păstrați']], d) + '</section>';
+  h += '<section class="card"><h3>Antrenament</h3><div class="fld"><span>Experiență la sală</span>' + opts('level', [['beg', 'Începător', 'sub un an de antrenament constant'], ['int', 'Intermediar', 'peste un an, tehnică sigură']], d) + '</div>' +
+    '<div class="fld"><span>Zile de antrenament pe săptămână</span>' + opts('days', [[3, '3 zile'], [4, '4 zile'], [5, '5 zile']], d) + '<small class="hint">Pentru început, 3 sau 4 zile sunt ideale. Contează să poți veni în fiecare săptămână.</small></div>' +
+    '<div class="fld"><span>Pe ce pui accentul</span>' + opts('focus', [['echilibrat', 'Echilibrat', tag('echilibrat') || 'tot corpul, în mod egal'], ['inferior', 'Fesieri și picioare', tag('inferior') || 'mai mult volum pe partea de jos'], ['superior', 'Partea superioară', 'piept, spate, umeri și brațe']], d) + '<small class="hint">Poți alege orice variantă, indiferent de gen. Regulile de antrenament sunt aceleași pentru toți.</small></div></section>';
+  h += '<section class="card"><h3>Preferințe</h3><div class="fld"><span>Mese pe zi</span>' + opts('meals', [[0, 'Automat'], [3, '3'], [4, '4'], [5, '5'], [6, '6']], d) + '</div>' +
+    '<div class="fld"><span>Culoarea profilului</span><div class="opts sw">' + Object.keys(ACCENTS).map(k => '<label class="opt swatch"><input type="radio" data-in="form" name="accent" value="' + k + '"' + (d.accent === k ? ' checked' : '') + '><span style="--c:' + ACCENTS[k][0] + '" aria-label="' + k + '"></span></label>').join('') + '</div></div></section>';
+  if (f.err) h += '<p class="advice warn" id="ferr">' + esc(f.err) + '</p>';
+  h += '<button type="submit" class="btn big">' + (f.mode === 'edit' ? 'Salvează modificările' : 'Construiește planul') + '</button>' + (first ? '' : '<button type="button" class="btn ghost big" data-act="cancelform">Renunță</button>') + '</form>';
+  return h;
+}
+function submitForm() {
+  const f = ui.form, d = f.d, age = num(d.age), hh = num(d.h), w = num(d.w), name = String(d.name || '').trim();
+  let err = '';
+  if (!name) err = 'Scrie un prenume.';
+  else if (!d.sex) err = 'Alege genul: este folosit la calculul caloriilor.';
+  else if (!age || age < 16 || age > 85) err = 'Vârsta trebuie să fie între 16 și 85 de ani.';
+  else if (!hh || hh < 130 || hh > 220) err = 'Înălțimea trebuie să fie între 130 și 220 cm.';
+  else if (!w || w < 35 || w > 250) err = 'Greutatea trebuie să fie între 35 și 250 kg.';
+  else if (!d.act) err = 'Alege nivelul de activitate din afara sălii.';
+  else if (!d.goal) err = 'Alege un obiectiv.';
+  else if (!d.level) err = 'Alege experiența la sală.';
+  else if (!d.days) err = 'Alege numărul de zile de antrenament.';
+  else if (!d.focus) err = 'Alege pe ce pui accentul.';
+  if (err) { f.err = err; render(); const el = $('#ferr'); if (el) el.scrollIntoView({block: 'center'}); return; }
+  const today = TODAY(), vals = {name, sex: d.sex, age: Math.round(age), h: Math.round(hh), w, act: d.act, goal: d.goal, level: d.level, days: +d.days, focus: d.focus, meals: +d.meals || 0, accent: d.accent || 'rust'};
+  let p, isNew = f.mode !== 'edit';
+  if (isNew) { p = normProfile(Object.assign({id: 'p' + Date.now().toString(36), created: today}, vals)); p.bw.push({d: today, w}); S.profiles[p.id] = p; S.active = p.id; }
+  else {
+    p = P(); const wOld = curWeight(p); Object.assign(p, vals);
+    if (Math.abs(wOld - w) > 0.01) { p.bw = p.bw.filter(x => x.d !== today); p.bw.push({d: today, w}); }
+  }
+  ui.form = null; ui.day = null; ui.open = null; ui.tab = isNew ? 'train' : 'me';
+  save(); render(); window.scrollTo(0, 0);
+  if (isNew) openSheet(vPlanSheet(p));
+}
+function vPlanSheet(p) {
+  const t = targets(p), prog = program(p);
+  return '<h3>Planul tău este gata, ' + esc(p.name) + '</h3><p class="kv">' + GOALS[p.goal] + ' · ' + FOCUS[p.focus].toLowerCase() + '</p><ol class="plan">' + prog.map(d => '<li><b>' + esc(d.name) + '</b><span>' + esc(d.sub) + '</span></li>').join('') + '</ol>' +
+    '<div class="tgrid"><div><b>' + fmtK(t.kcal) + '</b><span>kcal pe zi</span></div><div><b>' + t.prot + ' g</b><span>proteine</span></div><div><b>' + mealCount(p, t.kcal) + '</b><span>mese</span></div><div><b>' + fmtN(t.water) + ' l</b><span>apă</span></div></div>' +
+    (t.note ? '<p class="advice warn">' + esc(t.note) + '</p>' : '') + '<button class="btn big" data-act="closesheet">Hai la treabă</button>';
+}
+
+/* ---------- foi (ferestre de jos) și mesaje ---------- */
+function openSheet(html) { const s = $('#sheet'); $('#sheet-in').innerHTML = html; s.hidden = false; document.body.classList.add('noscroll'); $('#sheet-in').scrollTop = 0; }
+function closeSheet() { $('#sheet').hidden = true; document.body.classList.remove('noscroll'); }
+let toastT = null;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
+function curDay() { const p = P(), prog = program(p); return prog[Math.min(ui.day || 0, prog.length - 1)]; }
+
+/* ---------- ACȚIUNI ---------- */
+const ACT = {
+  tab(el) { ui.tab = el.dataset.tab; render(); window.scrollTo(0, 0); },
+  day(el) { ui.day = +el.dataset.i; ui.open = null; rerender(); },
+  ex(el) { ui.open = ui.open === el.dataset.id ? null : el.dataset.id; rerender(); const c = $('#ex-' + el.dataset.id); if (c && ui.open) { const r = c.getBoundingClientRect(); if (r.top < 0 || r.top > window.innerHeight * 0.6) window.scrollTo(0, window.scrollY + r.top - 80); } },
+  chk(el) {
+    const p = P(), today = TODAY(), day = curDay(), id = el.dataset.id, j = +el.dataset.j, ex = day.ex.find(x => x.id === id), e = EX[id];
+    if (!ex) return;
+    const ses = ensureSession(p, today, day), rows = ses.sets[id] || (ses.sets[id] = []);
+    for (let k = 0; k <= j; k++) rows[k] = rows[k] || {};
+    const row = rows[j];
+    if (row.ok) { row.ok = 0; save(); rerender(); return; }
+    primeAudio();
+    const box = el.closest('.set'), wi = $('[data-f=w]', box), ri = $('[data-f=r]', box), sg = suggest(p, ex, today);
+    const prev = rows.slice(0, j).reverse().find(x => x && x.ok);
+    let w = wi ? num(wi.value) : 0, r = num(ri.value);
+    if (wi && w == null) w = prev ? prev.w : sg.w != null ? sg.w : e.bw ? 0 : null;
+    if (r == null) r = sg.r != null ? sg.r : prev ? prev.r : null;
+    if (w == null || r == null) { toast(e.k === 't' ? 'Scrie câte secunde ai ținut.' : 'Scrie greutatea și repetările.'); (w == null && wi ? wi : ri).focus(); return; }
+    if (w < 0 || w > 600 || r < 1 || r > (e.k === 't' ? 900 : 100)) { toast('Verifică valorile introduse.'); return; }
+    row.w = Math.round(w * 100) / 100; row.r = Math.round(r); row.ok = 1;
+    if (!ses.t0) ses.t0 = Date.now();
+    ses.t1 = Date.now(); ses.done = false;
+    save(); keepAwake(); startTimer(restFor(id)); rerender();
+  },
+  addset(el) { const p = P(), day = curDay(), id = el.dataset.id, ex = day.ex.find(x => x.id === id), ses = ensureSession(p, TODAY(), day), rows = ses.sets[id] || (ses.sets[id] = []); while (rows.length < ex.sets) rows.push({}); if (rows.length >= 8) return toast('Opt seturi sunt de ajuns.'); rows.push({}); save(); rerender(); },
+  delset(el) { const p = P(), ses = findSession(p, TODAY(), curDay().i); if (ses && ses.sets[el.dataset.id]) { ses.sets[el.dataset.id].pop(); save(); rerender(); } },
+  swap(el) {
+    const base = el.dataset.base, cur = el.dataset.id, list = [base].concat(EX[base].alt);
+    openSheet('<h3>Înlocuiește exercițiul</h3><p class="fine">Aparat ocupat sau exercițiu care nu ți se potrivește? Alege o variantă care lucrează aceiași mușchi. Alegerea rămâne salvată pentru ziua aceasta din plan.</p><ul class="list tap">' + list.map(id => '<li data-act="swapset" data-base="' + base + '" data-to="' + id + '"><span>' + esc(EX[id].n) + '<small>' + esc(EX[id].eq) + '</small></span><b>' + (id === cur ? 'ales' : id === base ? 'original ›' : 'Alege ›') + '</b></li>').join('') + '</ul><button class="btn ghost big" data-act="closesheet">Închide</button>');
+  },
+  swapset(el) { const p = P(), day = curDay(), key = day.k + ':' + el.dataset.base; if (el.dataset.to === el.dataset.base) delete p.swaps[key]; else p.swaps[key] = el.dataset.to; ui.open = el.dataset.to; save(); closeSheet(); rerender(); },
+  finish() {
+    const p = P(), today = TODAY(), ses = findSession(p, today, curDay().i); if (!ses) return;
+    ses.done = true; ses.t1 = Date.now(); save(); stopTimer(); releaseWake();
+    const prs = [];
+    Object.keys(ses.sets).forEach(id => { if (!EX[id]) return; const old = bestBefore(p, id, today); if (!old) return; const now = Math.max.apply(null, okSets(ses, id).map(x => (EX[id].k === 't' ? x.r : e1rm(x.w || 0, x.r))).concat([0])); if (now > old * 1.001) prs.push(EX[id].n); });
+    const mins = ses.t0 ? Math.max(1, Math.round((ses.t1 - ses.t0) / 60000)) : 0;
+    openSheet('<h3>Bravo, ' + esc(p.name) + '!</h3><div class="tgrid"><div><b>' + sesSetCount(ses) + '</b><span>seturi</span></div><div><b>' + fmtK(sesVolume(ses)) + '</b><span>kg volum</span></div><div><b>' + (mins || '—') + '</b><span>minute</span></div><div><b>' + weekDates(p, today) + '/' + p.days + '</b><span>săptămâna</span></div></div>' +
+      (prs.length ? '<div class="advice good"><p><b>Recorduri noi:</b> ' + prs.map(esc).join(', ') + '.</p></div>' : '') + '<p class="fine">Mănâncă o masă cu proteine în următoarele două ore și bea apă.</p><button class="btn big" data-act="closesheet">Gata</button>');
+    ui.open = null; rerender();
+  },
+  reopen() { const ses = findSession(P(), TODAY(), curDay().i); if (ses) { ses.done = false; save(); rerender(); } },
+  deload() { P().deload = TODAY(); save(); rerender(); },
+  tminus() { if (timer) { timer.end -= 15000; tick(); } },
+  tplus() { if (timer) { timer.end += 15000; timer.total += 15; timer.fin = 0; tick(); } },
+  tskip() { stopTimer(); },
+
+  eat(el) { const f = foodDay(P(), TODAY()); f.eat[el.dataset.slot] = f.eat[el.dataset.slot] ? 0 : 1; save(); rerender(); },
+  meal(el) { ui.meal = ui.meal === el.dataset.slot ? null : el.dataset.slot; rerender(); },
+  reroll(el) { const p = P(), d = TODAY(), slot = el.dataset.slot, f = foodDay(p, d), n = RECIPES[slot].length, cur = pickIdx(p, d, slot); f.pick[slot] = (cur + 1 + Math.floor(Math.random() * (n - 1))) % n; ui.meal = slot; save(); rerender(); },
+  shuffle() { const p = P(), d = TODAY(), f = foodDay(p, d); Object.keys(RECIPES).forEach(slot => { const n = RECIPES[slot].length, cur = pickIdx(p, d, slot); f.pick[slot] = (cur + 1 + Math.floor(Math.random() * (n - 1))) % n; }); ui.meal = null; save(); rerender(); toast('Meniu nou pentru azi.'); },
+  water(el) { const f = foodDay(P(), TODAY()); f.water = clamp((f.water || 0) + (+el.dataset.d), 0, 30); save(); rerender(); },
+  shop() {
+    const plan = planDay(P(), TODAY()), sum = {};
+    plan.meals.forEach(m => m.items.forEach(it => { sum[it.id] = (sum[it.id] || 0) + it.g; }));
+    const lines = Object.keys(sum).map(id => qtyText({id, g: sum[id]})).sort((a, b) => a.replace(/^[\d½\s]+(g|ml)?\s*/, '').localeCompare(b.replace(/^[\d½\s]+(g|ml)?\s*/, ''), 'ro'));
+    ui.shopText = 'Ingrediente pentru meniul de azi:\n' + lines.map(l => '• ' + l).join('\n');
+    openSheet('<h3>Ingrediente pentru meniul de azi</h3><p class="fine">Cantitățile sunt pentru o singură persoană, adunate din toate mesele zilei. Carnea, peștele, orezul și pastele sunt cântărite crude.</p><ul class="ingr">' + lines.map(l => '<li>' + esc(l) + '</li>').join('') + '</ul><div class="row2"><button class="btn" data-act="copyshop">Copiază lista</button><button class="btn ghost" data-act="closesheet">Închide</button></div>');
+  },
+  copyshop() { const done = () => toast('Lista a fost copiată.'); try { navigator.clipboard.writeText(ui.shopText).then(done, () => toast('Nu am putut copia lista.')); } catch (e) { toast('Nu am putut copia lista.'); } },
+
+  bwsave() {
+    const p = P(), w = num($('#bw-w').value), c = num($('#bw-c').value), today = TODAY();
+    if (!w || w < 35 || w > 250) return toast('Scrie greutatea în kilograme.');
+    if (c != null && (c < 40 || c > 200)) return toast('Talia trebuie să fie între 40 și 200 cm.');
+    p.bw = p.bw.filter(x => x.d !== today); const e = {d: today, w}; if (c) e.c = c; p.bw.push(e); p.w = w;
+    save(); rerender(); toast('Cântărire salvată.');
+  },
+  applykcal(el) { const p = P(); p.kcalO = +el.dataset.k; save(); rerender(); toast('Ținta de calorii a fost actualizată.'); },
+  hist(el) { ui.hist = ui.hist === el.dataset.k ? null : el.dataset.k; rerender(); },
+  delses(el) { if (!confirm('Ștergi această ședință din istoric?')) return; const p = P(), a = el.dataset.k.split('|'); p.sessions = p.sessions.filter(s => !(s.d === a[0] && s.i === +a[1])); ui.hist = null; save(); rerender(); },
+  exhist(el) {
+    const p = P(), id = el.dataset.id, e = EX[id], rows = [];
+    p.sessions.forEach(s => { const o = okSets(s, id); if (o.length) rows.push({d: s.d, sets: o, v: Math.max.apply(null, o.map(x => (e.k === 't' ? x.r : e1rm(x.w || 0, x.r))))}); });
+    openSheet('<h3>' + esc(e.n) + '</h3><p class="fine">' + (e.k === 't' ? 'Cel mai lung set din fiecare ședință.' : 'Evoluția forței estimate (greutate și repetări combinate).') + '</p>' + spark(rows.slice(-14).map(r => r.v)) + '<ul class="list">' + rows.slice(-10).reverse().map(r => '<li><span>' + fmtD(r.d, {day: 'numeric', month: 'short', year: 'numeric'}) + '</span><b>' + r.sets.map(x => (e.k === 't' ? x.r + ' s' : (x.w ? fmtN(x.w) + '×' : '') + x.r)).join(' · ') + '</b></li>').join('') + '</ul><button class="btn ghost big" data-act="closesheet">Închide</button>');
+  },
+
+  profiles() {
+    const p = P();
+    openSheet('<h3>Cine se antrenează?</h3><ul class="list tap">' + Object.values(S.profiles).map(o => '<li data-act="switch" data-id="' + o.id + '"><span><i class="dot" style="background:' + (ACCENTS[o.accent] || ACCENTS.rust)[0] + '"></i>' + esc(o.name) + '<small>' + GOALS[o.goal] + ' · ' + o.days + ' zile</small></span><b>' + (o.id === p.id ? 'activ' : 'Alege ›') + '</b></li>').join('') + '</ul><div class="row2"><button class="btn ghost" data-act="newprofile">Adaugă profil</button><button class="btn ghost" data-act="closesheet">Închide</button></div>');
+  },
+  'switch'(el) { if (S.profiles[el.dataset.id]) { S.active = el.dataset.id; ui.day = null; ui.open = null; ui.meal = null; ui.hist = null; stopTimer(); save(); closeSheet(); render(); window.scrollTo(0, 0); toast('Profil activ: ' + P().name); } },
+  newprofile() { const used = Object.values(S.profiles).map(o => o.accent), free = Object.keys(ACCENTS).find(k => used.indexOf(k) < 0) || 'rust'; closeSheet(); ui.form = {mode: 'new', d: {accent: free, meals: 0}}; render(); window.scrollTo(0, 0); },
+  edit() { const p = P(); ui.form = {mode: 'edit', touched: true, d: {name: p.name, sex: p.sex, age: p.age, h: p.h, w: fmtN(curWeight(p)), act: p.act, goal: p.goal, level: p.level, days: p.days, focus: p.focus, meals: p.meals || 0, accent: p.accent}}; render(); window.scrollTo(0, 0); },
+  cancelform() { ui.form = null; render(); window.scrollTo(0, 0); },
+  delprofile() { const p = P(); if (!confirm('Ștergi profilul „' + p.name + '” cu tot istoricul lui? Nu se poate anula.')) return; delete S.profiles[p.id]; S.active = Object.keys(S.profiles)[0] || null; ui.day = null; ui.tab = 'train'; save(); render(); window.scrollTo(0, 0); },
+  osave() {
+    const p = P(), k = num($('#o-k').value), pr = num($('#o-p').value);
+    if (k != null && (k < 1200 || k > 6000)) return toast('Caloriile trebuie să fie între 1.200 și 6.000.');
+    if (pr != null && (pr < 40 || pr > 350)) return toast('Proteinele trebuie să fie între 40 și 350 g.');
+    if (k) p.kcalO = Math.round(k); else delete p.kcalO;
+    if (pr) p.protO = Math.round(pr); else delete p.protO;
+    save(); rerender(); toast('Țintele au fost salvate.');
+  },
+  'export'() {
+    const name = 'fisa-antrenament-' + TODAY() + '.json', text = JSON.stringify(S);
+    try {
+      const file = new File([text], name, {type: 'application/json'});
+      if (navigator.canShare && navigator.canShare({files: [file]})) { navigator.share({files: [file], title: 'Copie de siguranță'}).catch(() => {}); return; }
+    } catch (e) {}
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type: 'application/json'})); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    toast('Copia a fost descărcată.');
+  },
+  'import'() { $('#imp').click(); },
+  closesheet() { closeSheet(); },
+  sheetbg(el, e) { if (e.target === el) closeSheet(); }
+};
+
+document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (el && ACT[el.dataset.act]) ACT[el.dataset.act](el, e); });
+document.addEventListener('input', e => {
+  const el = e.target; if (!el.dataset) return;
+  if (el.dataset.in === 'set') {
+    /* valorile scrise se păstrează ca ciornă chiar dacă setul nu e încă bifat */
+    const p = P(), day = curDay(), id = el.dataset.id, j = +el.dataset.j, f = el.dataset.f;
+    const ses = ensureSession(p, TODAY(), day), rows = ses.sets[id] || (ses.sets[id] = []);
+    for (let k = 0; k <= j; k++) rows[k] = rows[k] || {};
+    const v = num(el.value);
+    if (v == null || v < 0) { if (!rows[j].ok) delete rows[j][f]; }
+    else rows[j][f] = f === 'r' ? Math.round(v) : v;
+    save();
+  } else if (el.dataset.in === 'form' && ui.form && el.type !== 'radio') ui.form.d[el.name] = el.value;
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.id === 'imp' && el.files && el.files[0]) {
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const data = JSON.parse(rd.result);
+        if (!data || !data.profiles || !Object.keys(data.profiles).length) throw new Error('gol');
+        Object.values(data.profiles).forEach(o => { if (!o.id || !o.name || !o.sex || !o.h) throw new Error('profil'); });
+        if (!confirm('Restaurarea înlocuiește toate datele din aplicație cu cele din copie. Continui?')) return;
+        S = {v: 2, active: data.active, profiles: data.profiles}; Object.values(S.profiles).forEach(normProfile);
+        if (!S.profiles[S.active]) S.active = Object.keys(S.profiles)[0];
+        ui.day = null; save(); render(); toast('Datele au fost restaurate.');
+      } catch (err) { toast('Fișierul nu este o copie validă.'); }
+    };
+    rd.readAsText(el.files[0]); el.value = '';
+    return;
+  }
+  if (el.dataset && el.dataset.in === 'form' && el.type === 'radio' && ui.form) {
+    const f = ui.form, d = f.d;
+    d[el.name] = el.value;
+    if (el.name === 'focus') f.touched = true;
+    if (el.name === 'sex' && !f.touched) d.focus = el.value === 'f' ? 'inferior' : 'echilibrat';
+    f.err = '';
+    rerender();
+  }
+});
+document.addEventListener('submit', e => { if (e.target.id === 'pform') { e.preventDefault(); submitForm(); } });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (ui.lastDate !== ymd()) { ui.lastDate = ymd(); ui.day = null; if (!ui.form) rerender(); }
+  const p = P(); if (p && p.sessions.some(s => s.d === TODAY() && !s.done && hasOk(s))) keepAwake();
+  tick();
+});
+
+render();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+
+</script>
+</body>
+</html>
