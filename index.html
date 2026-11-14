@@ -18,7 +18,7 @@
 :root{
   --bg:#141619; --surface:#1D2025; --surface-2:#272B32; --line:#353A43;
   --text:#EFEBE3; --muted:#959CA7; --good:#5DBB8A; --warn:#E0B552; --danger:#E0736B;
-  --accent:#DB7440; --accent-dim:#7A3F1E;
+  --accent:#DB7440; --accent-dim:#7A3F1E; --anim-eq:#4A505B;
   --r:14px; --tab-h:62px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -96,6 +96,10 @@ h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute
 .chev{color:var(--muted);font-size:22px;transition:transform .15s}
 .ex.open .chev{transform:rotate(90deg)}
 .ex-body{padding:2px 14px 16px;border-top:1px solid var(--line)}
+.anim{position:relative;margin:12px 0 0;background:var(--surface-2);border-radius:12px;color:var(--text);overflow:hidden}
+.anim svg{display:block;width:100%;height:auto;max-height:240px}
+.anim-btn{position:absolute;right:8px;top:8px;min-height:32px;padding:0 11px;border-radius:9px;background:rgba(20,22,25,.72);border:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--muted)}
+.anim-cap{position:absolute;left:10px;top:9px;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.02em}
 .sug{font-size:13.5px;color:var(--text);background:var(--surface-2);border-radius:10px;padding:10px 12px;margin:12px 0}
 .sets{display:flex;flex-direction:column;gap:8px}
 .set{display:flex;align-items:center;gap:8px}
@@ -854,10 +858,279 @@ function planDay(p, date, t) {
 
 if (typeof module !== 'undefined') module.exports = {targets, program, planDay, solveMeal, suggest, qtyText, mealCount, ymd, mondayOf, repRange};
 
+/* ============ ANIMAȚII: siluetă SVG pentru fiecare exercițiu ============
+   Vedere laterală, silueta privește spre dreapta. Unghiuri în grade, în coordonate SVG:
+   0 = înainte (dreapta), 90 = în jos, -90 = în sus, 180 = înapoi.
+   Fiecare exercițiu are două poziții (A = start, B = capătul mișcării); animația merge A → B → A. */
+const ANIM = (() => {
+  const L = {t: 29, ua: 16, fa: 15.5, th: 23, sh: 23, ft: 7, nk: 4, hr: 5.5};
+  const R = Math.PI / 180;
+  const V = (a, l) => [Math.cos(a * R) * l, Math.sin(a * R) * l];
+  const P_ = (p, q) => [p[0] + q[0], p[1] + q[1]];
+  const ST = {ank: [80, 99], th: 90, sh: 90, t: -90};
+  const VB = '0 -14 160 118';
+
+  /* b = comun ambelor poziții; pr = aparate și greutăți */
+  const D = {
+    bench: {b: {hip: [96, 72], t: 180, foot: [121, 99], us: 0.65}, A: {hand: [70, 46]}, B: {hand: [72, 64]},
+      pr: [['bench', 50, 77, 112, 77], ['plate', 'hand', 9]]},
+    dbbench: {b: {hip: [96, 72], t: 180, foot: [121, 99], us: 0.65}, A: {hand: [70, 46]}, B: {hand: [74, 66]},
+      pr: [['bench', 50, 77, 112, 77], ['db', 'hand']]},
+    chestpress: {b: {hip: [68, 78], t: -98, hd: -92, foot: [92, 99]}, A: {hand: [94, 51]}, B: {hand: [76, 49]},
+      pr: [['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 84, 70, 100, 2.5], ['lever', 100, 6, 'hand'], ['grip', 'hand']]},
+    incline: {b: {hip: [92, 74], t: -140, hd: -128, foot: [119, 99], us: 0.65}, A: {hand: [73, 29]}, B: {hand: [77, 48]},
+      pr: [['seat', 86, 79, 106, 79], ['seat', 89, 77, 62, 54], ['line', 96, 81, 96, 100, 2.5], ['db', 'hand']]},
+    pushup: {b: {hand: [55, 99], us: 0.85}, A: {hip: [77.6, 79.7], t: 203, th: 20, sh: 20, ft: 60}, B: {hip: [79.7, 89], t: 186, th: 8.5, sh: 8.5, ft: 55}, eb: -1,
+      pr: []},
+    flye: {b: {hip: [68, 78], t: -98, hd: -92, foot: [92, 99]}, A: {hand: [57, 52]}, B: {hand: [91, 52]},
+      pr: [['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 84, 70, 100, 2.5], ['grip', 'hand']]},
+    latpull: {b: {hip: [72, 76], t: -100, hd: -95, th: -2, sh: 90, us: 0.7}, A: {hand: [73, 22]}, B: {hand: [76, 44]},
+      pr: [['seat', 58, 80, 86, 80], ['line', 72, 82, 72, 100, 2.5], ['pad', 'knee', 4, 0, -6], ['cable', 76, -12, 'hand'], ['grip', 'hand']]},
+    asstpull: {b: {hand: [86, 14], th: 30, sh: 160, ft: 170}, A: {hip: [81, 73.5], t: -92}, B: {hip: [80, 46], t: -92},
+      pr: [['line', 72, 14, 98, 14, 3], ['line', 98, 14, 98, 100, 2.5], ['seat', 'knee', 0]]},
+    crow: {b: {hip: [60, 86], foot: [100, 82], ft: -80}, A: {t: -70, hand: [99, 64]}, B: {t: -98, hand: [67, 72]},
+      pr: [['seat', 38, 91, 76, 91], ['line', 104, 70, 104, 98, 3], ['cable', 128, 80, 'hand'], ['grip', 'hand']]},
+    dbrow: {b: {hip: [62, 54], t: -4, hd: 10, th: 90, sh: 180, ft: 90, foot2: [50, 99], hand2: [99, 76]}, A: {hand: [92, 83]}, B: {hand: [74, 62]},
+      pr: [['bench', 36, 79, 104, 79], ['db', 'hand']]},
+    brow: {b: {ank: [80, 99], th: 60, sh: 100, t: -40, hd: -15}, A: {hand: [95, 69]}, B: {hand: [80, 53]},
+      pr: [['plate', 'hand', 9]]},
+    facepull: {b: Object.assign({}, ST, {t: -95, eb: -1}), A: {hand: [106, 26]}, B: {hand: [88, 13]},
+      pr: [['line', 142, 0, 142, 100, 3], ['cable', 140, 20, 'hand'], ['grip', 'hand']]},
+    ohp: {b: Object.assign({}, ST, {us: 0.65}), A: {hand: [85, 17]}, B: {hand: [81, -2]}, pr: [['plate', 'hand', 9]]},
+    dbshoulder: {b: {hip: [72, 74], t: -92, foot: [96, 99], us: 0.65}, A: {hand: [77, 38]}, B: {hand: [74, 18]},
+      pr: [['seat', 60, 78, 88, 78], ['seat', 64, 76, 60, 30], ['line', 74, 80, 74, 100, 2.5], ['db', 'hand']]},
+    latraise: {front: true, b: {hy: 53, sy: 24, kx: 6, ky: 76, fx: 7, fy: 99, ef: 8}, A: {aa: 8, ef: 0}, B: {aa: 86},
+      pr: [['db2']]},
+    bicep: {b: Object.assign({}, ST, {ua: 92}), A: {fa: 92}, B: {fa: -75}, pr: [['db', 'hand']]},
+    hammer: {b: Object.assign({}, ST, {ua: 92}), A: {fa: 92}, B: {fa: -75}, pr: [['dbv', 'hand']]},
+    tricep: {b: Object.assign({}, ST, {t: -82, ua: 100}), A: {fa: -5}, B: {fa: 92},
+      pr: [['line', 108, -14, 108, 100, 3], ['cable', 106, -10, 'hand'], ['grip', 'hand']]},
+    ohtri: {b: {hip: [80, 54], t: -66, hd: -70, foot: [98, 99], foot2: [58, 95], ft2: 40, ua: -78}, A: {fa: 150}, B: {fa: 282},
+      pr: [['line', 26, 0, 26, 100, 3], ['cable', 30, 92, 'hand'], ['grip', 'hand']]},
+    squat: {b: {ank: [80, 99], hr: [1, 1], eb: 1}, A: {th: 90, sh: 90, t: -90, hd: -90}, B: {th: 15, sh: 115, t: -50, hd: -70},
+      pr: [['line', 104, 8, 104, 100, 2], ['plate', 'sh', 10, -2, -1]]},
+    goblet: {b: {ank: [80, 99], hr: [8, 9], eb: 1}, A: {th: 90, sh: 90, t: -90, hd: -90}, B: {th: 12, sh: 112, t: -62, hd: -78},
+      pr: [['db', 'hand', 4.5]]},
+    legpress: {b: {hip: [62, 86], t: -132, hd: -115, kb: -1, hand: [68, 86]}, A: {foot: [99, 59], ft: -40}, B: {foot: [84, 72], ft: -45},
+      pr: [['seat', 66, 91, 40, 61], ['line', 70, 98, 130, 42, 2], ['platform', 'ank', 47, 22, 2, 2]]},
+    rdl: {b: {ank: [80, 99], hr: [0, 31]}, A: {th: 90, sh: 92, t: -90, hd: -90}, B: {th: 45, sh: 95, t: -20, hd: -5},
+      pr: [['plate', 'hand', 10]]},
+    deadlift: {b: {ank: [80, 99], hr: [0, 31]}, A: {th: 30, sh: 112, t: -25, hd: -10}, B: {th: 90, sh: 90, t: -90, hd: -90},
+      pr: [['plate', 'hand', 11]]},
+    hipthrust: {b: {foot: [104, 99], hh: [-2, -3], eb: -1}, A: {hip: [80.2, 90.6], t: 220, hd: 230}, B: {hip: [87, 72], t: 180, hd: 205},
+      pr: [['bench', 28, 78, 60, 78], ['plate', 'hip', 10, 0, -6]]},
+    glutebridge: {b: {foot: [96, 99], hand: [79, 98.5]}, A: {hip: [79, 94], t: 180}, B: {hip: [76.3, 81.7], t: 155},
+      pr: [['mat', 30, 101, 110, 101]]},
+    bulgarian: {b: {foot: [98, 99], foot2: [56, 73], ft2: 170, hr: [0, 31]}, A: {hip: [77, 52], t: -86}, B: {hip: [75, 70], t: -78},
+      pr: [['bench', 34, 78, 62, 78], ['db', 'hand']]},
+    lunge: {b: {foot: [100, 99], foot2: [56, 94], ft2: 40, hr: [0, 31]}, A: {hip: [78, 54], t: -90}, B: {hip: [77, 72], t: -86},
+      pr: [['db', 'hand']]},
+    stepup: {b: {foot: [102, 79], hr: [0, 31]}, A: {hip: [86, 58], t: -76, foot2: [68, 99]}, B: {hip: [99, 33], t: -90, foot2: [95, 79]},
+      pr: [['box', 88, 80, 44, 20], ['db', 'hand']]},
+    legext: {b: {hip: [64, 74], t: -96, th: 0, hh: [6, 5]}, A: {sh: 92, ft: 0}, B: {sh: -4, ft: -80},
+      pr: [['seat', 52, 79, 88, 79], ['seat', 55, 77, 51, 40], ['line', 62, 81, 62, 100, 2.5], ['pad', 'ank', 3.6, 3, -1]]},
+    legcurl: {b: {hip: [52, 74], t: -96, th: 0, hh: [7, 5]}, A: {sh: -2, ft: -80}, B: {sh: 112, ft: 10},
+      pr: [['seat', 40, 79, 76, 79], ['seat', 43, 77, 39, 40], ['line', 52, 81, 52, 100, 2.5], ['pad', 'knee', 4, -3, -7], ['pad', 'ank', 3.6, 0, 4.5]]},
+    kickback: {b: {hip: [72, 56], t: -38, hd: -25, foot2: [72, 99], hand: [106, 48]}, A: {th: 115, sh: 75, ft: 0}, B: {th: 165, sh: 172, ft: 80},
+      pr: [['line', 110, 30, 110, 100, 3], ['line', 104, 48, 110, 48, 3], ['cable', 112, 97, 'ank'], ['grip', 'ank']]},
+    abduction: {front: true, b: {hy: 64, sy: 34, ky: 70, fy: 95, aa: 12, ef: 0}, A: {kx: 7, fx: 7}, B: {kx: 21, fx: 17},
+      pr: [['box', 60, 66, 40, 7], ['kpad']]},
+    backext: {b: {hip: [82, 58], th: 136, sh: 136, ft: 226, hc: [0, 0]}, A: {t: 78}, B: {t: -44},
+      pr: [['line', 40, 99, 88, 62, 3], ['pad', 'hip', 4.5, 3, 3], ['pad', 'ank', 3.2, 2, 3.5]]},
+    calf: {b: {th: 90, sh: 90, t: -90, hr: [3, 31]}, A: {ank: [80, 95], ft: -23}, B: {ank: [83.5, 85.7], ft: 60},
+      pr: [['box', 85, 92, 42, 8]]},
+    plank: {hold: true, b: {t: 192, th: 11, sh: 11, ft: 85, ua: 90, fa: 0}, A: {hip: [80.5, 85.5]}, B: {hip: [80.5, 86.3]},
+      pr: [['mat', 40, 101, 132, 101]]},
+    legraise: {b: {hand: [82, -12]}, A: {hip: [82, 50], t: -90, th: 90, sh: 90}, B: {hip: [86, 46], t: -98, th: -6, sh: -6},
+      pr: [['line', 70, -12, 96, -12, 3], ['line', 96, -12, 96, 100, 2.5]]},
+    cablecrunch: {b: {hip: [74, 74], th: 90, sh: 180, ft: 90, hx: [3, 2]}, A: {t: -82, hd: -80}, B: {t: 8, hd: 70},
+      pr: [['line', 102, -14, 102, 100, 3], ['cable', 100, -10, 'hand'], ['grip', 'hand']]}
+  };
+
+  function ik(r, tg, l1, l2, s) {
+    const dx = tg[0] - r[0], dy = tg[1] - r[1], d = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
+    const dc = Math.min(l1 + l2 - 0.01, Math.max(Math.abs(l1 - l2) + 0.01, d));
+    const al = Math.acos(Math.max(-1, Math.min(1, (l1 * l1 + dc * dc - l2 * l2) / (2 * l1 * dc))));
+    const ja = a + s * al, j = [r[0] + Math.cos(ja) * l1, r[1] + Math.sin(ja) * l1];
+    const ea = Math.atan2(tg[1] - j[1], tg[0] - j[0]);
+    return [j, [j[0] + Math.cos(ea) * l2, j[1] + Math.sin(ea) * l2]];
+  }
+  const lerp = (a, b, s) => Array.isArray(a) ? a.map((x, i) => x + (b[i] - x) * s) : typeof a === 'number' ? a + (b - a) * s : (s < 0.5 ? a : b);
+  function pose(def, s) {
+    const A = Object.assign({}, def.b, def.A), B = Object.assign({}, def.b, def.B), o = {};
+    for (const k in A) o[k] = k in B ? lerp(A[k], B[k], s) : A[k];
+    ['eb', 'kb'].forEach(k => { if (def[k] != null && o[k] == null) o[k] = def[k]; });
+    return o;
+  }
+
+  /* ---------- vedere laterală ---------- */
+  function solve(P) {
+    let hip;
+    if (P.ank) { const knee = P_(P.ank, V(P.sh + 180, L.sh)); hip = P_(knee, V(P.th + 180, L.th)); } else hip = P.hip;
+    const sh = P_(hip, V(P.t, L.t)), head = P_(sh, V(P.hd != null ? P.hd : P.t, L.nk + L.hr));
+    const s = {hip, sh, head, chest: P_(hip, V(P.t, L.t * 0.72))};
+    const leg = (f, th, shA, kb, ft) => {
+      let k, a;
+      if (f) [k, a] = ik(hip, f, L.th, L.sh, kb); else { k = P_(hip, V(th, L.th)); a = P_(k, V(shA, L.sh)); }
+      return [hip, k, a, P_(a, V(ft, L.ft))];
+    };
+    s.leg1 = P.ank ? leg(null, P.th, P.sh, 0, P.ft || 0) : leg(P.foot, P.th, P.sh, P.kb != null ? P.kb : -1, P.ft || 0);
+    s.leg2 = (P.foot2 || P.th2 != null) ? leg(P.foot2, P.th2 != null ? P.th2 : P.th, P.sh2 != null ? P.sh2 : P.sh, P.kb2 != null ? P.kb2 : -1, P.ft2 != null ? P.ft2 : (P.ft || 0)) : null;
+    const tgt = x => P['hand' + x] || (P['hr' + x] && P_(sh, P['hr' + x])) || (P['hh' + x] && P_(hip, P['hh' + x])) || (P['hc' + x] && P_(s.chest, P['hc' + x])) || (P['hx' + x] && P_(head, P['hx' + x]));
+    const arm = x => {
+      const t = tgt(x);
+      const ua = L.ua * (P.us || 1);
+      if (t) { const r = ik(sh, t, ua, L.fa, P['eb' + x] != null ? P['eb' + x] : P.eb != null ? P.eb : 1); return [sh, r[0], r[1]]; }
+      const e = P_(sh, V(P['ua' + x], ua)); return [sh, e, P_(e, V(P['fa' + x], L.fa))];
+    };
+    s.arm1 = arm('');
+    s.arm2 = ['hand2', 'hr2', 'hh2', 'hc2', 'hx2', 'ua2'].some(k => k in P) ? arm('2') : null;
+    return s;
+  }
+
+  const f1 = n => (Math.round(n * 10) / 10).toString();
+  const pts = a => a.map(p => f1(p[0]) + ',' + f1(p[1])).join(' ');
+  const off = (a, d) => a.map(p => [p[0] + d[0], p[1] + d[1]]);
+  const line = (a, w, st, op) => '<polyline points="' + pts(a) + '" fill="none" stroke="' + (st || 'currentColor') + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (op ? ' opacity="' + op + '"' : '') + '/>';
+  const circ = (c, r, fill, st, sw, op) => '<circle cx="' + f1(c[0]) + '" cy="' + f1(c[1]) + '" r="' + r + '" fill="' + fill + '"' + (st ? ' stroke="' + st + '" stroke-width="' + sw + '"' : '') + (op ? ' opacity="' + op + '"' : '') + '/>';
+  const EQ = 'var(--anim-eq)', WT = 'var(--accent)', WTD = 'var(--accent-dim)';
+  const GROUND = '<line x1="-60" y1="100.6" x2="220" y2="100.6" stroke="' + EQ + '" stroke-width="1.2"/>';
+
+  function ref(s, r) {
+    return ({hand: s.arm1[2], hand2: (s.arm2 || s.arm1)[2], elbow: s.arm1[1], sh: s.sh, hip: s.hip, head: s.head, chest: s.chest,
+      knee: s.leg1[1], ank: s.leg1[2], toe: s.leg1[3], knee2: (s.leg2 || s.leg1)[1], ank2: (s.leg2 || s.leg1)[2]})[r];
+  }
+  function props(def, s, layer) {
+    let h = '';
+    (def.pr || []).forEach(p => {
+      const k = p[0];
+      if (layer === 'back') {
+        if (k === 'bench') h += line([[p[1], p[2]], [p[3], p[4]]], 5, EQ) + line([[p[1] + 4, p[2]], [p[1] + 4, 100]], 2.2, EQ) + line([[p[3] - 4, p[4]], [p[3] - 4, 100]], 2.2, EQ);
+        else if (k === 'seat' && typeof p[1] === 'number') h += line([[p[1], p[2]], [p[3], p[4]]], 5, EQ);
+        else if (k === 'seat') { const c = ref(s, p[1]); h += line([[c[0] - 7, c[1] + 4], [c[0] + 7, c[1] + 4]], 5, EQ); }
+        else if (k === 'mat') h += line([[p[1], p[2]], [p[3], p[4]]], 2.5, EQ);
+        else if (k === 'line') h += line([[p[1], p[2]], [p[3], p[4]]], p[5] || 2.5, EQ);
+        else if (k === 'box') h += '<rect x="' + p[1] + '" y="' + p[2] + '" width="' + p[3] + '" height="' + p[4] + '" rx="1.5" fill="' + EQ + '"/>';
+        else if (k === 'cable') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 1.1, EQ) + circ([p[1], p[2]], 2.4, 'none', EQ, 1.5); }
+        else if (k === 'lever') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 3.2, EQ) + circ([p[1], p[2]], 2.6, EQ); }
+        else if (k === 'pad') { const c = ref(s, p[1]); h += circ([c[0] + (p[3] || 0), c[1] + (p[4] || 0)], p[2], EQ); }
+      } else if (layer === 'weight') {
+        if (k === 'plate') { const c = ref(s, p[1]), q = [c[0] + (p[3] || 0), c[1] + (p[4] || 0)]; h += circ(q, p[2], WTD, WT, 1.6, 0.92) + circ(q, 1.8, WT); }
+        else if (k === 'platform') { const c = ref(s, p[1]), q = [c[0] + (p[4] || 0), c[1] + (p[5] || 0)], d = V(p[2], p[3] / 2); h += line([[q[0] - d[0], q[1] - d[1]], [q[0] + d[0], q[1] + d[1]]], 4, WT); }
+      } else {
+        if (k === 'db') { const c = ref(s, p[1]); h += circ(c, p[2] || 3.6, WT); }
+        else if (k === 'dbv') { const c = ref(s, p[1]); h += '<rect x="' + f1(c[0] - 2) + '" y="' + f1(c[1] - 5.5) + '" width="4" height="11" rx="1.6" fill="' + WT + '"/>'; }
+        else if (k === 'grip') { const c = ref(s, p[1]); h += circ(c, 2.1, WT); }
+      }
+    });
+    return h;
+  }
+
+  function sideSVG(def, s) {
+    const BACK = 0.38, d = [-1.8, -1.2];
+    let h = '<g class="fig">' + props(def, s, 'back');
+    h += s.leg2 ? line(s.leg2, 4.4, null, BACK) : line(off(s.leg1, d), 4.4, null, BACK);
+    h += s.arm2 ? line(s.arm2, 3.8, null, BACK) : line(off(s.arm1, d), 3.8, null, BACK);
+    h += props(def, s, 'weight');
+    h += line([s.hip, s.sh], 7, null) + line([s.sh, P_(s.sh, V(Math.atan2(s.head[1] - s.sh[1], s.head[0] - s.sh[0]) / R, L.nk))], 3.2, null);
+    h += circ(s.head, L.hr, 'currentColor');
+    h += line(s.leg1, 4.6, null) + line(s.arm1, 4, null);
+    return GROUND + h + props(def, s, 'front') + '</g>';
+  }
+
+  /* ---------- vedere frontală (ridicări laterale, abducții) ---------- */
+  function frontSVG(def, P) {
+    const cx = 80, sw = 10, hw = 6, BODY = 'currentColor';
+    let h = '<g class="fig">' + props(def, null, 'back');
+    const hands = [];
+    [-1, 1].forEach(sg => {
+      const s0 = [cx + sg * sw, P.sy], a1 = 90 - sg * P.aa, a2 = a1 - sg * P.ef;
+      const e = P_(s0, V(a1, L.ua)), w = P_(e, V(a2, L.fa));
+      hands.push(w);
+      h += line([[cx + sg * hw, P.hy], [cx + sg * P.kx, P.ky], [cx + sg * P.fx, P.fy]], 4.6, BODY);
+      h += line([s0, e, w], 4, BODY);
+      if (def.pr.some(p => p[0] === 'kpad')) h += '<rect x="' + f1(cx + sg * (P.kx + 4.5) - 2) + '" y="' + f1(P.ky - 5) + '" width="4" height="10" rx="1.6" fill="' + WT + '"/>';
+    });
+    h += line([[cx - hw, P.hy], [cx + hw, P.hy]], 5, BODY) + line([[cx - sw, P.sy], [cx + sw, P.sy]], 5, BODY);
+    h += '<path d="M' + (cx - sw + 1) + ',' + P.sy + ' L' + (cx - hw) + ',' + P.hy + ' L' + (cx + hw) + ',' + P.hy + ' L' + (cx + sw - 1) + ',' + P.sy + 'Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>';
+    h += line([[cx, P.sy], [cx, P.sy - L.nk]], 3.2, BODY) + circ([cx, P.sy - L.nk - L.hr], L.hr, 'currentColor');
+    if (def.pr.some(p => p[0] === 'db2')) hands.forEach(w => { h += circ(w, 3.6, WT); });
+    return GROUND + h + '</g>';
+  }
+
+  /* p = faza ciclului (0..1): pauză scurtă în A, A→B, pauză în B, B→A */
+  function ease(p) {
+    const seg = p < 0.12 ? 0 : p < 0.5 ? (p - 0.12) / 0.38 : p < 0.62 ? 1 : 1 - (p - 0.62) / 0.38;
+    return 0.5 - 0.5 * Math.cos(Math.PI * seg);
+  }
+  function svgInner(id, p) {
+    const def = D[id]; if (!def) return '';
+    const P = pose(def, ease(p));
+    return def.front ? frontSVG(def, P) : sideSVG(def, solve(P));
+  }
+
+  /* ---------- redare în pagină ---------- */
+  const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let paused = reduce, frozenAt = 0.5, raf = 0, last = 0;
+  const DUR = 3400;
+  function phase(now) { return paused ? frozenAt : (now % DUR) / DUR; }
+  function frame(now) {
+    raf = 0;
+    const els = document.querySelectorAll('.anim[data-anim]');
+    if (!els.length) return;
+    if (now - last > 30) {
+      last = now;
+      const p = phase(now);
+      els.forEach(el => { const svg = el.querySelector('svg'); if (svg) svg.innerHTML = svgInner(el.dataset.anim, p); });
+    }
+    if (!paused) raf = requestAnimationFrame(frame);
+  }
+  const vbCache = {};
+  function fit(svg, id) {
+    if (vbCache[id]) { svg.setAttribute('viewBox', vbCache[id]); return; }
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    [0, 0.2, 0.31, 0.42, 0.5].forEach(p => {
+      svg.innerHTML = svgInner(id, p);
+      const g = svg.querySelector('g.fig'); if (!g) return;
+      const b = g.getBBox(); if (!b.width) return;
+      x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
+    });
+    if (!(x1 > x0)) return;
+    const pad = 7; x0 -= pad; y0 -= pad; x1 += pad; y1 = Math.max(y1 + pad, 105);
+    let w = x1 - x0; const h = y1 - y0;
+    if (w < h * 1.3) { const nw = h * 1.3; x0 -= (nw - w) / 2; w = nw; }
+    vbCache[id] = [x0, y0, w, h].map(n => n.toFixed(1)).join(' ');
+    svg.setAttribute('viewBox', vbCache[id]);
+  }
+  function scan(force) {
+    document.querySelectorAll('.anim[data-anim]').forEach(el => {
+      const svg = el.querySelector('svg'); if (!svg) return;
+      if (!svg.dataset.fit) { fit(svg, el.dataset.anim); svg.dataset.fit = 1; force = true; }
+      if (force || !svg.innerHTML) svg.innerHTML = svgInner(el.dataset.anim, phase(performance.now()));
+      const b = el.querySelector('.anim-btn'); if (b) b.textContent = paused ? 'Pornește' : 'Pauză';
+    });
+    last = 0;
+    if (!raf && !paused) raf = requestAnimationFrame(frame);
+  }
+  function toggle() {
+    if (paused) paused = false; else { frozenAt = phase(performance.now()); paused = true; if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+    scan(true);
+  }
+  function html(id, name) {
+    if (!D[id]) return '';
+    return '<div class="anim" data-anim="' + id + '"><svg viewBox="' + VB + '" role="img" aria-label="Animație: ' + name.replace(/"/g, '') + '"></svg>' +
+      (D[id].hold ? '<span class="anim-cap">Menține poziția nemișcat</span>' : '') +
+      '<button class="anim-btn" data-act="animtoggle" aria-label="Pornește sau oprește animația">Pauză</button></div>';
+  }
+  return {D, VB, svgInner, html, scan, toggle, has: id => !!D[id]};
+})();
+
+if (typeof module !== 'undefined') module.exports = {ANIM};
+
 /* ============ APLICAȚIA: stare, ecrane, acțiuni ============ */
 
 const LS_KEY = 'fisa-antrenament.v2';
-const APP_VERSION = '2.0';
+const APP_VERSION = '2.1';
 const ACCENTS = {rust: ['#DB7440', '#7A3F1E'], teal: ['#4FB3A2', '#235B52'], violet: ['#A488E6', '#4E3C86'], rose: ['#E0708F', '#7E3550']};
 const GOALS = {masa: 'Masă musculară', ton: 'Tonifiere și formă', slab: 'Slăbire'};
 const FOCUS = {echilibrat: 'Echilibrat, tot corpul', inferior: 'Accent pe fesieri și picioare', superior: 'Accent pe partea superioară'};
@@ -941,6 +1214,7 @@ function render() {
   app.innerHTML = '<header class="top"><div><div class="eyebrow">' + esc(dateTxt) + '</div><h1>' + title + '</h1></div>' +
     '<button class="avatar" data-act="profiles" aria-label="Schimbă profilul">' + esc(p.name.charAt(0).toUpperCase()) + '</button></header>' +
     (ui.tab === 'train' ? vTrain(p) : ui.tab === 'food' ? vFood(p) : ui.tab === 'prog' ? vProg(p) : vMe(p));
+  ANIM.scan();
 }
 function rerender() { const y = window.scrollY; render(); window.scrollTo(0, y); }
 
@@ -987,7 +1261,7 @@ function vExercise(p, ex, ses, today) {
     '<span class="ex-txt"><b>' + esc(e.n) + '</b><small>' + esc(e.m) + ' · ' + target + '</small></span><span class="chev">›</span></button>';
   if (!open) return h + '</section>';
   const sg = suggest(p, ex, today);
-  h += '<div class="ex-body"><p class="sug">' + esc(sg.text) + '</p><div class="sets">';
+  h += '<div class="ex-body">' + ANIM.html(ex.id, e.n) + '<p class="sug">' + esc(sg.text) + '</p><div class="sets">';
   for (let j = 0; j < n; j++) {
     const r = rows[j] || {}, ok = r.ok ? ' ok' : '';
     const attrs = ' data-in="set" data-id="' + ex.id + '" data-j="' + j + '"';
@@ -1309,6 +1583,7 @@ const ACT = {
     toast('Copia a fost descărcată.');
   },
   'import'() { $('#imp').click(); },
+  animtoggle() { ANIM.toggle(); },
   closesheet() { closeSheet(); },
   sheetbg(el, e) { if (e.target === el) closeSheet(); }
 };
