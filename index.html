@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fișa de Antrenament</title>
+<title>Training Master</title>
 <meta name="description" content="Plan de antrenament, meniu cu porții calculate și jurnal de progres, pe profilul tău.">
 <meta name="theme-color" content="#141619">
 <meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Fișa">
+<meta name="apple-mobile-web-app-title" content="Training Master">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -1505,8 +1505,8 @@ if (typeof module !== 'undefined') module.exports = {ANIM};
 
 /* ============ APLICAȚIA: stare, ecrane, acțiuni ============ */
 
-const LS_KEY = 'fisa-antrenament.v2';
-const APP_VERSION = '2.3';
+const LS_KEY = 'fisa-antrenament.v2'; /* nume intern vechi, păstrat ca datele salvate să rămână */
+const APP_VERSION = '2.4';
 const ACCENTS = {rust: ['#DB7440', '#7A3F1E'], teal: ['#4FB3A2', '#235B52'], violet: ['#A488E6', '#4E3C86'], rose: ['#E0708F', '#7E3550']};
 const GOALS = {masa: 'Masă musculară', ton: 'Tonifiere și formă', slab: 'Slăbire'};
 const FOCUS = {echilibrat: 'Echilibrat, tot corpul', inferior: 'Accent pe fesieri și picioare', superior: 'Accent pe partea superioară'};
@@ -1813,7 +1813,7 @@ function vMe(p) {
 
   h += '<section class="card"><h3>Datele tale</h3><p class="fine">Totul se salvează doar pe acest telefon, în aplicație. Nu se trimite nimic pe internet. Fă din când în când o copie de siguranță, mai ales înainte să schimbi telefonul.</p><div class="row2"><button class="btn ghost" data-act="export">Salvează o copie</button><button class="btn ghost" data-act="import">Restaurează</button></div><input type="file" id="imp" accept="application/json,.json" hidden>' +
     '<details class="how"><summary>Cum pun aplicația pe ecranul telefonului</summary><p><b>iPhone:</b> deschide adresa aplicației în Safari, apasă butonul de partajare (pătratul cu săgeată) și alege „Adaugă pe ecranul principal”.</p><p><b>Android:</b> deschide adresa în Chrome, apasă meniul cu trei puncte și alege „Instalează aplicația” sau „Adaugă pe ecranul principal”.</p><p>După instalare merge și fără internet. Folosește mereu pictograma de pe ecran: acolo sunt salvate datele.</p></details></section>';
-  h += '<p class="fine pad">Fișa de Antrenament ' + APP_VERSION + '. Recomandările sunt generale, pentru adulți sănătoși. Dacă ești însărcinată, ai o problemă medicală sau o accidentare, cere întâi sfatul medicului.</p>';
+  h += '<p class="fine pad">Training Master ' + APP_VERSION + '. Recomandările sunt generale, pentru adulți sănătoși. Dacă ești însărcinată, ai o problemă medicală sau o accidentare, cere întâi sfatul medicului.</p>';
   return h;
 }
 
@@ -1857,7 +1857,7 @@ function vForm() {
     '<section class="card"><h3>Preferințe</h3><div class="fld"><span>Mese pe zi</span>' + opts('meals', [[0, 'Automat'], [3, '3'], [4, '4'], [5, '5'], [6, '6']], d) + '<small class="hint">Automat alege 4-6 mese după câte calorii ai de mâncat.</small></div>' +
     '<div class="fld"><span>Culoarea profilului</span><div class="opts sw">' + Object.keys(ACCENTS).map(k => '<label class="opt swatch"><input type="radio" data-in="form" name="accent" value="' + k + '"' + (d.accent === k ? ' checked' : '') + '><span style="--c:' + ACCENTS[k][0] + '" aria-label="' + k + '"></span></label>').join('') + '</div></div></section>'
   ];
-  let h = '<header class="top"><div><div class="eyebrow">' + (!wiz ? 'Modifică profilul' : first ? 'Bine ai venit' : 'Profil nou') + '</div><h1>' + (!wiz ? esc(d.name || '') : first && step === 0 ? 'Fișa de antrenament' : STEPS[step]) + '</h1></div></header>';
+  let h = '<header class="top"><div><div class="eyebrow">' + (!wiz ? 'Modifică profilul' : first ? 'Bine ai venit' : 'Profil nou') + '</div><h1>' + (!wiz ? esc(d.name || '') : first && step === 0 ? 'Training Master' : STEPS[step]) + '</h1></div></header>';
   if (wiz) {
     h += '<div class="steps" aria-label="Pasul ' + (step + 1) + ' din 4">' + STEPS.map((x, i) => '<span class="' + (i < step ? 'done' : i === step ? 'on' : '') + '"></span>').join('') + '</div>';
     if (step === 0) h += '<p class="lead">Spune-mi câteva lucruri despre tine și îți construiesc planul de antrenament și meniul, cu porții calculate pe măsura ta.</p>';
@@ -2006,7 +2006,7 @@ const ACT = {
     save(); rerender(); toast('Țintele au fost salvate.');
   },
   'export'() {
-    const name = 'fisa-antrenament-' + TODAY() + '.json', text = JSON.stringify(S);
+    const name = 'training-master-' + TODAY() + '.json', text = JSON.stringify(S);
     try {
       const file = new File([text], name, {type: 'application/json'});
       if (navigator.canShare && navigator.canShare({files: [file]})) { navigator.share({files: [file], title: 'Copie de siguranță'}).catch(() => {}); return; }

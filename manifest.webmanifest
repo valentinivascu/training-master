@@ -1,6 +1,6 @@
 {
-  "name": "Fișa de Antrenament",
-  "short_name": "Fișa",
+  "name": "Training Master",
+  "short_name": "Training Master",
   "description": "Plan de antrenament, meniu cu porții calculate și jurnal de progres.",
   "lang": "ro",
   "start_url": "./",

@@ -1,14 +1,14 @@
-# Fișa de Antrenament
+# Training Master
 
 Aplicație de telefon pentru sală: plan de antrenament pe profil (gen, obiectiv, nivel, zile pe săptămână), meniu cu porții calculate și jurnal de progres. Merge și fără internet. Datele rămân doar pe telefonul fiecăruia.
 
 ## Publicare pe GitHub Pages
 
-1. Pe github.com apasă **New repository**. Nume: `fisa`. Alege **Public** și apasă **Create repository**.
+1. Pe github.com apasă **New repository**. Nume: `training-master`. Alege **Public** și apasă **Create repository**.
 2. În pagina repository-ului apasă **uploading an existing file**.
 3. Trage în pagină TOT conținutul acestui folder (`index.html`, `manifest.webmanifest`, `sw.js`, `README.md` și folderul `icons`), apoi apasă **Commit changes**.
 4. Mergi la **Settings → Pages**. La **Branch** alege `main` și `/ (root)`, apoi **Save**.
-5. După 1-2 minute aplicația este la adresa `https://NUMELE-TĂU.github.io/fisa/`.
+5. După 1-2 minute aplicația este la adresa `https://NUMELE-TĂU.github.io/training-master/`.
 
 ## Instalare pe telefon
 

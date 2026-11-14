@@ -1,6 +1,6 @@
-/* Fișa de Antrenament: funcționare fără internet.
+/* Training Master: funcționare fără internet.
    La fiecare versiune nouă schimbă numărul de mai jos, ca telefoanele să ia fișierele noi. */
-const CACHE = 'fisa-antrenament-2.3';
+const CACHE = 'training-master-2.4';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'fonts/manrope-latin-wght-normal.woff2', 'fonts/manrope-latin-ext-wght-normal.woff2'];
 
 self.addEventListener('install', e => {
