@@ -15,15 +15,18 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>
+/* Manrope (SIL Open Font License, vezi fonts/OFL-Manrope.txt), inclus în aplicație ca să meargă și fără internet */
+@font-face{font-family:'Manrope';font-style:normal;font-display:swap;font-weight:200 800;src:url(fonts/manrope-latin-ext-wght-normal.woff2) format('woff2-variations');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Manrope';font-style:normal;font-display:swap;font-weight:200 800;src:url(fonts/manrope-latin-wght-normal.woff2) format('woff2-variations');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{
   --bg:#141619; --surface:#1D2025; --surface-2:#272B32; --line:#353A43;
   --text:#EFEBE3; --muted:#959CA7; --good:#5DBB8A; --warn:#E0B552; --danger:#E0736B;
-  --accent:#DB7440; --accent-dim:#7A3F1E; --anim-eq:#454B55; --anim-pad:#3A4049; --anim-floor:#191C20; --anim-body:#E6E0D6; --anim-body2:#7D838D; --anim-hair:#2B2420; --anim-mp:var(--accent); --anim-ms:rgba(219,116,64,.45); --glow:rgba(219,116,64,.26);
+  --accent:#DB7440; --accent-dim:#7A3F1E; --anim-outline:#0D0F12; --anim-pad:#2B3037; --anim-padhi:#4B535E; --anim-metal:#6E7682; --anim-metal2:#3B4149; --anim-steel:#A9B0BA; --anim-floor:#191C20; --anim-body:#E6E0D6; --anim-body2:#7D838D; --anim-hair:#2B2420; --anim-mp:var(--accent); --anim-ms:rgba(219,116,64,.45); --glow:rgba(219,116,64,.26);
   --r:14px; --tab-h:62px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;overflow-x:hidden}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-feature-settings:"tnum" 0;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
 body.noscroll{overflow:hidden}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none;padding:0}
@@ -307,6 +310,27 @@ details.how ul li b{color:var(--text)}
 
 @media (max-width:359px){.nut{flex-direction:column;align-items:stretch}.kring{margin:0 auto}.hero-stats{gap:12px}}
 
+/* ---------- v2.3: finisaje ---------- */
+.card{box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+h1{letter-spacing:-.03em}
+.avatar{box-shadow:0 0 0 4px var(--bg),0 0 0 5px var(--line);transition:transform .15s}
+.avatar:active{transform:scale(.94)}
+#tabs button{transition:color .2s}
+#tabs svg{box-sizing:content-box;padding:4px 16px;border-radius:999px;transition:background .2s}
+#tabs button.on svg{background:var(--glow)}
+.btn{transition:filter .15s, transform .1s}
+.btn:active{transform:scale(.98)}
+.ex,.meal{transition:border-color .2s}
+.anim{background:radial-gradient(120% 90% at 50% 0%, #2C3138 0%, var(--surface-2) 70%)}
+.vchart{display:flex;gap:7px;align-items:flex-end;height:120px;margin:6px 0 10px}
+.vb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;min-width:0}
+.vb i{display:block;width:100%;border-radius:7px 7px 3px 3px;background:var(--surface-2);min-height:4px;transition:height .4s ease}
+.vb.cur i{background:var(--accent)}
+.vb.has i{background:var(--accent-dim)}
+.vb.cur.has i{background:var(--accent)}
+.vb span{font-size:10px;color:var(--muted);white-space:nowrap}
+.vb b{font-size:10px;color:var(--text);font-weight:700;min-height:12px}
+
 </style>
 </head>
 <body>
@@ -390,25 +414,37 @@ const EX = {
        'Trage-te în sus până bărbia trece de mâini, cu pieptul înainte.',
        'Coboară lent până brațele sunt întinse.'],
     b:['Mișcare pe jumătate, fără întindere completă jos.','Umerii ridicați spre urechi.'],
-    tip:'Notează contragreutatea aleasă. Aici progresul înseamnă o contragreutate MAI MICĂ.', alt:['latpull','crow']},
+    tip:'Notează contragreutatea aleasă. Aici progresul înseamnă o contragreutate MAI MICĂ.', alt:['latpull','crow'], assist:true},
   crow: {n:'Ramat la cablu din șezut', en:'Seated Cable Row', m:'Spate (mijloc)', k:'c', eq:'Aparat de ramat cu cablu',
     s:['Șezi cu genunchii ușor îndoiți și spatele drept.',
        'Trage mânerul spre abdomen, cu coatele pe lângă corp, apropiind omoplații.',
        'Revino controlat până brațele sunt întinse, fără să rotunjești spatele.'],
     b:['Legănatul trunchiului înainte și înapoi.','Umerii ridicați spre urechi.'],
-    tip:'', alt:['dbrow','latpull','brow']},
+    tip:'', alt:['machinerow','dbrow','latpull','brow']},
   dbrow: {n:'Ramat cu gantera, un braț', en:'One-Arm Dumbbell Row', m:'Spate', k:'c', eq:'Bancă + ganteră',
     s:['Sprijină un genunchi și o palmă pe bancă, cu spatele drept și paralel cu podeaua.',
        'Trage gantera spre șold, cu cotul aproape de corp.',
        'Coboară controlat până brațul este întins. Fă toate repetările, apoi schimbă brațul.'],
     b:['Trunchiul care se rotește ca să ridice greutatea.','Gantera trasă spre umăr în loc de șold.'],
-    tip:'', alt:['crow','latpull','brow']},
+    tip:'', alt:['machinerow','crow','latpull','brow']},
   brow: {n:'Ramat cu bara, aplecat', en:'Barbell Row', m:'Spate', k:'c', eq:'Bară',
     s:['Apleacă trunchiul la aproximativ 45°, cu genunchii ușor îndoiți și spatele drept.',
        'Trage bara spre partea de jos a abdomenului, cu coatele aproape de corp.',
        'Coboară controlat până brațele sunt întinse.'],
     b:['Spatele rotunjit.','Trunchiul ridicat la fiecare repetare ca să ajuți mișcarea.'],
-    tip:'Dacă simți zona lombară, treci la ramatul la cablu sau cu gantera.', alt:['crow','dbrow']},
+    tip:'Dacă simți zona lombară, treci la ramatul la aparat, cu pieptul sprijinit.', alt:['machinerow','crow','dbrow']},
+  machinepress: {n:'Împins pentru umeri la aparat', en:'Machine Shoulder Press', m:'Umeri', k:'c', eq:'Aparat shoulder press',
+    s:['Reglează scaunul astfel încât mânerele să fie la nivelul umerilor.',
+       'Cu spatele lipit de spătar, împinge mânerele în sus până brațele sunt aproape întinse.',
+       'Coboară controlat până când mâinile ajung la nivelul bărbiei.'],
+    b:['Spatele desprins de spătar.','Coatele blocate brusc sus.'],
+    tip:'Varianta cea mai sigură pentru umeri la început: aparatul ghidează traseul.', alt:['dbshoulder','ohp']},
+  machinerow: {n:'Ramat la aparat, cu pieptul sprijinit', en:'Chest-Supported Machine Row', m:'Spate (mijloc)', k:'c', eq:'Aparat de ramat cu suport pentru piept',
+    s:['Reglează scaunul astfel încât mânerele să fie la nivelul pieptului și sprijină pieptul de pernă.',
+       'Trage mânerele spre corp, ducând coatele în spate și apropiind omoplații.',
+       'Revino lent până brațele sunt întinse, fără să desprinzi pieptul de pernă.'],
+    b:['Pieptul desprins de pernă ca să tragi cu tot corpul.','Umerii ridicați spre urechi.'],
+    tip:'Suportul de piept scoate zona lombară din ecuație: bun dacă te doare spatele la ramat.', alt:['crow','dbrow','latpull']},
   facepull: {n:'Face pull la cablu', en:'Face Pull', m:'Umeri posteriori, spate sus', k:'i', eq:'Cablu cu frânghie, la nivelul feței',
     s:['Prinde frânghia cu ambele mâini și fă un pas în spate.',
        'Trage frânghia spre față, despărțind capetele, cu coatele la nivelul umerilor.',
@@ -423,13 +459,13 @@ const EX = {
        'Împinge bara vertical până brațele sunt întinse, trecând capul ușor în față la final.',
        'Coboară controlat înapoi la nivelul claviculelor.'],
     b:['Spatele arcuit excesiv.','Bara împinsă în față în loc de vertical.'],
-    tip:'', alt:['dbshoulder']},
+    tip:'', alt:['machinepress','dbshoulder']},
   dbshoulder: {n:'Împins cu gantere din șezut', en:'Dumbbell Shoulder Press', m:'Umeri', k:'c', eq:'Bancă cu spătar + gantere',
     s:['Șezi cu spatele sprijinit și ganterele la nivelul umerilor, cu palmele spre înainte.',
        'Împinge ganterele deasupra capului până brațele sunt aproape întinse.',
        'Coboară controlat până la nivelul urechilor.'],
     b:['Spatele desprins de spătar.','Coborâre prea scurtă.'],
-    tip:'Notează greutatea unei singure gantere.', alt:['ohp']},
+    tip:'Notează greutatea unei singure gantere.', alt:['machinepress','ohp']},
   latraise: {n:'Ridicări laterale cu gantere', en:'Lateral Raise', m:'Umeri (lateral)', k:'i', eq:'Gantere ușoare',
     s:['Stai în picioare cu ganterele pe lângă corp și coatele ușor îndoite.',
        'Ridică brațele lateral până la nivelul umerilor.',
@@ -442,12 +478,17 @@ const EX = {
     s:['Stai în picioare cu brațele întinse și coatele lipite de corp.',
        'Îndoaie coatele și ridică ganterele spre umeri, fără să miști coatele din loc.',
        'Coboară controlat până brațele sunt complet întinse.'],
-    b:['Balans din spate ca să arunci greutatea în sus.'], tip:'', alt:['hammer']},
+    b:['Balans din spate ca să arunci greutatea în sus.'], tip:'', alt:['hammer','cablecurl']},
   hammer: {n:'Flexii ciocan', en:'Hammer Curl', m:'Biceps, antebraț', k:'i', eq:'Gantere',
     s:['Ține ganterele cu palmele față în față, ca pe un ciocan.',
        'Îndoaie coatele și ridică ganterele spre umeri, cu coatele fixe pe lângă corp.',
        'Coboară controlat.'],
-    b:['Balans din corp.'], tip:'', alt:['bicep']},
+    b:['Balans din corp.'], tip:'', alt:['bicep','cablecurl']},
+  cablecurl: {n:'Flexii pentru biceps la cablu', en:'Cable Curl', m:'Biceps', k:'i', eq:'Cablu jos, cu bară dreaptă sau EZ',
+    s:['Stai cu fața la aparat și prinde bara cu palmele în sus, cu coatele lipite de corp.',
+       'Îndoaie coatele și adu bara spre piept, fără să miști coatele din loc.',
+       'Coboară lent până brațele sunt întinse. Cablul ține mușchiul încordat pe tot traseul.'],
+    b:['Balans din spate.','Coatele care fug în față la urcare.'], tip:'', alt:['bicep','hammer']},
   tricep: {n:'Extensii pentru triceps la cablu', en:'Triceps Pushdown', m:'Triceps', k:'i', eq:'Cablu sus, cu bară sau frânghie',
     s:['Prinde bara sau frânghia cu coatele lipite de corp, îndoite la 90°.',
        'Întinde brațele complet în jos, fără să miști coatele.',
@@ -467,19 +508,25 @@ const EX = {
        'Ridică-te împingând în toată talpa, cu spatele drept.'],
     b:['Genunchii care cad spre interior la ridicare.','Călcâiele ridicate de pe podea.'],
     tip:'Învață mișcarea cu bara goală sau cu varianta goblet. Montează barele de siguranță ale rack-ului.',
-    alt:['goblet','legpress']},
+    alt:['goblet','legpress','hacksquat']},
   goblet: {n:'Genuflexiuni goblet', en:'Goblet Squat', m:'Cvadriceps, fesieri', k:'l', eq:'O ganteră sau un kettlebell',
     s:['Ține gantera vertical la piept, cu coatele sub ea.',
        'Coboară între genunchi, cu pieptul sus și călcâiele pe podea.',
        'Ridică-te împingând în toată talpa.'],
     b:['Trunchiul aplecat mult înainte.','Genunchii care cad spre interior.'],
-    tip:'Cea mai bună variantă pentru a învăța genuflexiunea.', alt:['squat','legpress']},
+    tip:'Cea mai bună variantă pentru a învăța genuflexiunea.', alt:['squat','legpress','hacksquat']},
   legpress: {n:'Presă pentru picioare', en:'Leg Press', m:'Cvadriceps, fesieri', k:'l', eq:'Aparat leg press',
     s:['Așază tălpile pe platformă la lățimea umerilor, cu spatele și șoldul lipite de scaun.',
        'Coboară platforma controlat până când genunchii ajung la aproximativ 90°.',
        'Împinge înapoi fără să blochezi genunchii la final.'],
     b:['Genunchii blocați complet sus.','Șoldul care se ridică de pe scaun în punctul de jos.'],
-    tip:'Tălpile mai sus pe platformă mută efortul spre fesieri; mai jos, spre cvadriceps.', alt:['goblet','squat']},
+    tip:'Tălpile mai sus pe platformă mută efortul spre fesieri; mai jos, spre cvadriceps.', alt:['hacksquat','goblet','squat']},
+  hacksquat: {n:'Genuflexiuni la aparatul hack', en:'Hack Squat', m:'Cvadriceps, fesieri', k:'l', eq:'Aparat hack squat',
+    s:['Sprijină spatele și umerii de pernele aparatului, cu tălpile la lățimea umerilor, la mijlocul platformei.',
+       'Deblochează siguranțele și coboară controlat până când coapsele sunt paralele cu platforma.',
+       'Împinge în toată talpa până aproape de întindere, fără să blochezi genunchii.'],
+    b:['Călcâiele ridicate de pe platformă.','Coborâre prea scurtă.'],
+    tip:'La final, pune la loc siguranțele înainte să ieși din aparat.', alt:['squat','legpress','goblet']},
   rdl: {n:'Îndreptări românești', en:'Romanian Deadlift', m:'Ischiogambieri, fesieri', k:'l', eq:'Bară sau gantere',
     s:['Ține bara în fața coapselor, cu genunchii ușor îndoiți.',
        'Împinge șoldul în spate și coboară bara lipită de picioare, cu spatele drept.',
@@ -605,54 +652,55 @@ const WEEKPLAN = {3:'Luni · Miercuri · Vineri', 4:'Luni · Marți · Joi · Vi
 /* ---------- INGREDIENTE: valori la 100 g (kcal, proteine, carbohidrați, grăsimi) ----------
    u = greutatea unei bucăți, one/many = denumirea la bucată, st = pasul de rotunjire, ml = lichid */
 const ING = {
-  ou:{one:'ou',many:'ouă',u:55,k:143,p:12.6,c:0.7,f:9.5},
-  albus:{one:'albuș',many:'albușuri',u:33,k:52,p:11,c:0.7,f:0.2},
-  ovaz:{n:'fulgi de ovăz',k:372,p:13.5,c:59,f:7},
-  lapte:{n:'lapte 1,5%',ml:1,k:47,p:3.4,c:4.9,f:1.5},
-  kefir:{n:'kefir sau lapte bătut',ml:1,k:50,p:3.4,c:4.5,f:1.8},
-  banana:{one:'banană',many:'banane',u:120,st:0.5,k:89,p:1.1,c:23,f:0.3},
-  mar:{one:'măr',many:'mere',u:150,st:0.5,k:52,p:0.3,c:14,f:0.2},
-  fruct:{n:'fruct la alegere (portocală, pară, kiwi)',k:55,p:0.7,c:13,f:0.2},
-  fructepad:{n:'fructe de pădure',k:50,p:1,c:12,f:0.3},
-  iaurtgr:{n:'iaurt grecesc 2%',k:73,p:9,c:4,f:2},
-  skyr:{n:'skyr natur',k:63,p:11,c:4,f:0.2},
-  cottage:{n:'brânză cottage',k:98,p:11,c:3.4,f:4.3},
-  branzavaci:{n:'brânză de vaci slabă',k:85,p:13,c:3.5,f:2},
-  telemea:{n:'telemea light',k:180,p:17,c:1,f:12},
-  cascaval:{n:'cașcaval',k:350,p:25,c:1,f:27},
-  parmezan:{n:'parmezan ras',k:392,p:36,c:3,f:26},
-  paine:{one:'felie de pâine integrală',many:'felii de pâine integrală',u:35,k:245,p:9,c:44,f:3},
-  rondele:{one:'rondea de orez expandat',many:'rondele de orez expandat',u:9,k:385,p:8,c:81,f:3},
-  crackers:{n:'crackers integrali',k:420,p:10,c:65,f:12},
-  granola:{n:'granola fără zahăr adăugat',k:420,p:10,c:64,f:13},
-  miere:{n:'miere',k:304,p:0.3,c:82,f:0},
-  unarahide:{n:'unt de arahide',k:590,p:25,c:16,f:50},
-  nuci:{n:'nuci',k:654,p:15,c:14,f:65},
-  migdale:{n:'migdale',k:579,p:21,c:22,f:50},
-  chia:{n:'semințe de chia',k:486,p:17,c:42,f:31},
-  avocado:{n:'avocado',k:160,p:2,c:9,f:15},
-  hummus:{n:'hummus',k:230,p:7,c:14,f:16},
-  ulei:{n:'ulei de măsline',k:884,p:0,c:0,f:100},
-  curcanfel:{n:'piept de curcan feliat',k:105,p:20,c:2,f:2},
-  pui:{n:'piept de pui (cântărit crud)',k:110,p:23,c:0,f:2},
-  curcan:{n:'piept de curcan (cântărit crud)',k:107,p:24,c:0,f:1.5},
-  pulpe:{n:'pulpe de pui dezosate, fără piele (crude)',k:120,p:19.5,c:0,f:4.5},
-  curcantoc:{n:'carne tocată de curcan',k:150,p:20,c:0,f:8},
-  vita:{n:'mușchi de vită slab (crud)',k:140,p:21.5,c:0,f:6},
-  somon:{n:'file de somon (crud)',k:200,p:20,c:0,f:13},
-  pestealb:{n:'file de cod sau merluciu (crud)',k:82,p:18,c:0,f:0.7},
-  ton:{n:'ton în suc propriu, scurs',k:110,p:25,c:0,f:1},
-  creveti:{n:'creveți decorticați',k:90,p:19,c:0.5,f:1},
-  orez:{n:'orez (cântărit crud)',k:355,p:7,c:78,f:0.7},
-  paste:{n:'paste integrale (cântărite crude)',k:350,p:13,c:66,f:2.5},
-  quinoa:{n:'quinoa (cântărită crudă)',k:368,p:14,c:64,f:6},
-  cartofi:{n:'cartofi',k:77,p:2,c:17,f:0.1},
-  cartofid:{n:'cartofi dulci',k:86,p:1.6,c:20,f:0.1},
-  legume:{n:'legume (broccoli, ardei, dovlecel, ciuperci)',k:35,p:2.5,c:5,f:0.3},
-  salata:{n:'salată (verde, roșii, castraveți)',k:18,p:1,c:3,f:0.2},
-  sosrosii:{n:'sos de roșii simplu (pasată)',k:35,p:1.5,c:6,f:0.3},
-  baton:{one:'baton proteic',many:'batoane proteice',u:55,k:360,p:33,c:33,f:11},
-  pudra:{one:'măsură de pudră proteică (30 g)',many:'măsuri de pudră proteică (30 g)',u:30,st:0.5,k:390,p:78,c:7,f:6}
+  ou:{one:'ou',many:'ouă',u:55,k:143,p:12.6,c:0.7,f:9.5,mx:220},
+  albus:{one:'albuș',many:'albușuri',u:33,k:52,p:11,c:0.7,f:0.2,mx:132},
+  ovaz:{n:'fulgi de ovăz',k:379,p:13.5,c:66,f:7,mx:100},
+  lapte:{n:'lapte 1,5%',ml:1,k:47,p:3.4,c:4.9,f:1.5,mx:300},
+  kefir:{n:'kefir sau lapte bătut',ml:1,k:50,p:3.4,c:4.5,f:1.8,mx:400},
+  banana:{one:'banană',many:'banane',u:120,st:0.5,k:89,p:1.1,c:23,f:0.3,mx:240},
+  mar:{one:'măr',many:'mere',u:150,st:0.5,k:52,p:0.3,c:14,f:0.2,mx:300},
+  fruct:{n:'fruct la alegere (portocală, pară, kiwi)',k:55,p:0.7,c:13,f:0.2,mx:250},
+  fructepad:{n:'fructe de pădure',k:50,p:1,c:12,f:0.3,mx:200},
+  iaurtgr:{n:'iaurt grecesc 2%',k:73,p:10,c:3.6,f:2,mx:300},
+  skyr:{n:'skyr natur',k:63,p:11,c:4,f:0.2,mx:350},
+  cottage:{n:'brânză cottage',k:98,p:11,c:3.4,f:4.3,mx:250},
+  branzavaci:{n:'brânză de vaci slabă',k:85,p:13,c:3.5,f:2,mx:250},
+  telemea:{n:'telemea light',k:180,p:17,c:1,f:12,mx:120},
+  cascaval:{n:'cașcaval',k:350,p:25,c:1,f:27,mx:50},
+  parmezan:{n:'parmezan ras',k:392,p:36,c:3,f:26,mx:20},
+  paine:{one:'felie de pâine integrală',many:'felii de pâine integrală',u:35,k:245,p:9,c:44,f:3,mx:105},
+  rondele:{one:'rondea de orez expandat',many:'rondele de orez expandat',u:9,k:385,p:8,c:81,f:3,mx:45},
+  crackers:{n:'crackers integrali',k:420,p:10,c:65,f:12,mx:50},
+  granola:{n:'granola fără zahăr adăugat',k:420,p:10,c:64,f:13,mx:70},
+  miere:{n:'miere',k:304,p:0.3,c:82,f:0,mx:25},
+  unarahide:{n:'unt de arahide',k:590,p:25,c:16,f:50,mx:30},
+  nuci:{n:'nuci',k:654,p:15,c:14,f:65,mx:30},
+  migdale:{n:'migdale',k:579,p:21,c:22,f:50,mx:30},
+  chia:{n:'semințe de chia',k:486,p:17,c:42,f:31,mx:40},
+  avocado:{n:'avocado',k:160,p:2,c:9,f:15,mx:100},
+  hummus:{n:'hummus',k:230,p:7,c:14,f:16,mx:80},
+  ulei:{n:'ulei de măsline',k:884,p:0,c:0,f:100,mx:20},
+  curcanfel:{n:'piept de curcan feliat',k:105,p:20,c:2,f:2,mx:150},
+  pui:{n:'piept de pui (cântărit crud)',k:114,p:23,c:0,f:2.2,mx:250},
+  curcan:{n:'piept de curcan (cântărit crud)',k:107,p:24,c:0,f:1.5,mx:250},
+  pulpe:{n:'pulpe de pui dezosate, fără piele (crude)',k:120,p:19.5,c:0,f:4.5,mx:250},
+  curcantoc:{n:'carne tocată de curcan',k:150,p:20,c:0,f:8,mx:250},
+  vita:{n:'mușchi de vită slab (crud)',k:140,p:21.5,c:0,f:6,mx:250},
+  somon:{n:'file de somon (crud)',k:200,p:20,c:0,f:13,mx:220},
+  pestealb:{n:'file de cod sau merluciu (crud)',k:82,p:18,c:0,f:0.7,mx:300},
+  ton:{n:'ton în suc propriu, scurs',k:110,p:25,c:0,f:1,mx:200},
+  creveti:{n:'creveți decorticați',k:90,p:19,c:0.5,f:1,mx:250},
+  orez:{n:'orez (cântărit crud)',k:355,p:7,c:78,f:0.7,mx:130},
+  paste:{n:'paste integrale (cântărite crude)',k:350,p:13,c:66,f:2.5,mx:130},
+  quinoa:{n:'quinoa (cântărită crudă)',k:368,p:14,c:64,f:6,mx:110},
+  cartofi:{n:'cartofi',k:77,p:2,c:17,f:0.1,mx:400},
+  cartofid:{n:'cartofi dulci',k:86,p:1.6,c:20,f:0.1,mx:350},
+  legume:{n:'legume (broccoli, ardei, dovlecel, ciuperci)',k:35,p:2.5,c:5,f:0.3,mx:300},
+  salata:{n:'salată (verde, roșii, castraveți)',k:18,p:1,c:3,f:0.2,mx:250},
+  sosrosii:{n:'sos de roșii simplu (pasată)',k:35,p:1.5,c:6,f:0.3,mx:200},
+  baton:{one:'baton proteic',many:'batoane proteice',u:55,k:360,p:33,c:33,f:11,mx:55},
+  malai:{n:'mălai',k:360,p:8.5,c:77,f:1.5,mx:110},
+  pudra:{one:'măsură de pudră proteică (30 g)',many:'măsuri de pudră proteică (30 g)',u:30,st:0.5,k:390,p:78,c:7,f:6,mx:45}
 };
 
 /* Mesele zilei. Rol ingredient: p = sursa de proteine, c = sursa de carbohidrați,
@@ -682,7 +730,9 @@ const RECIPES = {
     {n:'Omletă cu legume și telemea', i:[['ou',165,'p'],['legume',150,'x'],['telemea',30,'f'],['paine',70,'c']],
      prep:'Călește 3-4 minute ciuperci, ardei sau spanac în tigaie antiaderentă, cu o lingură de apă. Toarnă ouăle bătute, presară telemeaua și gătește acoperit 3 minute. Servește cu pâine prăjită.'},
     {n:'Budincă de chia cu iaurt și banană', i:[['chia',30,'f'],['lapte',200,'x'],['iaurtgr',200,'p'],['banana',120,'c'],['miere',10,'c']],
-     prep:'De seara: amestecă semințele de chia cu laptele și lasă la frigider peste noapte. Dimineața adaugă iaurtul, banana felii și mierea.'}
+     prep:'De seara: amestecă semințele de chia cu laptele și lasă la frigider peste noapte. Dimineața adaugă iaurtul, banana felii și mierea.'},
+    {n:'Mămăliguță cu brânză de vaci și ouă', i:[['malai',60,'c'],['branzavaci',120,'p'],['ou',110,'p'],['salata',100,'x']],
+     prep:'Fierbe mălaiul în 250 ml de apă cu un praf de sare, amestecând 8-10 minute. Fierbe ouăle 8 minute sau fă-le ochiuri în tigaie antiaderentă, fără ulei. Servește mămăliguța cu brânza, ouăle și o roșie.'}
   ],
   m2:[
     {n:'Iaurt grecesc cu fructe și nuci', i:[['iaurtgr',200,'p'],['fructepad',100,'c'],['nuci',15,'f']], prep:'Fără gătit: amestecă totul într-un bol.'},
@@ -710,7 +760,11 @@ const RECIPES = {
     {n:'Cod la cuptor cu cartofi și salată', i:[['pestealb',220,'p'],['cartofi',300,'c'],['salata',150,'x'],['ulei',10,'f']],
      prep:'Pune peștele în tavă cu sare, piper, lămâie și jumătate din ulei și coace-l 12-15 minute la 200°C. Cartofii se coc 35-40 de minute. Salata se drege cu restul de ulei.'},
     {n:'Paste integrale cu pui și sos de roșii', i:[['pui',170,'p'],['paste',75,'c'],['sosrosii',150,'x'],['parmezan',10,'f'],['ulei',5,'f']],
-     prep:'Fierbe pastele după timpul de pe pachet. Taie puiul cuburi și rumenește-l 6-7 minute în ulei, apoi adaugă sosul de roșii, usturoi și busuioc și fierbe 5 minute. Amestecă pastele în sos și presară parmezanul.'}
+     prep:'Fierbe pastele după timpul de pe pachet. Taie puiul cuburi și rumenește-l 6-7 minute în ulei, apoi adaugă sosul de roșii, usturoi și busuioc și fierbe 5 minute. Amestecă pastele în sos și presară parmezanul.'},
+    {n:'Ciorbă de perișoare de curcan, cu pâine', i:[['curcantoc',170,'p'],['orez',25,'c'],['legume',250,'x'],['paine',70,'c']],
+     prep:'Amestecă carnea cu jumătate din orez, pătrunjel, sare și piper și formează perișoare mici. Fierbe 15 minute legumele tăiate mărunt (morcov, ceapă, ardei, țelină) în 1,5 l de apă, adaugă perișoarele și restul orezului și mai fierbe 20 de minute. Acrește cu borș sau zeamă de lămâie și pune leuștean. Se păstrează 3 zile la frigider.'},
+    {n:'Tocăniță de pui cu mămăligă', i:[['pulpe',180,'p'],['malai',70,'c'],['legume',150,'x'],['sosrosii',100,'x'],['ulei',5,'f']],
+     prep:'Rumenește 5 minute puiul tăiat cuburi în ulei, adaugă ceapă și ardei, apoi sosul de roșii și 100 ml de apă și fierbe acoperit 25 de minute. Fierbe mălaiul în 300 ml de apă cu sare 8-10 minute, amestecând.'}
   ],
   m4:[
     {n:'Shake proteic cu banană', i:[['pudra',30,'p'],['banana',120,'c'],['lapte',250,'x']], prep:'Mixează totul în blender sau în shaker (banana se poate mânca separat). Ideal cu 45-60 de minute înainte de sală.'},
@@ -738,7 +792,9 @@ const RECIPES = {
     {n:'Vită la cuptor cu orez și legume', i:[['vita',150,'p'],['orez',65,'c'],['legume',200,'x'],['ulei',5,'f']],
      prep:'Rumenește vita un minut pe fiecare parte în tigaie, apoi dă-o 8-10 minute la cuptor, la 200°C. Orezul fierbe 15 minute. Legumele se coc în tavă, cu uleiul.'},
     {n:'Creveți cu usturoi și paste integrale', i:[['creveti',180,'p'],['paste',70,'c'],['salata',100,'x'],['ulei',10,'f']],
-     prep:'Fierbe pastele. Călește creveții 2-3 minute în ulei cu usturoi, până devin roz, și amestecă-i cu pastele și pătrunjel. Salată alături.'}
+     prep:'Fierbe pastele. Călește creveții 2-3 minute în ulei cu usturoi, până devin roz, și amestecă-i cu pastele și pătrunjel. Salată alături.'},
+    {n:'Pește la grătar cu mămăligă și salată de varză', i:[['pestealb',200,'p'],['malai',60,'c'],['salata',150,'x'],['ulei',10,'f']],
+     prep:'Gătește peștele în tigaie-grill încinsă 3-4 minute pe fiecare parte, cu sare, piper și lămâie. Fierbe mălaiul în 250 ml de apă cu sare 8-10 minute. Salata de varză se drege cu uleiul, oțet și mărar.'}
   ],
   m6:[
     {n:'Brânză de vaci cu miere', i:[['branzavaci',200,'p'],['miere',10,'c']], prep:'Fără gătit. Proteina din brânză se digeră lent, potrivit pentru seară.'},
@@ -786,7 +842,7 @@ function targets(p) {
   /* proteinele se raportează la o greutate de referință, ca să nu iasă exagerate la greutăți mari */
   const refW = Math.min(w, 25 * Math.pow(p.h / 100, 2));
   let prot = refW * (goal === 'ton' ? 1.8 : 2.0);
-  prot = Math.round(Math.min(prot, kcal * 0.35 / 4) / 5) * 5;
+  prot = Math.round(Math.min(prot, kcal * 0.3 / 4) / 5) * 5;
   const auto = {kcal, prot};
   if (p.kcalO) kcal = goal === 'slab' || p.goal === 'slab' ? Math.max(p.kcalO, Math.round(floor / 50) * 50) : p.kcalO;
   if (p.protO) prot = p.protO;
@@ -813,6 +869,14 @@ function program(p) {
 function repRange(reps) { const m = String(reps).match(/(\d+)\D+(\d+)/); return m ? [+m[1], +m[2]] : [+reps || 0, +reps || 0]; }
 function restFor(id) { const k = EX[id].k; return k === 'i' ? 75 : k === 't' ? 60 : 120; }
 function e1rm(w, r) { return w * (1 + r / 30); }
+/* Scorul unui set, pentru recorduri: forța estimată; la greutatea corpului contează repetările,
+   la tracțiunile asistate o contragreutate mai mică e mai bună, la plank contează secundele */
+function score(id, x) {
+  const e = EX[id]; if (!e) return 0;
+  if (e.k === 't') return x.r;
+  if (e.assist) return 300 - (x.w || 0) + x.r / 100;
+  return e1rm(x.w || 0, x.r) + x.r / 100;
+}
 function okSets(ses, id) { return ((ses && ses.sets && ses.sets[id]) || []).filter(s => s && s.ok); }
 
 /* Ultima ședință (înainte de `before`) în care exercițiul a fost făcut */
@@ -840,8 +904,11 @@ function suggest(p, ex, today) {
   }
   const lastTxt = last.sets.map(s => (s.w ? fmtN(s.w) + ' kg × ' : '') + s.r).join(' · ');
   const allTop = last.sets.length >= Math.min(ex.sets, 2) && last.sets.every(s => s.r >= rr[1]);
+  if (allTop && !top.w && !e.assist) return {w: 0, r: rr[1], up: true, last, text: 'Data trecută: ' + lastTxt + '. Ai atins maximul de repetări: ține o ganteră sau un disc ușor ca să crești dificultatea.'};
   if (allTop && top.w > 0) {
-    const inc = e.k === 'l' ? 5 : e.k === 'c' ? 2.5 : 0;
+    /* pași mici: 2 kg pe ganteră, 2,5 kg la bară; 5 kg la picioare doar peste 40 kg */
+    const db = /ganter/i.test(e.eq);
+    const inc = db && e.k !== 'i' ? 2 : e.k === 'l' ? (top.w >= 40 ? 5 : 2.5) : e.k === 'c' ? 2.5 : 0;
     if (ex.id === 'asstpull') return {w: Math.max(0, top.w - 5), r: rr[0], last, text: 'Data trecută: ' + lastTxt + '. Ai atins maximul de repetări: scade contragreutatea cu un pas.'};
     if (inc) return {w: top.w + inc, r: rr[0], last, text: 'Data trecută: ' + lastTxt + '. Ai atins ' + rr[1] + ' repetări la toate seturile: urcă la ' + fmtN(top.w + inc) + ' kg.'};
     return {w: top.w, r: rr[0], up: true, last, text: 'Data trecută: ' + lastTxt + '. Ai atins maximul de repetări: treci la următoarea greutate disponibilă.'};
@@ -870,12 +937,20 @@ function qtyText(it) {
   return it.g + (a.ml ? ' ml ' : ' g ') + a.n;
 }
 
-function solveMeal(rc, K, Pt) {
+/* dacă porțiile ating limita realistă, restul caloriilor vine din alimente care se potrivesc firesc la masa respectivă */
+const FILL = {m1: ['paine', 'miere'], m2: ['migdale'], m3: ['paine', 'ulei'], m4: ['miere', 'rondele'], m5: ['paine', 'ulei'], m6: ['nuci']};
+function minStep(id) { const a = ING[id]; return a.u ? a.u * (a.st || 1) : a.ml ? 25 : 5; }
+function capQty(id, g) {
+  const a = ING[id]; if (!a.mx || g <= a.mx) return g;
+  if (a.u) { const st = a.st || 1; return Math.max(st, Math.floor(a.mx / a.u / st) * st) * a.u; }
+  return a.mx;
+}
+function solveMeal(rc, K, Pt, slot) {
   const base = rc.i.reduce((s, x) => s + mac(x[0], x[1]).k, 0);
-  const s0 = clamp(K / base, 0.5, 1.8);
+  const s0 = clamp(K / base, 0.5, 1.8), sx = clamp(K / base, 0.6, 1.25);
   const fix = {k: 0, p: 0}, gp = {k: 0, p: 0}, gc = {k: 0, p: 0};
   rc.i.forEach(x => {
-    const m = mac(x[0], x[2] === 'f' ? x[1] * s0 : x[1]);
+    const m = mac(x[0], x[2] === 'f' ? x[1] * s0 : x[2] === 'x' ? x[1] * sx : x[1]);
     const t = x[2] === 'p' ? gp : x[2] === 'c' ? gc : fix;
     t.k += m.k; t.p += m.p;
   });
@@ -889,17 +964,34 @@ function solveMeal(rc, K, Pt) {
     sp = clamp((K - fix.k - sc * gc.k) / gp.k, LO, HI);
   } else if (gp.k > 0) sp = clamp((K - fix.k) / gp.k, LO, HI);
   else if (gc.k > 0) sc = clamp((K - fix.k) / gc.k, CLO, CHI);
-  const items = rc.i.map(x => ({id: x[0], g: roundQty(x[0], x[1] * (x[2] === 'p' ? sp : x[2] === 'c' ? sc : x[2] === 'f' ? s0 : 1))}));
-  const tot = {k: 0, p: 0, c: 0, f: 0};
-  items.forEach(it => { const m = mac(it.id, it.g); tot.k += m.k; tot.p += m.p; tot.c += m.c; tot.f += m.f; });
+  const items = rc.i.map(x => ({id: x[0], r: x[2], g: capQty(x[0], roundQty(x[0], x[1] * (x[2] === 'p' ? sp : x[2] === 'c' ? sc : x[2] === 'f' ? s0 : sx)))}));
+  const sum = () => items.reduce((t, it) => { const m = mac(it.id, it.g); return {k: t.k + m.k, p: t.p + m.p, c: t.c + m.c, f: t.f + m.f}; }, {k: 0, p: 0, c: 0, f: 0});
+  let tot = sum();
+  (FILL[slot] || []).forEach(id => {
+    const miss = K - tot.k; if (miss < 60) return;
+    const it = items.find(x => x.id === id), have = it ? it.g : 0;
+    const g = capQty(id, roundQty(id, have + Math.min(ING[id].mx - have, miss / ING[id].k * 100)));
+    if (g <= have) return;
+    if (it) it.g = g; else items.push({id, g, r: 'c'});
+    tot = sum();
+  });
+  /* porțiile minime (un baton, un ou) pot depăși masa: atunci scad pe rând sursele de carbohidrați și grăsimi */
+  for (let guard = 0; guard < 14 && tot.k > K * 1.06; guard++) {
+    const cand = items.filter(it => (it.r === 'c' || it.r === 'f') && it.g > minStep(it.id)).sort((x, y) => mac(y.id, y.g).k - mac(x.id, x.g).k)[0];
+    if (!cand) break;
+    cand.g = Math.max(minStep(cand.id), cand.g - minStep(cand.id));
+    tot = sum();
+  }
   return {name: rc.n, prep: rc.prep, items, k: Math.round(tot.k), p: Math.round(tot.p), c: Math.round(tot.c), f: Math.round(tot.f)};
 }
 
 function hashStr(s) { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+/* Rotație: fiecare masă trece prin toate rețetele ei înainte să se repete */
 function pickIdx(p, date, slot) {
   const f = p.food && p.food[date];
   if (f && f.pick && f.pick[slot] != null && RECIPES[slot][f.pick[slot]]) return f.pick[slot];
-  return hashStr(date + slot + p.id) % RECIPES[slot].length;
+  const a = date.split('-').map(Number), day = Math.floor(Date.UTC(a[0], a[1] - 1, a[2]) / 86400000);
+  return (day + hashStr(slot + p.id)) % RECIPES[slot].length;
 }
 
 /* Meniul unei zile: fiecare masă primește o parte din calorii și proteine; două treceri de corecție
@@ -908,24 +1000,27 @@ function planDay(p, date, t) {
   t = t || targets(p);
   const set = SLOTSETS[mealCount(p, t.kcal)];
   const mainShare = set.filter(s => /m[135]/.test(s[0])).reduce((a, s) => a + s[1], 0);
-  let extra = 0, kf = 1, meals = [], tot = null;
-  for (let pass = 0; pass < 4; pass++) {
+  let extra = 0, kf = 1, meals = [], tot = null, best = null;
+  for (let pass = 0; pass < 8; pass++) {
     meals = set.map(s => {
       const rc = RECIPES[s[0]][pickIdx(p, date, s[0])];
       const main = /m[135]/.test(s[0]);
-      const m = solveMeal(rc, t.kcal * s[1] * kf, t.prot * s[1] + (main ? extra * s[1] / mainShare : 0));
+      const m = solveMeal(rc, t.kcal * s[1] * kf, t.prot * s[1] + (main ? extra * s[1] / mainShare : 0), s[0]);
       m.slot = s[0]; m.idx = pickIdx(p, date, s[0]);
       return m;
     });
     tot = meals.reduce((a, m) => ({k: a.k + m.k, p: a.p + m.p, c: a.c + m.c, f: a.f + m.f}), {k: 0, p: 0, c: 0, f: 0});
     const dp = t.prot - tot.p, dk = t.kcal / tot.k;
+    /* păstrează cea mai bună variantă: caloriile contează mai mult; proteinele doar să nu fie sub țintă */
+    const err = Math.abs(dk - 1) * 100 * (dk < 1 && t.goal === 'slab' ? 1.5 : 1) + Math.max(0, dp) / t.prot * 30;
+    if (!best || err < best.err) best = {err, meals, tot};
     if (Math.abs(dp) < 5 && Math.abs(dk - 1) < 0.02) break;
-    extra += dp; kf = clamp(kf * dk, 0.85, 1.15);
+    extra += dp; kf = clamp(kf * Math.pow(dk, 1.3), 0.75, 1.35);
   }
-  return {meals, tot, t};
+  return {meals: best.meals, tot: best.tot, t};
 }
 
-if (typeof module !== 'undefined') module.exports = {targets, program, planDay, solveMeal, suggest, qtyText, mealCount, ymd, mondayOf, repRange};
+if (typeof module !== 'undefined') module.exports = {targets, program, planDay, solveMeal, suggest, qtyText, mealCount, ymd, mondayOf, repRange, score};
 
 /* ============ ANIMAȚII: siluetă SVG pentru fiecare exercițiu ============
    Vedere laterală, silueta privește spre dreapta. Unghiuri în grade, în coordonate SVG:
@@ -946,25 +1041,25 @@ const ANIM = (() => {
     dbbench: {b: {hip: [96, 72], t: 180, foot: [121, 99], us: 0.65}, A: {hand: [70, 46]}, B: {hand: [74, 66]},
       pr: [['bench', 50, 77, 112, 77], ['db', 'hand']]},
     chestpress: {b: {hip: [68, 78], t: -98, hd: -92, foot: [92, 99]}, A: {hand: [94, 51]}, B: {hand: [76, 49]},
-      pr: [['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 84, 70, 100, 2.5], ['lever', 100, 6, 'hand'], ['grip', 'hand']]},
+      pr: [['stack', 40, 18, 'hand'], ['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 85, 70, 100, 2.6], ['lever', 100, 6, 'hand'], ['grip', 'hand']]},
     incline: {b: {hip: [92, 74], t: -140, hd: -128, foot: [119, 99], us: 0.65}, A: {hand: [73, 29]}, B: {hand: [77, 48]},
       pr: [['seat', 86, 79, 106, 79], ['seat', 89, 77, 62, 54], ['line', 96, 81, 96, 100, 2.5], ['db', 'hand']]},
     pushup: {mir: true, b: {hand: [55, 99], us: 0.85}, A: {hip: [77.6, 79.7], t: 203, th: 20, sh: 20, ft: 60}, B: {hip: [79.7, 89], t: 186, th: 8.5, sh: 8.5, ft: 55}, eb: -1,
       pr: []},
     flye: {b: {hip: [68, 78], t: -98, hd: -92, foot: [92, 99]}, A: {hand: [57, 52]}, B: {hand: [91, 52]},
-      pr: [['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 84, 70, 100, 2.5], ['grip', 'hand']]},
+      pr: [['stack', 40, 18, 'hand', 0.25], ['seat', 58, 82, 82, 82], ['seat', 61, 80, 55, 40], ['line', 70, 85, 70, 100, 2.6], ['lever', 64, 14, 'hand'], ['grip', 'hand']]},
     latpull: {b: {hip: [72, 76], t: -100, hd: -95, th: -2, sh: 90, us: 0.7}, A: {hand: [73, 22]}, B: {hand: [76, 44]},
-      pr: [['seat', 58, 80, 86, 80], ['line', 72, 82, 72, 100, 2.5], ['pad', 'knee', 4, 0, -6], ['cable', 76, -12, 'hand'], ['grip', 'hand']]},
+      pr: [['stack', 44, -14, 'hand'], ['line', 44, -14, 78, -14, 2.6], ['seat', 58, 80, 86, 80], ['line', 72, 83, 72, 100, 2.6], ['pad', 'knee', 4, 0, -6], ['cable', 76, -12, 'hand'], ['grip', 'hand']]},
     asstpull: {b: {hand: [86, 14], th: 30, sh: 160, ft: 170}, A: {hip: [81, 73.5], t: -92}, B: {hip: [80, 46], t: -92},
-      pr: [['line', 72, 14, 98, 14, 3], ['line', 98, 14, 98, 100, 2.5], ['seat', 'knee', 0]]},
+      pr: [['stack', 112, 6, 'hip', 0.3], ['line', 72, 14, 106, 14, 3], ['line', 98, 14, 98, 100, 2.6], ['seat', 'knee', 0]]},
     crow: {b: {hip: [60, 86], foot: [100, 82], ft: -80}, A: {t: -70, hand: [99, 64]}, B: {t: -98, hand: [67, 72]},
-      pr: [['seat', 38, 91, 76, 91], ['line', 104, 70, 104, 98, 3], ['cable', 128, 80, 'hand'], ['grip', 'hand']]},
+      pr: [['stack', 134, 34, 'hand'], ['seat', 38, 91, 76, 91], ['line', 104, 70, 104, 98, 3], ['cable', 127.5, 80, 'hand'], ['grip', 'hand']]},
     dbrow: {b: {hip: [62, 54], t: -4, hd: 10, th: 90, sh: 180, ft: 90, foot2: [50, 99], hand2: [99, 76]}, A: {hand: [92, 83]}, B: {hand: [74, 62]},
       pr: [['bench', 36, 79, 104, 79], ['db', 'hand']]},
     brow: {b: {ank: [80, 99], th: 60, sh: 100, t: -40, hd: -15}, A: {hand: [95, 69]}, B: {hand: [80, 53]},
       pr: [['plate', 'hand', 9]]},
     facepull: {b: Object.assign({}, ST, {t: -95, eb: -1}), A: {hand: [106, 26]}, B: {hand: [88, 13]},
-      pr: [['line', 142, 0, 142, 100, 3], ['cable', 140, 20, 'hand'], ['grip', 'hand']]},
+      pr: [['stack', 146, -4, 'hand'], ['cable', 139.5, 20, 'hand'], ['grip', 'hand']]},
     ohp: {b: Object.assign({}, ST, {us: 0.65}), A: {hand: [85, 17]}, B: {hand: [81, -2]}, pr: [['plate', 'hand', 9]]},
     dbshoulder: {b: {hip: [72, 74], t: -92, foot: [96, 99], us: 0.65}, A: {hand: [77, 38]}, B: {hand: [74, 18]},
       pr: [['seat', 60, 78, 88, 78], ['seat', 64, 76, 60, 30], ['line', 74, 80, 74, 100, 2.5], ['db', 'hand']]},
@@ -973,15 +1068,15 @@ const ANIM = (() => {
     bicep: {b: Object.assign({}, ST, {ua: 92}), A: {fa: 92}, B: {fa: -75}, pr: [['db', 'hand']]},
     hammer: {b: Object.assign({}, ST, {ua: 92}), A: {fa: 92}, B: {fa: -75}, pr: [['dbv', 'hand']]},
     tricep: {b: Object.assign({}, ST, {t: -82, ua: 100}), A: {fa: -5}, B: {fa: 92},
-      pr: [['line', 108, -14, 108, 100, 3], ['cable', 106, -10, 'hand'], ['grip', 'hand']]},
+      pr: [['stack', 112, -14, 'hand'], ['cable', 105.5, -10, 'hand'], ['grip', 'hand']]},
     ohtri: {b: {hip: [80, 54], t: -66, hd: -70, foot: [98, 99], foot2: [58, 95], ft2: 40, ua: -78}, A: {fa: 150}, B: {fa: 282},
-      pr: [['line', 26, 0, 26, 100, 3], ['cable', 30, 92, 'hand'], ['grip', 'hand']]},
+      pr: [['stack', 22, 2, 'hand', 0.3], ['cable', 28.5, 92, 'hand'], ['grip', 'hand']]},
     squat: {b: {ank: [80, 99], hr: [1, 1], eb: 1}, A: {th: 90, sh: 90, t: -90, hd: -90}, B: {th: 15, sh: 115, t: -50, hd: -70},
-      pr: [['line', 104, 8, 104, 100, 2], ['plate', 'sh', 10, -2, -1]]},
+      pr: [['rack', 106, 2, 64], ['plate', 'sh', 10, -2, -1]]},
     goblet: {b: {ank: [80, 99], hr: [8, 9], eb: 1}, A: {th: 90, sh: 90, t: -90, hd: -90}, B: {th: 12, sh: 112, t: -62, hd: -78},
       pr: [['db', 'hand', 4.5]]},
     legpress: {b: {hip: [62, 86], t: -132, hd: -115, kb: -1, hand: [68, 86]}, A: {foot: [99, 59], ft: -40}, B: {foot: [84, 72], ft: -45},
-      pr: [['seat', 66, 91, 40, 61], ['line', 70, 98, 130, 42, 2], ['platform', 'ank', 47, 22, 2, 2]]},
+      pr: [['line', 70, 98, 130, 42, 2.4], ['line', 40, 100, 70, 92, 2.6], ['seat', 66, 91, 40, 61], ['platform', 'ank', 47, 22, 2, 2]]},
     rdl: {b: {ank: [80, 99], hr: [0, 31]}, A: {th: 90, sh: 92, t: -90, hd: -90}, B: {th: 45, sh: 95, t: -20, hd: -5},
       pr: [['plate', 'hand', 10]]},
     deadlift: {b: {ank: [80, 99], hr: [0, 31]}, A: {th: 30, sh: 112, t: -25, hd: -10}, B: {th: 90, sh: 90, t: -90, hd: -90},
@@ -997,23 +1092,31 @@ const ANIM = (() => {
     stepup: {b: {foot: [102, 79], hr: [0, 31]}, A: {hip: [86, 58], t: -76, foot2: [68, 99]}, B: {hip: [99, 33], t: -90, foot2: [95, 79]},
       pr: [['box', 88, 80, 44, 20], ['db', 'hand']]},
     legext: {b: {hip: [64, 74], t: -96, th: 0, hh: [6, 5]}, A: {sh: 92, ft: 0}, B: {sh: -4, ft: -80},
-      pr: [['seat', 52, 79, 88, 79], ['seat', 55, 77, 51, 40], ['line', 62, 81, 62, 100, 2.5], ['pad', 'ank', 3.6, 3, -1]]},
+      pr: [['stack', 34, 30, 'ank', 0.3], ['seat', 52, 79, 88, 79], ['seat', 55, 77, 51, 40], ['line', 62, 82, 62, 100, 2.6], ['pad', 'ank', 3.6, 3, -1]]},
     legcurl: {b: {hip: [52, 74], t: -96, th: 0, hh: [7, 5]}, A: {sh: -2, ft: -80}, B: {sh: 112, ft: 10},
-      pr: [['seat', 40, 79, 76, 79], ['seat', 43, 77, 39, 40], ['line', 52, 81, 52, 100, 2.5], ['pad', 'knee', 4, -3, -7], ['pad', 'ank', 3.6, 0, 4.5]]},
+      pr: [['stack', 24, 30, 'ank', 0.3], ['seat', 40, 79, 76, 79], ['seat', 43, 77, 39, 40], ['line', 52, 82, 52, 100, 2.6], ['pad', 'knee', 4, -3, -7], ['pad', 'ank', 3.6, 0, 4.5]]},
     kickback: {b: {hip: [72, 56], t: -38, hd: -25, foot2: [72, 99], hand: [106, 48]}, A: {th: 115, sh: 75, ft: 0}, B: {th: 165, sh: 172, ft: 80},
-      pr: [['line', 110, 30, 110, 100, 3], ['line', 104, 48, 110, 48, 3], ['cable', 112, 97, 'ank'], ['grip', 'ank']]},
+      pr: [['stack', 120, 30, 'ank', 0.3], ['line', 104, 48, 114, 48, 2.6], ['line', 113.5, 46, 113.5, 100, 2.6], ['cable', 113.5, 97, 'ank'], ['grip', 'ank']]},
     abduction: {front: true, b: {hy: 64, sy: 34, ky: 70, fy: 95, aa: 12, ef: 0}, A: {kx: 7, fx: 7}, B: {kx: 21, fx: 17},
       pr: [['box', 60, 66, 40, 7], ['kpad']]},
     backext: {b: {hip: [82, 58], th: 136, sh: 136, ft: 226, hc: [0, 0]}, A: {t: 78}, B: {t: -44},
-      pr: [['line', 40, 99, 88, 62, 3], ['pad', 'hip', 4.5, 3, 3], ['pad', 'ank', 3.2, 2, 3.5]]},
+      pr: [['line', 40, 99, 88, 62, 3], ['line', 84, 66, 92, 100, 2.6], ['pad', 'hip', 4.5, 3, 3], ['pad', 'ank', 3.2, 2, 3.5]]},
     calf: {b: {th: 90, sh: 90, t: -90, hr: [3, 31]}, A: {ank: [80, 95], ft: -23}, B: {ank: [83.5, 85.7], ft: 60},
       pr: [['box', 85, 92, 42, 8]]},
     plank: {hold: true, mir: true, b: {t: 192, th: 11, sh: 11, ft: 85, ua: 90, fa: 0}, A: {hip: [80.5, 85.5]}, B: {hip: [80.5, 86.3]},
       pr: [['mat', 40, 101, 132, 101]]},
     legraise: {b: {hand: [82, -12]}, A: {hip: [82, 50], t: -90, th: 90, sh: 90}, B: {hip: [86, 46], t: -98, th: -6, sh: -6},
-      pr: [['line', 70, -12, 96, -12, 3], ['line', 96, -12, 96, 100, 2.5]]},
+      pr: [['line', 68, -12, 98, -12, 3], ['line', 98, -12, 98, 100, 2.8]]},
     cablecrunch: {b: {hip: [74, 74], th: 90, sh: 180, ft: 90, hx: [3, 2]}, A: {t: -82, hd: -80}, B: {t: 8, hd: 70},
-      pr: [['line', 102, -14, 102, 100, 3], ['cable', 100, -10, 'hand'], ['grip', 'hand']]}
+      pr: [['stack', 108, -14, 'hand', 0.3], ['cable', 101.5, -10, 'hand'], ['grip', 'hand']]},
+    machinepress: {b: {hip: [72, 74], t: -92, foot: [96, 99], us: 0.65}, A: {hand: [77, 38]}, B: {hand: [74, 18]},
+      pr: [['stack', 40, 4, 'hand'], ['seat', 60, 78, 88, 78], ['seat', 64, 76, 60, 30], ['line', 74, 81, 74, 100, 2.6], ['lever', 52, 46, 'hand'], ['grip', 'hand']]},
+    machinerow: {b: {hip: [62, 78], t: -86, hd: -88, foot: [86, 99]}, A: {hand: [99, 52]}, B: {hand: [74, 55]},
+      pr: [['stack', 128, 12, 'hand'], ['seat', 50, 82, 74, 82], ['line', 62, 85, 62, 100, 2.6], ['cpad', 80, 42, 80, 66], ['line', 80, 66, 84, 100, 2.4], ['lever', 112, 12, 'hand'], ['grip', 'hand']]},
+    cablecurl: {b: Object.assign({}, ST, {ua: 92}), A: {fa: 92}, B: {fa: -75},
+      pr: [['stack', 120, 36, 'hand'], ['cable', 113.5, 95, 'hand'], ['grip', 'hand']]},
+    hacksquat: {b: {ank: [88, 97], hr: [2, -1], eb: 1}, A: {th: 88, sh: 95, t: -110, hd: -100}, B: {th: 20, sh: 120, t: -110, hd: -100},
+      pr: [['line', 96, 100, 104, 92, 2.6], ['line', 77, 100, 47, 18, 2.6], ['backpad'], ['plate', 'hip', 9, -15, -2]]}
   };
 
   function ik(r, tg, l1, l2, s) {
@@ -1059,12 +1162,15 @@ const ANIM = (() => {
 
   const f1 = n => (Math.round(n * 10) / 10).toString();
   const pts = a => a.map(p => f1(p[0]) + ',' + f1(p[1])).join(' ');
-  const line = (a, w, st, op) => '<polyline points="' + pts(a) + '" fill="none" stroke="' + (st || 'currentColor') + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (op ? ' opacity="' + op + '"' : '') + '/>';
-  const circ = (c, r, fill, st, sw, op) => '<circle cx="' + f1(c[0]) + '" cy="' + f1(c[1]) + '" r="' + r + '" fill="' + fill + '"' + (st ? ' stroke="' + st + '" stroke-width="' + sw + '"' : '') + (op != null ? ' opacity="' + op + '"' : '') + '/>';
-  const poly = (a, fill, op) => '<polygon points="' + pts(a) + '" fill="' + fill + '" stroke="' + fill + '" stroke-width="0.8" stroke-linejoin="round"' + (op != null ? ' opacity="' + op + '"' : '') + '/>';
-  const EQ = 'var(--anim-eq)', PAD = 'var(--anim-pad)', WT = 'var(--accent)', WTD = 'var(--accent-dim)';
+  const line = (a, w, st, op) => '<polyline points="' + pts(a) + '" fill="none" stroke="' + (st || 'currentColor') + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"' + (op != null ? ' opacity="' + op + '"' : '') + '/>';
+  const circ = (c, r, fill, st, sw, op) => '<circle cx="' + f1(c[0]) + '" cy="' + f1(c[1]) + '" r="' + f1(r) + '" fill="' + fill + '"' + (st ? ' stroke="' + st + '" stroke-width="' + sw + '"' : '') + (op != null ? ' opacity="' + op + '"' : '') + '/>';
+  const poly = (a, fill, op) => '<polygon points="' + pts(a) + '" fill="' + fill + '" stroke="' + fill + '" stroke-width="0.7" stroke-linejoin="round"' + (op != null ? ' opacity="' + op + '"' : '') + '/>';
+  const rect = (x, y, w, h, fill, rx, st) => '<rect x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(w) + '" height="' + f1(h) + '" rx="' + (rx || 0) + '" fill="' + fill + '"' + (st ? ' stroke="' + st + '" stroke-width="0.9"' : '') + '/>';
+  const OUT = 'var(--anim-outline)', PAD = 'var(--anim-pad)', PADHI = 'var(--anim-padhi)', MET = 'var(--anim-metal)', MET2 = 'var(--anim-metal2)', STEEL = 'var(--anim-steel)';
+  const WT = 'var(--accent)', WTD = 'var(--accent-dim)';
   const SKIN = 'var(--anim-body)', SKIN2 = 'var(--anim-body2)', HAIR = 'var(--anim-hair)', MP = 'var(--anim-mp)', MS = 'var(--anim-ms)';
-  const GROUND = '<rect x="-60" y="100.6" width="280" height="30" fill="var(--anim-floor)"/><line x1="-60" y1="100.6" x2="220" y2="100.6" stroke="' + EQ + '" stroke-width="1"/>';
+  const GROUND = '<rect x="-80" y="100.6" width="320" height="40" fill="var(--anim-floor)"/><line x1="-80" y1="100.6" x2="240" y2="100.6" stroke="' + MET2 + '" stroke-width="0.9"/>';
+  let ACTV = 0, MIR = 1;
 
   /* ---------- grupe musculare: p = principale, s = secundare ---------- */
   const MN = {chest: 'Piept', abs: 'Abdomen', back: 'Spate', traps: 'Trapez', lowerback: 'Zona lombară', glutes: 'Fesieri', gmed: 'Fesier lateral',
@@ -1074,6 +1180,7 @@ const ANIM = (() => {
     bench: 'chest|triceps shoulders', dbbench: 'chest|triceps shoulders', chestpress: 'chest|triceps shoulders', incline: 'chest shoulders|triceps',
     pushup: 'chest|triceps shoulders abs', flye: 'chest|shoulders', latpull: 'back|biceps reardelt', asstpull: 'back|biceps reardelt',
     crow: 'back|biceps reardelt traps', dbrow: 'back|biceps reardelt', brow: 'back|biceps reardelt lowerback', facepull: 'reardelt traps|back',
+    machinerow: 'back|biceps reardelt traps', machinepress: 'shoulders|triceps', cablecurl: 'biceps|forearms', hacksquat: 'quads glutes|hamstrings',
     ohp: 'shoulders|triceps traps abs', dbshoulder: 'shoulders|triceps', latraise: 'shoulders|traps', bicep: 'biceps|forearms', hammer: 'biceps forearms|',
     tricep: 'triceps|', ohtri: 'triceps|', squat: 'quads glutes|hamstrings lowerback abs', goblet: 'quads glutes|abs', legpress: 'quads glutes|hamstrings',
     rdl: 'hamstrings glutes|lowerback', deadlift: 'glutes hamstrings lowerback|quads back traps', hipthrust: 'glutes|hamstrings', glutebridge: 'glutes|hamstrings',
@@ -1083,6 +1190,7 @@ const ANIM = (() => {
   };
   const ONE = {dbrow: 'arm', kickback: 'leg', stepup: 'leg', bulgarian: 'leg'};
   function muscles(id) { const m = (MUS[id] || '|').split('|'); return {p: m[0].split(' ').filter(Boolean), s: (m[1] || '').split(' ').filter(Boolean)}; }
+  const mcol = (mus, m) => mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null;
 
   /* profilul fiecărui segment: [poziția pe segment, grosime în față, grosime în spate] */
   const PR = {
@@ -1095,7 +1203,6 @@ const ANIM = (() => {
     foot: [[0, 2.5, 1.8], [0.35, 2.1, 1.5], [1, 1.1, 1]]
   };
   /* "în față" = partea anterioară a corpului; trunchiul e orientat invers față de membre */
-  let MIR = 1;
   function fr(p, q, sg) { const d = [q[0] - p[0], q[1] - p[1]], l = Math.hypot(d[0], d[1]) || 1, u = [d[0] / l, d[1] / l]; sg *= MIR; return {p, u, l, n: [sg * u[1], -sg * u[0]]}; }
   const at = (F, t, o) => [F.p[0] + F.u[0] * F.l * t + F.n[0] * o, F.p[1] + F.u[1] * F.l * t + F.n[1] * o];
   function rad(pr, t, side) {
@@ -1107,39 +1214,60 @@ const ANIM = (() => {
     for (let i = 0; i <= 12; i++) { const t = i / 12; A.push(at(F, t, rad(pr, t, 1))); B.push(at(F, t, -rad(pr, t, 2))); }
     return A.concat(B.reverse());
   }
-  function belly(F, pr, side, t0, t1, depth) {
-    const A = [], B = [], sg = side === 1 ? 1 : -1;
+  function lens(F, pr, side, t0, t1, depth, inset) {
+    const A = [], B = [], sg = side === 1 ? 1 : -1, fib = [[], []];
     for (let i = 0; i <= 10; i++) {
-      const t = t0 + (t1 - t0) * i / 10, r = rad(pr, t, side) - 0.25, k = Math.sin(Math.PI * i / 10);
+      const t = t0 + (t1 - t0) * i / 10, r = rad(pr, t, side) - (inset == null ? 0.3 : inset), k = Math.sin(Math.PI * i / 10);
       A.push(at(F, t, sg * r)); B.push(at(F, t, sg * (r - r * depth * k)));
+      fib[0].push(at(F, t, sg * (r - r * depth * k * 0.36))); fib[1].push(at(F, t, sg * (r - r * depth * k * 0.7)));
     }
-    return A.concat(B.reverse());
+    return {p: A.concat(B.reverse()), fib};
   }
+  /* mușchiul: formă, fibre și intensitate care crește în timpul efortului */
+  function musc(L_, col, op) {
+    const o = (op == null ? 1 : op) * (col === MP ? 0.68 + 0.32 * ACTV : 1);
+    return poly(L_.p, col, o) + line(L_.fib[0].slice(2, 9), 0.42, 'rgba(0,0,0,.25)', op) + line(L_.fib[1].slice(2, 9), 0.42, 'rgba(0,0,0,.18)', op);
+  }
+  /* un grup de forme cu contur exterior comun (fără linii între segmentele aceluiași membru) */
+  function grp(list, fill) {
+    let o = '', f = '';
+    list.forEach(x => {
+      if (x.c) { o += circ(x.c, x.r + 0.8, OUT); f += circ(x.c, x.r, fill); }
+      else { o += '<polygon points="' + pts(x) + '" fill="' + OUT + '" stroke="' + OUT + '" stroke-width="1.7" stroke-linejoin="round"/>'; f += poly(x, fill); }
+    });
+    return o + f;
+  }
+  const shade = (F, pr) => poly(lens(F, pr, 2, 0.04, 0.96, 0.4, 0.1).p, '#000', 0.09);
   const MDEF = {
     chest: [['torso', 1, 0.46, 1, 1]], abs: [['torso', 1, 0.08, 0.56, 0.7]], back: [['torso', 2, 0.36, 0.95, 0.9]],
     traps: [['torso', 2, 0.84, 1, 0.9], ['neck', 2, 0, 0.95, 0.85]], lowerback: [['torso', 2, 0.1, 0.44, 0.65]],
-    shoulders: [], reardelt: [['uarm', 2, 0, 0.42, 0.95]],
-    biceps: [['uarm', 1, 0.3, 0.92, 0.85]], triceps: [['uarm', 2, 0.28, 0.94, 0.85]], forearms: [['farm', 1, 0.05, 0.62, 0.8], ['farm', 2, 0.05, 0.62, 0.8]],
+    reardelt: [['uarm', 2, 0, 0.42, 0.95]], biceps: [['uarm', 1, 0.3, 0.92, 0.85]], triceps: [['uarm', 2, 0.28, 0.94, 0.85]],
+    forearms: [['farm', 1, 0.05, 0.62, 0.8], ['farm', 2, 0.05, 0.62, 0.8]],
     quads: [['thigh', 1, 0.08, 0.93, 0.85]], hamstrings: [['thigh', 2, 0.26, 0.92, 0.85]], calves: [['shin', 2, 0.06, 0.62, 0.85]], hipflex: [['thigh', 1, 0, 0.32, 0.8]]
   };
 
-  /* un membru (braț sau picior) desenat cu volum și cu mușchii lui */
+  /* un membru (braț sau picior) desenat cu volum, contur și mușchii lui */
   function limbSide(pts3, kind, mus, far) {
-    const body = far ? SKIN2 : SKIN, op = far ? 0.55 : 1;
+    const body = far ? SKIN2 : SKIN, op = far ? 0.5 : 1;
     let h = '';
     if (kind === 'leg') {
       const T = fr(pts3[0], pts3[1], 1), S = fr(pts3[1], pts3[2], 1), fd = [pts3[3][0] - pts3[2][0], pts3[3][1] - pts3[2][1]], fl = Math.hypot(fd[0], fd[1]) || 1;
       const heel = [pts3[2][0] - fd[0] / fl * 2, pts3[2][1] - fd[1] / fl * 2], toe = [pts3[3][0] + fd[0] / fl * 0.8, pts3[3][1] + fd[1] / fl * 0.8];
-      h += poly(shape(fr(heel, toe, 1), PR.foot), body) + poly(shape(S, PR.shin), body) + circ(pts3[1], 3.6, body) + poly(shape(T, PR.thigh), body);
-      ['quads', 'hamstrings', 'calves', 'hipflex'].forEach(m => { const c = mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null; if (c) MDEF[m].forEach(d => { h += poly(belly(d[0] === 'thigh' ? T : S, PR[d[0]], d[1], d[2], d[3], d[4]), c, op); }); });
+      h += grp([shape(fr(heel, toe, 1), PR.foot), shape(S, PR.shin), {c: pts3[1], r: 3.6}, shape(T, PR.thigh)], body);
+      if (!far) h += shade(S, PR.shin) + shade(T, PR.thigh);
+      ['quads', 'hamstrings', 'calves', 'hipflex'].forEach(m => { const c = mcol(mus, m); if (c) MDEF[m].forEach(d => { h += musc(lens(d[0] === 'thigh' ? T : S, PR[d[0]], d[1], d[2], d[3], d[4]), c, op); }); });
     } else {
-      const U = fr(pts3[0], pts3[1], 1), F = fr(pts3[1], pts3[2], 1);
-      h += poly(shape(F, PR.farm), body) + circ(pts3[1], 2.6, body) + poly(shape(U, PR.uarm), body) + circ(pts3[0], 4.2, body);
-      const hd = [pts3[2][0] + F.u[0] * 1.6, pts3[2][1] + F.u[1] * 1.6]; h += circ(hd, 2.3, body);
-      const dc = mus.p.includes('shoulders') ? MP : mus.s.includes('shoulders') ? MS : null;
-      if (dc) { const A = [], B = []; for (let i = 0; i <= 8; i++) { const t = 0.42 * i / 8, k = 1 - Math.pow(i / 8, 2) * 0.75; A.push(at(U, t, (rad(PR.uarm, t, 1) - 0.2) * k)); B.push(at(U, t, -(rad(PR.uarm, t, 2) - 0.2) * k)); }
-        h += circ(pts3[0], 3.9, dc, null, 0, op) + poly(A.concat(B.reverse()), dc, op); }
-      ['reardelt', 'biceps', 'triceps', 'forearms'].forEach(m => { const c = mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null; if (c) MDEF[m].forEach(d => { h += poly(belly(d[0] === 'uarm' ? U : F, PR[d[0]], d[1], d[2], d[3], d[4]), c, op); }); });
+      const U = fr(pts3[0], pts3[1], 1), F = fr(pts3[1], pts3[2], 1), hd = [pts3[2][0] + F.u[0] * 1.6, pts3[2][1] + F.u[1] * 1.6];
+      h += grp([shape(F, PR.farm), {c: pts3[1], r: 2.6}, shape(U, PR.uarm), {c: pts3[0], r: 4.2}, {c: hd, r: 2.3}], body);
+      if (!far) h += shade(U, PR.uarm) + shade(F, PR.farm);
+      const dc = mcol(mus, 'shoulders');
+      if (dc) {
+        const A = [], B = [];
+        for (let i = 0; i <= 8; i++) { const t = 0.42 * i / 8, k = 1 - Math.pow(i / 8, 2) * 0.75; A.push(at(U, t, (rad(PR.uarm, t, 1) - 0.25) * k)); B.push(at(U, t, -(rad(PR.uarm, t, 2) - 0.25) * k)); }
+        const o = op * (dc === MP ? 0.68 + 0.32 * ACTV : 1);
+        h += circ(pts3[0], 3.8, dc, null, 0, o) + poly(A.concat(B.reverse()), dc, o) + line([at(U, 0.05, 0), at(U, 0.36, 0)], 0.45, 'rgba(0,0,0,.22)', op);
+      }
+      ['reardelt', 'biceps', 'triceps', 'forearms'].forEach(m => { const c = mcol(mus, m); if (c) MDEF[m].forEach(d => { h += musc(lens(d[0] === 'uarm' ? U : F, PR[d[0]], d[1], d[2], d[3], d[4]), c, op); }); });
     }
     return h;
   }
@@ -1148,103 +1276,142 @@ const ANIM = (() => {
     return ({hand: s.arm1[2], hand2: (s.arm2 || s.arm1)[2], elbow: s.arm1[1], sh: s.sh, hip: s.hip, head: s.head, chest: s.chest,
       knee: s.leg1[1], ank: s.leg1[2], toe: s.leg1[3], knee2: (s.leg2 || s.leg1)[1], ank2: (s.leg2 || s.leg1)[2]})[r];
   }
-  function plate(q, r) { return circ(q, r, WTD, WT, 1.5, 0.95) + circ(q, r * 0.62, 'none', WT, 0.7, 0.55) + circ(q, 2.4, 'var(--anim-floor)', WT, 1.1) ; }
-  function props(def, s, layer) {
+
+  /* ---------- echipament ---------- */
+  function padSeg(a, b, w) {
+    const d = [b[0] - a[0], b[1] - a[1]], l = Math.hypot(d[0], d[1]) || 1;
+    let n = [-d[1] / l, d[0] / l]; if (n[1] > 0 || (Math.abs(n[1]) < 0.01 && n[0] > 0)) n = [-n[0], -n[1]];
+    const k = w / 2 - 1.1, s = 0.12;
+    const hi = [[a[0] + d[0] * s + n[0] * k, a[1] + d[1] * s + n[1] * k], [b[0] - d[0] * s + n[0] * k, b[1] - d[1] * s + n[1] * k]];
+    return line([a, b], w + 1.6, OUT) + line([a, b], w, PAD) + line(hi, 1, PADHI);
+  }
+  const post = (a, b, w) => line([a, b], (w || 2.6) + 1.4, OUT) + line([a, b], w || 2.6, MET) + line([[a[0] - 0.5, a[1]], [b[0] - 0.5, b[1]]], 0.5, 'rgba(255,255,255,.18)');
+  const foot = (x) => line([[x - 3.5, 100], [x + 3.5, 100]], 2.4, MET2);
+  function plate(q, r) {
+    return circ(q, r + 0.8, OUT) + circ(q, r, WTD, WT, 1.3) + circ(q, r * 0.8, 'none', 'rgba(0,0,0,.28)', 0.8) + circ(q, r * 0.48, 'none', WT, 0.6, 0.7) +
+      circ(q, 2.3, MET, OUT, 0.6) + circ(q, 1, MET2);
+  }
+  function hexDb(c, r) {
+    const p = []; for (let i = 0; i < 6; i++) p.push(P_(c, V(30 + i * 60, r)));
+    return '<polygon points="' + pts(p) + '" fill="' + WT + '" stroke="' + OUT + '" stroke-width="0.9" stroke-linejoin="round"/>' + circ(c, r * 0.38, WTD);
+  }
+  function stack(x, top, lift) {
+    const n = 10, ph = 2.3, w = 11, base = 99.4;
+    let h = post([x - 6.5, top], [x - 6.5, 100.6], 2.2) + post([x + 6.5, top], [x + 6.5, 100.6], 2.2) + post([x - 7.5, top], [x + 7.5, top], 2.6);
+    h += line([[x, top + 3], [x, base - n * ph - lift]], 0.8, STEEL) + circ([x, top + 3], 2.6, MET2, MET, 0.8) + circ([x, top + 3], 0.9, MET);
+    h += line([[x - 3, top + 2], [x - 3, base]], 0.6, 'rgba(255,255,255,.14)') + line([[x + 3, top + 2], [x + 3, base]], 0.6, 'rgba(255,255,255,.14)');
+    for (let i = 0; i < n; i++) {
+      const mv = i >= n - 3, y = base - (i + 1) * ph - (mv ? lift : 0);
+      h += rect(x - w / 2, y, w, ph - 0.35, mv ? WT : MET2, 0.5, OUT);
+    }
+    h += rect(x + w / 2 - 0.5, base - (n - 2.5) * ph - lift - 0.5, 3, 1.2, MET, 0.4);
+    return h + foot(x - 6.5) + foot(x + 6.5);
+  }
+  function props(def, s, layer, sA) {
     let h = '';
     (def.pr || []).forEach(p => {
       const k = p[0];
       if (layer === 'back') {
-        if (k === 'bench') h += line([[p[1] + 4, p[2] + 2], [p[1] + 4, 100.6]], 2.4, EQ) + line([[p[3] - 4, p[4] + 2], [p[3] - 4, 100.6]], 2.4, EQ) + line([[p[1], p[2]], [p[3], p[4]]], 5.5, PAD);
-        else if (k === 'seat' && typeof p[1] === 'number') h += line([[p[1], p[2]], [p[3], p[4]]], 5.5, PAD);
-        else if (k === 'seat') { const c = ref(s, p[1]); h += line([[c[0] - 7, c[1] + 4.5], [c[0] + 7, c[1] + 4.5]], 5.5, PAD); }
-        else if (k === 'mat') h += line([[p[1], p[2]], [p[3], p[4]]], 2.6, PAD);
-        else if (k === 'line') h += line([[p[1], p[2]], [p[3], p[4]]], p[5] || 2.5, EQ);
-        else if (k === 'box') h += '<rect x="' + p[1] + '" y="' + p[2] + '" width="' + p[3] + '" height="' + p[4] + '" rx="2" fill="' + PAD + '"/>';
-        else if (k === 'cable') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 0.9, EQ) + circ([p[1], p[2]], 2.6, 'var(--anim-floor)', EQ, 1.4); }
-        else if (k === 'lever') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 3.4, EQ) + circ([p[1], p[2]], 2.8, EQ); }
-        else if (k === 'pad') { const c = ref(s, p[1]); h += circ([c[0] + (p[3] || 0), c[1] + (p[4] || 0)], p[2], PAD); }
+        if (k === 'bench') h += post([p[1] + 5, p[2] + 2], [p[1] + 5, 100]) + post([p[3] - 5, p[4] + 2], [p[3] - 5, 100]) + foot(p[1] + 5) + foot(p[3] - 5) + padSeg([p[1], p[2]], [p[3], p[4]], 6);
+        else if (k === 'seat' && typeof p[1] === 'number') h += padSeg([p[1], p[2]], [p[3], p[4]], 6);
+        else if (k === 'seat') { const c = ref(s, p[1]); h += padSeg([c[0] - 7, c[1] + 4.6], [c[0] + 7, c[1] + 4.6], 5.5); }
+        else if (k === 'mat') h += line([[p[1], p[2]], [p[3], p[4]]], 2.6, PAD) + line([[p[1] + 2, p[2] - 0.9], [p[3] - 2, p[4] - 0.9]], 0.6, PADHI);
+        else if (k === 'line') h += post([p[1], p[2]], [p[3], p[4]], p[5] || 2.6);
+        else if (k === 'box') h += rect(p[1], p[2], p[3], p[4], PAD, 2, OUT) + line([[p[1] + 2, p[2] + 1.2], [p[1] + p[3] - 2, p[2] + 1.2]], 1, PADHI);
+        else if (k === 'stack') { const c = ref(s, p[3]), c0 = ref(sA, p[3]); h += stack(p[1], p[2], Math.min(16, Math.hypot(c[0] - c0[0], c[1] - c0[1]) * (p[4] || 0.42))); }
+        else if (k === 'cable') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 0.8, STEEL) + circ([p[1], p[2]], 2.7, MET2, MET, 0.8) + circ([p[1], p[2]], 0.9, MET); }
+        else if (k === 'lever') { const c = ref(s, p[3]); h += line([[p[1], p[2]], c], 5, OUT) + line([[p[1], p[2]], c], 3.6, MET) + circ([p[1], p[2]], 3.2, MET2, OUT, 0.8) + circ([p[1], p[2]], 1.1, MET); }
+        else if (k === 'pad') { const c = ref(s, p[1]), q = [c[0] + (p[3] || 0), c[1] + (p[4] || 0)]; h += circ(q, p[2] + 0.8, OUT) + circ(q, p[2], PAD) + circ(q, p[2] * 0.35, MET); }
+        else if (k === 'rack') h += post([p[1], p[2]], [p[1], 100.6], 3) + foot(p[1]) + post([p[1], p[3]], [p[1] - 9, p[3]], 2) + post([p[1], p[2] + 18], [p[1] - 4, p[2] + 18], 1.8);
+        else if (k === 'backpad') { const T = fr(s.hip, s.sh, -1); h += padSeg(at(T, 0.05, -8.4), at(T, 1.02, -8.4), 6) + circ(at(T, 1.05, -2), 3.2, PAD, OUT, 0.9); }
+        else if (k === 'cpad') h += padSeg([p[1], p[2]], [p[3], p[4]], 6);
       } else if (layer === 'weight') {
         if (k === 'plate') { const c = ref(s, p[1]); h += plate([c[0] + (p[3] || 0), c[1] + (p[4] || 0)], p[2]); }
-        else if (k === 'platform') { const c = ref(s, p[1]), q = [c[0] + (p[4] || 0), c[1] + (p[5] || 0)], d = V(p[2], p[3] / 2); h += line([[q[0] - d[0], q[1] - d[1]], [q[0] + d[0], q[1] + d[1]]], 4, WT); }
+        else if (k === 'platform') {
+          const c = ref(s, p[1]), q = [c[0] + (p[4] || 0), c[1] + (p[5] || 0)], d = V(p[2], p[3] / 2), back = V(p[2] - 90, 6);
+          h += line([[q[0] - d[0], q[1] - d[1]], [q[0] + d[0], q[1] + d[1]]], 5.6, OUT) + line([[q[0] - d[0], q[1] - d[1]], [q[0] + d[0], q[1] + d[1]]], 4.2, MET) +
+            plate([q[0] + back[0], q[1] + back[1]], 7.5);
+        }
       } else {
-        if (k === 'db') { const c = ref(s, p[1]), r = p[2] || 3.8; h += circ(c, r, WT) + circ(c, r * 0.42, WTD); }
-        else if (k === 'dbv') { const c = ref(s, p[1]); h += '<rect x="' + f1(c[0] - 2.4) + '" y="' + f1(c[1] - 6) + '" width="4.8" height="12" rx="2" fill="' + WT + '"/>'; }
-        else if (k === 'grip') { const c = ref(s, p[1]); h += circ(c, 2.3, WT); }
+        if (k === 'db') { const c = ref(s, p[1]); h += hexDb(c, p[2] || 3.9); }
+        else if (k === 'dbv') { const c = ref(s, p[1]); h += hexDb([c[0], c[1] - 4], 2.9) + hexDb([c[0], c[1] + 4], 2.9) + line([[c[0], c[1] - 2], [c[0], c[1] + 2]], 1.6, MET); }
+        else if (k === 'grip') { const c = ref(s, p[1]); h += circ(c, 2.3, MET2, OUT, 0.8) + circ(c, 0.9, MET); }
       }
     });
     return h;
   }
   function head(c, dirDeg, front) {
-    if (front) return circ([c[0], c[1] - 1.1], 5.9, HAIR) + circ([c[0], c[1] + 0.4], 5.3, SKIN) + circ([c[0] - 2, c[1] + 0.2], 0.65, HAIR) + circ([c[0] + 2, c[1] + 0.2], 0.65, HAIR);
+    if (front) return grp([{c: [c[0], c[1] - 1.1], r: 5.9}], HAIR) + circ([c[0], c[1] + 0.4], 5.3, SKIN) + circ([c[0] - 2, c[1] + 0.2], 0.65, HAIR) + circ([c[0] + 2, c[1] + 0.2], 0.65, HAIR);
     const u = V(dirDeg, 1), n = [-u[1] * MIR, u[0] * MIR];
-    const hc = [c[0] + u[0] * 0.9 - n[0] * 1.2, c[1] + u[1] * 0.9 - n[1] * 1.2];
-    return circ(hc, 5.8, HAIR) + circ([c[0] + n[0] * 0.3, c[1] + n[1] * 0.3], 5.4, SKIN) +
-      circ([c[0] + n[0] * 5.3 - u[0] * 0.6, c[1] + n[1] * 5.3 - u[1] * 0.6], 1.2, SKIN) + circ([c[0] + n[0] * 3 + u[0] * 0.7, c[1] + n[1] * 3 + u[1] * 0.7], 0.65, HAIR);
+    const hc = [c[0] + u[0] * 0.9 - n[0] * 1.2, c[1] + u[1] * 0.9 - n[1] * 1.2], fc = [c[0] + n[0] * 0.3, c[1] + n[1] * 0.3];
+    return circ(hc, 6.6, OUT) + circ(fc, 6.2, OUT) + circ(hc, 5.8, HAIR) + circ(fc, 5.4, SKIN) +
+      circ([c[0] + n[0] * 5.3 - u[0] * 0.6, c[1] + n[1] * 5.3 - u[1] * 0.6], 1.2, SKIN) +
+      circ([c[0] - n[0] * 0.6 + u[0] * 0.2, c[1] - n[1] * 0.6 + u[1] * 0.2], 1.3, 'rgba(0,0,0,.12)') +
+      circ([c[0] + n[0] * 3 + u[0] * 0.7, c[1] + n[1] * 3 + u[1] * 0.7], 0.65, HAIR);
   }
 
-  function sideSVG(def, s, id) {
+  function sideSVG(def, s, id, sA) {
     MIR = def.mir ? -1 : 1;
     const mus = muscles(id), none = {p: [], s: []}, one = ONE[id];
     const T = fr(s.hip, s.sh, -1), hdDeg = Math.atan2(s.head[1] - s.sh[1], s.head[0] - s.sh[0]) / R;
     const NK = fr(s.sh, [s.sh[0] + Math.cos(hdDeg * R) * (L.nk + 1.5), s.sh[1] + Math.sin(hdDeg * R) * (L.nk + 1.5)], -1);
-    const d = [-1.4, -1];
-    const offL = a => a.map(p => [p[0] + d[0], p[1] + d[1]]);
+    const d = [-1.4, -1], offL = a => a.map(p => [p[0] + d[0], p[1] + d[1]]);
     let h = '<g class="fig">';
     const lowY = Math.max(s.leg1[2][1], s.leg1[3][1], (s.leg2 || s.leg1)[2][1]);
-    if (lowY > 92) h += '<ellipse cx="' + f1((s.leg1[2][0] + (s.leg2 || s.leg1)[2][0] + s.hip[0]) / 3) + '" cy="101.2" rx="20" ry="1.8" fill="#000" opacity=".28"/>';
-    h += props(def, s, 'back');
+    if (lowY > 92) h += '<ellipse cx="' + f1((s.leg1[2][0] + (s.leg2 || s.leg1)[2][0] + s.hip[0]) / 3) + '" cy="101.3" rx="22" ry="2" fill="#000" opacity=".32"/>';
+    h += props(def, s, 'back', sA);
     h += limbSide(s.leg2 || offL(s.leg1), 'leg', one === 'leg' ? none : mus, true);
     h += limbSide(s.arm2 || offL(s.arm1), 'arm', one === 'arm' ? none : mus, true);
-    h += props(def, s, 'weight');
-    /* trunchi, fesieri, gât, cap */
-    h += poly(shape(T, PR.torso), SKIN) + circ(s.hip, 5.6, SKIN) + poly(shape(NK, PR.neck), SKIN);
-    ['chest', 'abs', 'back', 'lowerback', 'traps'].forEach(m => { const c = mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null; if (c) MDEF[m].forEach(q => { h += poly(belly(q[0] === 'neck' ? NK : T, PR[q[0]], q[1], q[2], q[3], q[4]), c); }); });
-    const gc = mus.p.includes('glutes') ? MP : mus.s.includes('glutes') ? MS : null;
+    h += props(def, s, 'weight', sA);
+    /* trunchi, fesieri, gât */
+    h += grp([shape(T, PR.torso), {c: s.hip, r: 5.6}, shape(NK, PR.neck)], SKIN) + shade(T, PR.torso);
+    ['chest', 'abs', 'back', 'lowerback', 'traps'].forEach(m => { const c = mcol(mus, m); if (c) MDEF[m].forEach(q => { h += musc(lens(q[0] === 'neck' ? NK : T, PR[q[0]], q[1], q[2], q[3], q[4]), c); }); });
+    if (mcol(mus, 'abs')) [0.2, 0.32, 0.44].forEach(t => { h += line([at(T, t, rad(PR.torso, t, 1) - 0.5), at(T, t, rad(PR.torso, t, 1) * 0.45)], 0.5, 'rgba(0,0,0,.28)'); });
+    const gc = mcol(mus, 'glutes');
     h += limbSide(s.leg1, 'leg', mus, false);
     if (gc) {
-      const TH = fr(s.leg1[0], s.leg1[1], 1), o = [], inner = [];
-      for (let i = 0; i <= 6; i++) { const t = 0.24 - 0.24 * i / 6; o.push(at(T, t, -(rad(PR.torso, t, 2) - 0.3))); }
-      for (let i = 0; i <= 6; i++) { const t = 0.34 * i / 6; o.push(at(TH, t, -(rad(PR.thigh, t, 2) - 0.3))); }
-      inner.push(at(TH, 0.3, -1.4), [s.hip[0], s.hip[1]], at(T, 0.2, -1.6));
-      h += poly(o.concat(inner), gc);
+      const TH = fr(s.leg1[0], s.leg1[1], 1), o = [];
+      for (let i = 0; i <= 6; i++) { const t = 0.24 - 0.24 * i / 6; o.push(at(T, t, -(rad(PR.torso, t, 2) - 0.35))); }
+      for (let i = 0; i <= 6; i++) { const t = 0.34 * i / 6; o.push(at(TH, t, -(rad(PR.thigh, t, 2) - 0.35))); }
+      const op = gc === MP ? 0.68 + 0.32 * ACTV : 1;
+      h += poly(o.concat([at(TH, 0.3, -1.4), [s.hip[0], s.hip[1]], at(T, 0.2, -1.6)]), gc, op) + line([at(T, 0.16, -3.2), s.hip.map((v, i) => v + T.n[i] * -2.8), at(TH, 0.22, -3)], 0.45, 'rgba(0,0,0,.25)');
     }
     h += head(s.head, hdDeg, false);
     h += limbSide(s.arm1, 'arm', mus, false);
-    return GROUND + h + props(def, s, 'front') + '</g>';
+    return GROUND + h + props(def, s, 'front', sA) + '</g>';
   }
 
   /* ---------- vedere frontală (ridicări laterale, abducții) ---------- */
   function frontSVG(def, P, id) {
     MIR = 1;
-    const cx = 80, mus = muscles(id), col = m => mus.p.includes(m) ? MP : mus.s.includes(m) ? MS : null;
-    let h = '<g class="fig"><ellipse cx="80" cy="101.2" rx="18" ry="1.8" fill="#000" opacity=".28"/>' + props(def, null, 'back');
+    const cx = 80, mus = muscles(id), col = m => mcol(mus, m);
+    let h = '<g class="fig"><ellipse cx="80" cy="101.3" rx="20" ry="2" fill="#000" opacity=".32"/>';
+    (def.pr || []).forEach(p => { if (p[0] === 'box') h += rect(p[1], p[2], p[3], p[4], PAD, 2, OUT) + line([[p[1] + 2, p[2] + 1.2], [p[1] + p[3] - 2, p[2] + 1.2]], 1, PADHI) + post([p[1] + 6, p[2] + p[4]], [p[1] + 6, 100]) + post([p[1] + p[3] - 6, p[2] + p[4]], [p[1] + p[3] - 6, 100]); });
     const sy = P.sy, hy = P.hy, hands = [];
-    /* picioare */
     [-1, 1].forEach(sg => {
       const hip = [cx + sg * 4.6, hy + 1], knee = [cx + sg * P.kx, P.ky], ft = [cx + sg * P.fx, P.fy];
       const T = fr(hip, knee, 1), S = fr(knee, ft, 1);
-      h += '<ellipse cx="' + f1(ft[0] + sg * 1.5) + '" cy="' + f1(ft[1] + 0.6) + '" rx="3.6" ry="1.9" fill="' + SKIN + '"/>';
-      h += poly(shape(S, PR.shin), SKIN) + circ(knee, 3.4, SKIN) + poly(shape(T, PR.thigh), SKIN);
-      const out = sg < 0 ? 1 : 2;
-      if (col('gmed')) h += poly(belly(T, PR.thigh, out, 0, 0.42, 0.9), col('gmed'));
-      if (def.pr.some(p => p[0] === 'kpad')) h += '<rect x="' + f1(knee[0] + sg * 5.5 - 2.2) + '" y="' + f1(knee[1] - 5.5) + '" width="4.4" height="11" rx="2" fill="' + WT + '"/>';
+      h += '<ellipse cx="' + f1(ft[0] + sg * 1.5) + '" cy="' + f1(ft[1] + 0.6) + '" rx="4.2" ry="2.5" fill="' + OUT + '"/><ellipse cx="' + f1(ft[0] + sg * 1.5) + '" cy="' + f1(ft[1] + 0.6) + '" rx="3.6" ry="1.9" fill="' + SKIN + '"/>';
+      h += grp([shape(S, PR.shin), {c: knee, r: 3.4}, shape(T, PR.thigh)], SKIN);
+      if (col('gmed')) h += musc(lens(T, PR.thigh, sg < 0 ? 1 : 2, 0, 0.45, 0.9), col('gmed'));
+      if (def.pr.some(p => p[0] === 'kpad')) h += rect(knee[0] + sg * 5.6 - 2.4, knee[1] - 6, 4.8, 12, PAD, 2, OUT) + line([[knee[0] + sg * 5.6, knee[1] - 4.5], [knee[0] + sg * 5.6, knee[1] + 4.5]], 0.8, PADHI);
     });
-    /* trunchi */
     const tw = (y0, y1, k) => y0 + (y1 - y0) * k;
     const torso = [[cx - 2.6, sy - 2], [cx - 10.6, sy + 0.4], [cx - 9.4, tw(sy, hy, 0.3)], [cx - 6.6, tw(sy, hy, 0.68)], [cx - 8.2, hy], [cx - 6, hy + 4], [cx, hy + 5.5],
       [cx + 6, hy + 4], [cx + 8.2, hy], [cx + 6.6, tw(sy, hy, 0.68)], [cx + 9.4, tw(sy, hy, 0.3)], [cx + 10.6, sy + 0.4], [cx + 2.6, sy - 2]];
-    h += poly(torso, SKIN) + poly([[cx - 2.4, sy - 1], [cx - 2.2, sy - 5], [cx + 2.2, sy - 5], [cx + 2.4, sy - 1]], SKIN);
-    if (col('traps')) h += poly([[cx - 2.6, sy - 3.4], [cx - 9.6, sy - 0.2], [cx - 5, sy + 1.6], [cx, sy + 0.6], [cx + 5, sy + 1.6], [cx + 9.6, sy - 0.2], [cx + 2.6, sy - 3.4]], col('traps'));
-    /* brațe */
+    h += grp([torso, [[cx - 2.4, sy - 1], [cx - 2.2, sy - 5], [cx + 2.2, sy - 5], [cx + 2.4, sy - 1]]], SKIN);
+    h += line([[cx - 6, tw(sy, hy, 0.24)], [cx, tw(sy, hy, 0.3)], [cx + 6, tw(sy, hy, 0.24)]], 0.5, 'rgba(0,0,0,.16)') + line([[cx, tw(sy, hy, 0.35)], [cx, hy - 1]], 0.5, 'rgba(0,0,0,.12)');
+    if (col('traps')) h += poly([[cx - 2.6, sy - 3.4], [cx - 9.6, sy - 0.2], [cx - 5, sy + 1.6], [cx, sy + 0.6], [cx + 5, sy + 1.6], [cx + 9.6, sy - 0.2], [cx + 2.6, sy - 3.4]], col('traps'), col('traps') === MP ? 0.68 + 0.32 * ACTV : 1);
     [-1, 1].forEach(sg => {
       const s0 = [cx + sg * 9.6, sy + 1.2], a1 = 90 - sg * P.aa, a2 = a1 - sg * P.ef;
       const e = P_(s0, V(a1, L.ua)), w = P_(e, V(a2, L.fa)), U = fr(s0, e, 1), F = fr(e, w, 1);
       hands.push(P_(w, V(a2, 1.6)));
-      h += poly(shape(F, PR.farm), SKIN) + circ(e, 2.6, SKIN) + poly(shape(U, PR.uarm), SKIN) + circ(s0, 4.4, SKIN) + circ(P_(w, V(a2, 1.6)), 2.3, SKIN);
-      if (col('shoulders')) h += poly(belly(U, PR.uarm, 1, 0, 0.4, 0.95), col('shoulders')) + poly(belly(U, PR.uarm, 2, 0, 0.4, 0.95), col('shoulders')) + circ(s0, 3.6, col('shoulders'));
+      h += grp([shape(F, PR.farm), {c: e, r: 2.6}, shape(U, PR.uarm), {c: s0, r: 4.4}, {c: P_(w, V(a2, 1.6)), r: 2.3}], SKIN);
+      const c = col('shoulders');
+      if (c) h += musc(lens(U, PR.uarm, 1, 0, 0.42, 0.95), c) + musc(lens(U, PR.uarm, 2, 0, 0.42, 0.95), c) + circ(s0, 3.6, c, null, 0, c === MP ? 0.68 + 0.32 * ACTV : 1);
     });
     h += head([cx, sy - L.nk - L.hr - 0.6], 0, true);
-    if (def.pr.some(p => p[0] === 'db2')) hands.forEach(w => { h += circ(w, 3.8, WT) + circ(w, 1.6, WTD); });
+    if (def.pr.some(p => p[0] === 'db2')) hands.forEach(w => { h += hexDb(w, 3.9); });
     return GROUND + h + '</g>';
   }
 
@@ -1253,10 +1420,15 @@ const ANIM = (() => {
     const seg = p < 0.12 ? 0 : p < 0.5 ? (p - 0.12) / 0.38 : p < 0.62 ? 1 : 1 - (p - 0.62) / 0.38;
     return 0.5 - 0.5 * Math.cos(Math.PI * seg);
   }
+  const startPose = {};
   function svgInner(id, p) {
     const def = D[id]; if (!def) return '';
-    const P = pose(def, ease(p));
-    return def.front ? frontSVG(def, P, id) : sideSVG(def, solve(P), id);
+    const e = ease(p);
+    ACTV = e;
+    const P = pose(def, e);
+    if (def.front) return frontSVG(def, P, id);
+    const sA = startPose[id] || (startPose[id] = solve(pose(def, 0)));
+    return sideSVG(def, solve(P), id, sA);
   }
 
   /* ---------- redare în pagină ---------- */
@@ -1334,7 +1506,7 @@ if (typeof module !== 'undefined') module.exports = {ANIM};
 /* ============ APLICAȚIA: stare, ecrane, acțiuni ============ */
 
 const LS_KEY = 'fisa-antrenament.v2';
-const APP_VERSION = '2.2';
+const APP_VERSION = '2.3';
 const ACCENTS = {rust: ['#DB7440', '#7A3F1E'], teal: ['#4FB3A2', '#235B52'], violet: ['#A488E6', '#4E3C86'], rose: ['#E0708F', '#7E3550']};
 const GOALS = {masa: 'Masă musculară', ton: 'Tonifiere și formă', slab: 'Slăbire'};
 const FOCUS = {echilibrat: 'Echilibrat, tot corpul', inferior: 'Accent pe fesieri și picioare', superior: 'Accent pe partea superioară'};
@@ -1381,7 +1553,7 @@ function nextDay(p, prog, today) {
   for (let i = ss.length - 1; i >= 0; i--) if (hasOk(ss[i])) return (ss[i].i + 1) % prog.length;
   return 0;
 }
-function sesVolume(s) { let v = 0; Object.keys(s.sets).forEach(id => { if (EX[id] && EX[id].k !== 't') okSets(s, id).forEach(x => { v += (x.w || 0) * x.r; }); }); return v; }
+function sesVolume(s) { let v = 0; Object.keys(s.sets).forEach(id => { if (EX[id] && EX[id].k !== 't' && !EX[id].assist) okSets(s, id).forEach(x => { v += (x.w || 0) * x.r; }); }); return v; }
 function sesSetCount(s) { return Object.keys(s.sets).reduce((n, id) => n + okSets(s, id).length, 0); }
 function weekDates(p, today) {
   const mon = mondayOf(today), set = {};
@@ -1390,7 +1562,7 @@ function weekDates(p, today) {
 }
 function bestBefore(p, id, before) {
   let best = 0;
-  p.sessions.forEach(s => { if (s.d < before) okSets(s, id).forEach(x => { best = Math.max(best, EX[id].k === 't' ? x.r : e1rm(x.w || 0, x.r)); }); });
+  p.sessions.forEach(s => { if (s.d < before) okSets(s, id).forEach(x => { best = Math.max(best, score(id, x)); }); });
   return best;
 }
 
@@ -1594,6 +1766,13 @@ function vProg(p) {
   const d0 = parseYmd(mondayOf(today)); if (!wkSet[ymd(d0)]) d0.setDate(d0.getDate() - 7);
   while (wkSet[ymd(d0)]) { streak++; d0.setDate(d0.getDate() - 7); }
   let h = '<div class="stats"><div><b>' + wk + '/' + p.days + '</b><span>săptămâna aceasta</span></div><div><b>' + done.length + '</b><span>antrenamente în total</span></div><div><b>' + streak + '</b><span>săptămâni la rând</span></div></div>';
+  if (done.length) {
+    const vol = {}; done.forEach(s => { const m = mondayOf(s.d); vol[m] = (vol[m] || 0) + sesVolume(s); });
+    const m0 = parseYmd(mondayOf(today)), weeksV = [];
+    for (let i = 7; i >= 0; i--) { const d = new Date(m0); d.setDate(d.getDate() - i * 7); const k = ymd(d); weeksV.push({k, v: vol[k] || 0}); }
+    const mx = Math.max(1, ...weeksV.map(w => w.v)), tons = v => v >= 1000 ? fmtN(Math.round(v / 100) / 10) + 't' : v ? Math.round(v) + '' : '';
+    h += '<section class="card"><h3>Volum pe săptămână</h3><div class="vchart" role="img" aria-label="Volumul ridicat în ultimele 8 săptămâni">' + weeksV.map((w, i) => '<div class="vb' + (i === 7 ? ' cur' : '') + (w.v ? ' has' : '') + '"><b>' + tons(w.v) + '</b><i style="height:' + Math.max(3, w.v / mx * 100) + '%"></i><span>' + fmtD(w.k, {day: 'numeric', month: 'numeric'}) + '</span></div>').join('') + '</div><p class="fine">Kilograme ridicate pe săptămână (greutate × repetări). Dacă bara crește încet de la o lună la alta, progresezi.</p></section>';
+  }
 
   const adv = bwAdvice(p), last = p.bw[p.bw.length - 1];
   h += '<section class="card"><h3>Greutate corporală</h3><div class="bwrow"><label>Greutate (kg)<input class="in" id="bw-w" inputmode="decimal" autocomplete="off" placeholder="' + (last ? fmtN(last.w) : '70,5') + '"></label><label>Talie (cm), opțional<input class="in" id="bw-c" inputmode="decimal" autocomplete="off" placeholder="' + (last && last.c ? fmtN(last.c) : '—') + '"></label><button class="btn" data-act="bwsave">Salvează</button></div>' +
@@ -1601,7 +1780,7 @@ function vProg(p) {
     '<ul class="list">' + p.bw.slice(-5).reverse().map(x => '<li><span>' + fmtD(x.d, {day: 'numeric', month: 'short', year: 'numeric'}) + '</span><b>' + fmtN(x.w) + ' kg' + (x.c ? ' · talie ' + fmtN(x.c) + ' cm' : '') + '</b></li>').join('') + '</ul></section>';
 
   const pr = {};
-  done.forEach(s => Object.keys(s.sets).forEach(id => { if (!EX[id]) return; okSets(s, id).forEach(x => { const v = EX[id].k === 't' ? x.r : e1rm(x.w || 0, x.r); if (!pr[id] || v > pr[id].v) pr[id] = {v, w: x.w, r: x.r, d: s.d}; }); }));
+  done.forEach(s => Object.keys(s.sets).forEach(id => { if (!EX[id]) return; okSets(s, id).forEach(x => { const v = score(id, x); if (!pr[id] || v > pr[id].v) pr[id] = {v, w: x.w, r: x.r, d: s.d}; }); }));
   const ids = Object.keys(pr);
   h += '<section class="card"><h3>Recorduri personale</h3>' + (ids.length ? '<ul class="list tap">' + ids.map(id => '<li data-act="exhist" data-id="' + id + '"><span>' + esc(EX[id].n) + '<small>' + fmtD(pr[id].d) + '</small></span><b>' + (EX[id].k === 't' ? pr[id].r + ' sec' : (pr[id].w ? fmtN(pr[id].w) + ' kg × ' : '') + pr[id].r) + ' ›</b></li>').join('') + '</ul>' : '<p class="fine">Aici apar cele mai bune seturi ale tale la fiecare exercițiu, după primul antrenament.</p>') + '</section>';
 
@@ -1761,7 +1940,7 @@ const ACT = {
     const p = P(), today = TODAY(), ses = findSession(p, today, curDay().i); if (!ses) return;
     ses.done = true; ses.t1 = Date.now(); save(); stopTimer(); releaseWake();
     const prs = [];
-    Object.keys(ses.sets).forEach(id => { if (!EX[id]) return; const old = bestBefore(p, id, today); if (!old) return; const now = Math.max.apply(null, okSets(ses, id).map(x => (EX[id].k === 't' ? x.r : e1rm(x.w || 0, x.r))).concat([0])); if (now > old * 1.001) prs.push(EX[id].n); });
+    Object.keys(ses.sets).forEach(id => { if (!EX[id]) return; const old = bestBefore(p, id, today); if (!old) return; const now = Math.max.apply(null, okSets(ses, id).map(x => score(id, x)).concat([0])); if (now > old + 0.001) prs.push(EX[id].n); });
     const mins = ses.t0 ? Math.max(1, Math.round((ses.t1 - ses.t0) / 60000)) : 0;
     openSheet('<h3>Bravo, ' + esc(p.name) + '!</h3><div class="tgrid"><div><b>' + sesSetCount(ses) + '</b><span>seturi</span></div><div><b>' + fmtK(sesVolume(ses)) + '</b><span>kg volum</span></div><div><b>' + (mins || '—') + '</b><span>minute</span></div><div><b>' + weekDates(p, today) + '/' + p.days + '</b><span>săptămâna</span></div></div>' +
       (prs.length ? '<div class="advice good"><p><b>Recorduri noi:</b> ' + prs.map(esc).join(', ') + '.</p></div>' : '') + '<p class="fine">Mănâncă o masă cu proteine în următoarele două ore și bea apă.</p><button class="btn big" data-act="closesheet">Gata</button>');
@@ -1799,8 +1978,8 @@ const ACT = {
   delses(el) { if (!confirm('Ștergi această ședință din istoric?')) return; const p = P(), a = el.dataset.k.split('|'); p.sessions = p.sessions.filter(s => !(s.d === a[0] && s.i === +a[1])); ui.hist = null; save(); rerender(); },
   exhist(el) {
     const p = P(), id = el.dataset.id, e = EX[id], rows = [];
-    p.sessions.forEach(s => { const o = okSets(s, id); if (o.length) rows.push({d: s.d, sets: o, v: Math.max.apply(null, o.map(x => (e.k === 't' ? x.r : e1rm(x.w || 0, x.r))))}); });
-    openSheet('<h3>' + esc(e.n) + '</h3><p class="fine">' + (e.k === 't' ? 'Cel mai lung set din fiecare ședință.' : 'Evoluția forței estimate (greutate și repetări combinate).') + '</p>' + spark(rows.slice(-14).map(r => r.v)) + '<ul class="list">' + rows.slice(-10).reverse().map(r => '<li><span>' + fmtD(r.d, {day: 'numeric', month: 'short', year: 'numeric'}) + '</span><b>' + r.sets.map(x => (e.k === 't' ? x.r + ' s' : (x.w ? fmtN(x.w) + '×' : '') + x.r)).join(' · ') + '</b></li>').join('') + '</ul><button class="btn ghost big" data-act="closesheet">Închide</button>');
+    p.sessions.forEach(s => { const o = okSets(s, id); if (o.length) rows.push({d: s.d, sets: o, v: Math.max.apply(null, o.map(x => score(id, x)))}); });
+    openSheet('<h3>' + esc(e.n) + '</h3><p class="fine">' + (e.k === 't' ? 'Cel mai lung set din fiecare ședință.' : e.assist ? 'O contragreutate mai mică înseamnă progres.' : 'Evoluția forței estimate (greutate și repetări combinate).') + '</p>' + spark(rows.slice(-14).map(r => r.v)) + '<ul class="list">' + rows.slice(-10).reverse().map(r => '<li><span>' + fmtD(r.d, {day: 'numeric', month: 'short', year: 'numeric'}) + '</span><b>' + r.sets.map(x => (e.k === 't' ? x.r + ' s' : (x.w ? fmtN(x.w) + '×' : '') + x.r)).join(' · ') + '</b></li>').join('') + '</ul><button class="btn ghost big" data-act="closesheet">Închide</button>');
   },
 
   profiles() {
