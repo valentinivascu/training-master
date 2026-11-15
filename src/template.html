@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Training Master</title>
+<meta name="description" content="Plan de antrenament, meniu cu porții calculate și jurnal de progres, pe profilul tău.">
+<meta name="theme-color" content="#141619">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Training Master">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+/*__CSS__*/
+</style>
+</head>
+<body>
+<div id="banner" hidden>Salvarea nu funcționează în acest mod de navigare (fereastră privată?). Datele se pierd când închizi pagina.</div>
+<main id="app"></main>
+
+<div id="timer" hidden>
+  <div id="timer-fill"></div>
+  <span id="timer-t" aria-live="polite"></span>
+  <button data-act="tminus" aria-label="Scade 15 secunde">−15</button>
+  <button data-act="tplus" aria-label="Adaugă 15 secunde">+15</button>
+  <button data-act="tskip">Sari</button>
+</div>
+
+<nav id="tabs" hidden aria-label="Secțiuni"><div>
+  <button data-act="tab" data-tab="train"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 7v10M3.5 9.5v5M17.5 7v10M20.5 9.5v5M6.5 12h11"/></svg>Antrenament</button>
+  <button data-act="tab" data-tab="food"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M4.5 3v4.5a2.5 2.5 0 0 0 5 0V3M7 11v10M17 3c-2 1.5-3 4-3 7h3zm0 7v11"/></svg>Nutriție</button>
+  <button data-act="tab" data-tab="prog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>Progres</button>
+  <button data-act="tab" data-tab="me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6.5 8-6.5s8 2.500 8 6.500"/></svg>Profil</button>
+</div></nav>
+
+<div id="sheet" hidden data-act="sheetbg"><div id="sheet-in" role="dialog" aria-modal="true"></div></div>
+<div id="toast" hidden role="status"></div>
+
+<script>
+/*__JS__*/
+</script>
+</body>
+</html>

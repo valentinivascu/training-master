@@ -1966,7 +1966,7 @@ function vForm() {
   const tag = k => (rec === k ? 'recomandat pentru tine' : '');
   const sec = [
     '<section class="card"><h3>Despre tine</h3>' +
-    '<label class="fld">Prenume<input class="in" data-in="form" name="name" maxlength="20" autocomplete="off" value="' + esc(d.name || '') + '" placeholder="ex. Valentin"></label>' +
+    '<label class="fld">Prenume<input class="in" data-in="form" name="name" maxlength="20" autocomplete="off" value="' + esc(d.name || '') + '" placeholder="ex. Andrei"></label>' +
     '<div class="fld"><span>Gen</span>' + opts('sex', [['m', 'Bărbat'], ['f', 'Femeie']], d) + '</div>' +
     '<div class="grid3"><label class="fld">Vârstă<input class="in" data-in="form" name="age" inputmode="numeric" autocomplete="off" value="' + esc(d.age || '') + '" placeholder="ani"></label><label class="fld">Înălțime<input class="in" data-in="form" name="h" inputmode="numeric" autocomplete="off" value="' + esc(d.h || '') + '" placeholder="cm"></label><label class="fld">Greutate<input class="in" data-in="form" name="w" inputmode="decimal" autocomplete="off" value="' + esc(d.w || '') + '" placeholder="kg"></label></div>' +
     '<div class="fld"><span>Activitatea ta în afara sălii</span>' + opts('act', [['sed', 'Sedentar', 'birou, mașină'], ['mod', 'Moderat', 'mult mers pe jos'], ['act', 'Activ', 'muncă fizică']], d) + '</div></section>',

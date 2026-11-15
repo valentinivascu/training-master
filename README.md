@@ -1,22 +1,32 @@
 # Training Master
 
-Aplicație de telefon pentru sală: plan de antrenament pe profil (gen, obiectiv, nivel, zile pe săptămână), meniu cu porții calculate și jurnal de progres. Merge și fără internet. Datele rămân doar pe telefonul fiecăruia.
+Aplicație de telefon pentru sală: plan de antrenament pe profilul tău, animații care arată cum se face fiecare exercițiu și ce mușchi lucrează, meniu cu porții calculate și jurnal de progres. Merge și fără internet, iar datele rămân pe telefon.
 
-## Publicare pe GitHub Pages
-
-1. Pe github.com apasă **New repository**. Nume: `training-master`. Alege **Public** și apasă **Create repository**.
-2. În pagina repository-ului apasă **uploading an existing file**.
-3. Trage în pagină TOT conținutul acestui folder (`index.html`, `manifest.webmanifest`, `sw.js`, `README.md` și folderul `icons`), apoi apasă **Commit changes**.
-4. Mergi la **Settings → Pages**. La **Branch** alege `main` și `/ (root)`, apoi **Save**.
-5. După 1-2 minute aplicația este la adresa `https://NUMELE-TĂU.github.io/training-master/`.
+**Deschide aplicația:** https://valentinivascu.github.io/training-master/
 
 ## Instalare pe telefon
 
-- **iPhone:** deschide adresa în Safari → butonul de partajare → **Adaugă pe ecranul principal**.
-- **Android:** deschide adresa în Chrome → meniul cu trei puncte → **Instalează aplicația**.
+**iPhone (Safari)**
+1. Deschide adresa de mai sus în Safari.
+2. Apasă butonul de partajare (pătratul cu săgeată).
+3. Alege „Adaugă pe ecranul principal”, lasă activă opțiunea „Deschide ca aplicație web” și apasă „Adaugă”.
 
-Fiecare persoană își face profilul pe telefonul ei. Folosiți mereu pictograma de pe ecran: acolo sunt salvate datele. Din Profil → „Salvează o copie” se face o copie de siguranță.
+**Android (Chrome)**
+1. Deschide adresa în Chrome.
+2. Apasă meniul cu trei puncte și alege „Instalează aplicația” (sau „Adaugă pe ecranul de pornire”).
 
-## Actualizare
+Deschide aplicația mereu din iconiță. Din Profil → „Salvează o copie” faci o copie de siguranță a datelor, pe care o poți restaura pe alt telefon.
 
-Când înlocuiești fișierele cu o versiune nouă, schimbă și numărul din `sw.js` (linia `const CACHE = ...`). Telefoanele iau versiunea nouă la a doua deschidere.
+## Pentru dezvoltare
+
+Sursele sunt în `src/`. Fișierele din rădăcină (`index.html`, `sw.js`, `manifest.webmanifest`, `fonts/`, `icons/`) sunt cele publicate și se generează cu:
+
+```bash
+python3 build.py
+node test/core.test.js
+python3 test/smoke.py
+```
+
+Detaliile complete (structură, reguli, logica de calcul, motorul de animație, pașii de publicare) sunt în [CLAUDE.md](CLAUDE.md).
+
+Fontul Manrope este inclus sub licența SIL Open Font License (`fonts/OFL-Manrope.txt`).
