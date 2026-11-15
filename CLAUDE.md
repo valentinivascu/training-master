@@ -72,10 +72,12 @@ Testele de browser au nevoie de `pip install playwright` și de un Chromium (`pl
 ## Modelul de date (localStorage)
 
 ```js
-S = {v: 2, active: profileId, profiles: {
+S = {v: 2, active: profileId, bk?: 'YYYY-MM-DD' /* ultima copie de siguranță */, profiles: {
   [id]: {id, name, sex: 'm'|'f', age, h, w, act: 'sed'|'mod'|'act', goal: 'masa'|'ton'|'slab',
          level: 'beg'|'int', days: 3|4|5, focus: 'echilibrat'|'inferior'|'superior', meals: 0|3..6,
          accent: 'rust'|'teal'|'violet'|'rose', created, deload?, kcalO?, protO?,
+         kcalAt?,                               // data ultimei schimbări a țintei de calorii (sfatul așteaptă cântăriri noi)
+         pick?: {d, i},                         // antrenamentul din bibliotecă ales azi (rămâne ales la redeschidere)
          swaps: {'BLOCK:exId': altExId},
          sessions: [{d: 'YYYY-MM-DD', i, k: blockKey, n: nume, sets: {exId: [{w, r, ok}]}, done?, t0?, t1?}],
          bw: [{d, w, c?}],                      // cântăriri (c = talie)
@@ -93,6 +95,8 @@ S = {v: 2, active: profileId, profiles: {
 - **Programe:** `PROGRAMS[focus][zile]` → chei din `BLOCKS`. Intermediarii primesc un set în plus la primele două exerciții.
 - **Biblioteca „Ce lucrezi azi?”:** `LIB` pe categorii, ordinea din `LIB_ORDER` depinde de gen (femei: fesieri primele; bărbați: Push/Pull/Legs). Bazată pe cercetare: fiecare grupă de 2 ori pe săptămână e mai bine decât o dată (Schoenfeld 2016); fesierii, 2-3 ședințe pe săptămână, combinând hip thrust, genuflexiuni sau fandări, îndreptări și abducții (Contreras). La zilele „pe grupe”, aplicația afișează un sfat despre frecvență.
 - **Săptămână ușoară:** după 7 săptămâni cu antrenamente de la ultima resetare.
+- **Data antrenamentului (`trainDate`):** o ședință neterminată, cu ultimul set bifat acum sub 3 ore, își păstrează data și după miezul nopții.
+- **Meniu:** „Amestecă” și ↻ nu schimbă mesele bifate ca mâncate.
 
 ## Animații (src/anim.js)
 
@@ -105,6 +109,8 @@ S = {v: 2, active: profileId, profiles: {
 ## Design
 
 - Temă închisă. Culori în `:root` din styles.css (`--bg #141619`, `--surface`, `--line`, `--text`, `--muted`). Accentul (`--accent`, `--accent-dim`) vine din culoarea profilului: rust, teal, violet sau rose.
+- Toate culorile și razele sunt variabile în `:root` (`--r-xs` … `--r-pill`, `--on-accent`, `--placeholder` etc.); nu scrie culori direct în reguli.
+- Confirmările se fac cu `ask()` (fereastra de jos), nu cu `confirm()`.
 - Font Manrope (variabil, inclus local). Butoane mari (min. 44-54 px), carduri cu colțuri de 14-20 px, fereastră de jos (`openSheet`) pentru alegeri, mesaje scurte (`toast`).
 - Componente: `.hero` (antrenamentul zilei), `.ex` (exercițiu cu animație și seturi), `.wcard` + `.bmap` (selector cu hartă musculară), `.meal`, `.kring` (inel de calorii), `.vchart` (volum pe săptămână).
 - Ton: direct, prietenos, fără jargon. Butoanele spun ce fac („Începe antrenamentul”, „Salvează o copie”).

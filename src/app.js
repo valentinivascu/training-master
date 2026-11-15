@@ -1,7 +1,7 @@
 /* ============ APLICAȚIA: stare, ecrane, acțiuni ============ */
 
 const LS_KEY = 'fisa-antrenament.v2'; /* nume intern vechi, păstrat ca datele salvate să rămână */
-const APP_VERSION = '2.5';
+const APP_VERSION = '2.6';
 const ACCENTS = {rust: ['#DB7440', '#7A3F1E'], teal: ['#4FB3A2', '#235B52'], violet: ['#A488E6', '#4E3C86'], rose: ['#E0708F', '#7E3550']};
 const GOALS = {masa: 'Masă musculară', ton: 'Tonifiere și formă', slab: 'Slăbire'};
 const FOCUS = {echilibrat: 'Echilibrat, tot corpul', inferior: 'Accent pe fesieri și picioare', superior: 'Accent pe partea superioară'};
@@ -23,7 +23,9 @@ const P = () => S.profiles[S.active] || null;
 const TODAY = () => ymd();
 const fmtD = (s, o) => parseYmd(s).toLocaleDateString('ro-RO', o || {day: 'numeric', month: 'short'});
 const fmtK = n => Math.round(n).toLocaleString('ro-RO');
-const ui = {tab: 'train', day: null, open: null, meal: null, form: null, hist: null, lastDate: ymd()};
+const ui = {tab: 'train', day: null, open: null, meal: null, form: null, hist: null, lastDate: ymd(), sy: 0, ask: null};
+/* elementele de listă apăsabile se pot folosi și de la tastatură / cititor de ecran */
+const TAP = ' role="button" tabindex="0"';
 
 function normProfile(p) {
   p.swaps = p.swaps || {}; p.sessions = p.sessions || []; p.bw = p.bw || []; p.food = p.food || {};
@@ -40,6 +42,13 @@ function ensureSession(p, d, day) {
   let s = findSession(p, d, day.i);
   if (!s) { s = {d, i: day.i, k: day.k, n: day.name, sets: {}}; p.sessions.push(s); p.sessions.sort((a, b) => (a.d < b.d ? -1 : a.d > b.d ? 1 : 0)); }
   return s;
+}
+/* Data antrenamentului: un antrenament început înainte de miezul nopții și încă deschis (ultimul set bifat
+   acum mai puțin de 3 ore) continuă pe data lui, ca seturile să nu se rupă în două ședințe. */
+function trainDate(p) {
+  const t = TODAY(); p = p || P(); if (!p) return t;
+  const now = Date.now(), open = p.sessions.filter(s => s.d < t && !s.done && s.t1 && now - s.t1 < 3 * 3600000 && hasOk(s)).pop();
+  return open ? open.d : t;
 }
 function nextDay(p, prog, today) {
   const ss = p.sessions;
@@ -79,7 +88,7 @@ function render() {
   }
   applyAccent(p);
   $('#tabs').hidden = false;
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === ui.tab));
+  document.querySelectorAll('#tabs button').forEach(b => { const on = b.dataset.tab === ui.tab; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   const title = {train: 'Antrenament', food: 'Nutriție', prog: 'Progres', me: 'Profil'}[ui.tab];
   const dateTxt = new Date().toLocaleDateString('ro-RO', {weekday: 'long', day: 'numeric', month: 'long'});
   app.innerHTML = '<header class="top"><div><div class="eyebrow">' + esc(dateTxt) + '</div><h1>' + title + '</h1></div>' +
@@ -106,11 +115,13 @@ function ring(done, total, label) {
 }
 function sesDone(ses, day) { return ses ? day.ex.reduce((n, x) => n + Math.min(x.sets, okSets(ses, x.id).length), 0) : 0; }
 function vTrain(p) {
-  const prog = program(p), today = TODAY();
+  const prog = program(p), today = trainDate(p);
   if (ui.day == null || (ui.day < 100 && ui.day >= prog.length)) {
-    /* dacă azi s-a lucrat deja, rămâi pe antrenamentul de azi; altfel arată ziua care urmează în rotație */
+    /* antrenamentul ales azi din bibliotecă rămâne ales și dacă telefonul închide aplicația;
+       dacă azi s-a lucrat deja, rămâi pe antrenamentul de azi; altfel arată ziua care urmează în rotație */
+    const pk = p.pick && p.pick.d === today && LIBK[p.pick.i - 100] ? p.pick.i : null;
     const mine = p.sessions.filter(s => s.d === today && hasOk(s) && (s.i < prog.length || s.i >= 100)).pop();
-    ui.day = mine ? mine.i : nextDay(p, prog, today);
+    ui.day = pk != null ? pk : mine ? mine.i : nextDay(p, prog, today);
   }
   const nd = nextDay(p, prog, today), day = dayByIndex(p, ui.day), ses = findSession(p, today, day.i), wk = weekDates(p, today);
   const total = day.ex.reduce((n, x) => n + x.sets, 0), done = sesDone(ses, day), mins = dayMins(day);
@@ -136,7 +147,7 @@ function vTrain(p) {
     prog.map(d => '<button class="chip' + (d.i === ui.day ? ' on' : '') + '" data-act="day" data-i="' + d.i + '"><b>Ziua ' + (d.i + 1) + '</b><span>' + esc(d.name) + '</span>' + (d.i === nd ? '<i>urmează</i>' : '') + '</button>').join('') +
     '<button class="chip more" data-act="picker"><b>Altceva</b><span>Toate antrenamentele</span><i>+</i></button></div>';
   if (!p.sessions.some(hasOk)) h += '<section class="card note"><b>Cum funcționează</b><p>Începe cu 5-8 minute de încălzire ușoară (bandă, bicicletă). Apasă pe un exercițiu: vezi mișcarea animată și mușchii lucrați, scrii greutatea și repetările, apoi bifezi setul. Cronometrul de pauză pornește singur. Dacă azi vrei altceva decât programul, alege din „Altceva”.</p></section>';
-  h += '<h3 class="sec">Exercițiile zilei</h3>' + day.ex.map(ex => vExercise(p, ex, ses, today)).join('');
+  h += '<h3 class="sec">Exercițiile zilei</h3>' + day.ex.map(ex => vExercise(p, ex, ses, today, nextEx)).join('');
 
   if (ses && hasOk(ses) && !ses.done && nextEx) h += '<button class="btn big ghost" data-act="finish">Încheie antrenamentul</button>';
   if (targets(p).goal === 'slab') h += '<section class="card note"><b>Pentru slăbire</b><p>Greutățile rămân la fel de grele ca la masă musculară: ele îți păstrează mușchii. Adaugă 8.000-10.000 de pași pe zi și, dacă vrei, 20-30 de minute de mers alert după antrenament.</p></section>';
@@ -163,13 +174,13 @@ function vPicker(p) {
   return h + '<button class="btn ghost big" data-act="closesheet">Închide</button>';
 }
 
-function vExercise(p, ex, ses, today) {
+function vExercise(p, ex, ses, today, nextEx) {
   const e = EX[ex.id], rows = (ses && ses.sets[ex.id]) || [], done = rows.filter(s => s && s.ok).length;
-  const n = Math.max(ex.sets, rows.length), open = ui.open === ex.id;
+  const n = Math.max(ex.sets, rows.length), open = ui.open === ex.id, isNext = !!(nextEx && nextEx.id === ex.id && !(ses && ses.done));
   const target = ex.sets + ' × ' + ex.reps + (e.k === 't' ? ' sec' : UNI[ex.id] ? ' pe parte' : '');
-  let h = '<section class="ex' + (open ? ' open' : '') + (done >= ex.sets ? ' complete' : '') + '" id="ex-' + ex.id + '">' +
+  let h = '<section class="ex' + (open ? ' open' : '') + (done >= ex.sets ? ' complete' : '') + (isNext ? ' next' : '') + '" id="ex-' + ex.id + '">' +
     '<button class="ex-head" data-act="ex" data-id="' + ex.id + '" aria-expanded="' + open + '">' + ANIM.thumb(ex.id) +
-    '<span class="ex-txt"><b>' + esc(e.n) + '</b><small>' + esc(e.m) + '</small><small class="tgt">' + target + '</small></span><span class="ring">' + (done >= ex.sets ? '✓' : done + '/' + ex.sets) + '</span></button>';
+    '<span class="ex-txt">' + (isNext && !open ? '<i class="nx">' + (ses && hasOk(ses) ? 'Urmează' : 'Începe aici') + '</i>' : '') + '<b>' + esc(e.n) + '</b><small>' + esc(e.m) + '</small><small class="tgt">' + target + '</small></span><span class="ring">' + (done >= ex.sets ? '✓' : done + '/' + ex.sets) + '</span></button>';
   if (!open) return h + '</section>';
   const sg = suggest(p, ex, today);
   h += '<div class="ex-body">' + ANIM.html(ex.id, e.n) + '<p class="sug">' + esc(sg.text) + '</p><div class="sets">';
@@ -179,7 +190,8 @@ function vExercise(p, ex, ses, today) {
     if (e.k === 't') h += '<div class="set' + ok + '"><span class="sn">' + (j + 1) + '</span><input class="in"' + attrs + ' data-f="r" inputmode="numeric" autocomplete="off" aria-label="Secunde, setul ' + (j + 1) + '" value="' + (r.r != null ? r.r : '') + '" placeholder="' + (sg.r || 30) + '"><span class="unit">sec</span><button class="chk" data-act="chk" data-id="' + ex.id + '" data-j="' + j + '" aria-label="Set făcut">✓</button></div>';
     else h += '<div class="set' + ok + '"><span class="sn">' + (j + 1) + '</span><input class="in"' + attrs + ' data-f="w" inputmode="decimal" autocomplete="off" aria-label="Greutate în kg, setul ' + (j + 1) + '" value="' + (r.w != null ? fmtN(r.w) : '') + '" placeholder="' + (sg.w != null ? fmtN(sg.w) : e.bw ? '0' : 'kg') + '"><span class="unit">kg ×</span><input class="in"' + attrs + ' data-f="r" inputmode="numeric" autocomplete="off" aria-label="Repetări, setul ' + (j + 1) + '" value="' + (r.r != null ? r.r : '') + '" placeholder="' + (sg.r || repRange(ex.reps)[0]) + '"><span class="unit">rep</span><button class="chk" data-act="chk" data-id="' + ex.id + '" data-j="' + j + '" aria-label="Set făcut">✓</button></div>';
   }
-  h += '</div><div class="ex-actions"><button class="btn small ghost" data-act="addset" data-id="' + ex.id + '">+ Set</button>' +
+  const after = done >= ex.sets && nextEx && nextEx.id !== ex.id && !(ses && ses.done);
+  h += '</div>' + (after ? '<button class="btn big next-btn" data-act="start">Următorul: ' + esc(EX[nextEx.id].n) + ' →</button>' : '') + '<div class="ex-actions"><button class="btn small ghost" data-act="addset" data-id="' + ex.id + '">+ Set</button>' +
     (rows.length > ex.sets && !(rows[rows.length - 1] || {}).ok ? '<button class="btn small ghost" data-act="delset" data-id="' + ex.id + '">− Set</button>' : '') +
     (EX[ex.base].alt.length ? '<button class="btn small ghost" data-act="swap" data-base="' + ex.base + '" data-id="' + ex.id + '">Înlocuiește</button>' : '') +
     '<a class="btn small ghost" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=' + encodeURIComponent(e.en + ' proper form tutorial') + '">Video ↗</a></div>' +
@@ -225,18 +237,18 @@ function vFood(p) {
   plan.meals.forEach(m => { if (eat[m.slot]) { ek += m.k; ep += m.p; ec += m.c; ef += m.f; } });
   const glasses = Math.round(t.water / 0.25), w = f.water || 0, C = 2 * Math.PI * 40, fr = clamp(ek / t.kcal, 0, 1);
   const mac = (lbl, v, tg, cls) => '<div class="bar"><div class="bar-l"><span>' + lbl + '</span><span><b>' + v + '</b> / ' + tg + ' g</span></div><div class="track"><i class="' + cls + '" style="width:' + clamp(v / tg * 100, 0, 100) + '%"></i></div></div>';
-  let h = '<section class="card nut"><div class="kring"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" class="kr-bg"/><circle cx="50" cy="50" r="40" class="kr-fg" stroke-dasharray="' + (fr * C).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 50 50)"/></svg>' +
-    '<div><b>' + fmtK(Math.max(0, t.kcal - ek)) + '</b><span>kcal rămase</span><small>din ' + fmtK(t.kcal) + '</small></div></div>' +
+  let h = '<section class="card nut"><div class="kring"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" class="kr-bg"/><circle cx="50" cy="50" r="40" class="kr-fg' + (ek > t.kcal ? ' over' : '') + '" stroke-dasharray="' + (fr * C).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 50 50)"/></svg>' +
+    '<div>' + (ek > t.kcal ? '<b class="over">+' + fmtK(ek - t.kcal) + '</b><span>kcal peste țintă</span>' : '<b>' + fmtK(t.kcal - ek) + '</b><span>kcal rămase</span>') + '<small>din ' + fmtK(t.kcal) + '</small></div></div>' +
     '<div class="macros">' + mac('Proteine', ep, t.prot, 'mp') + mac('Carbohidrați', ec, t.carb, 'mc') + mac('Grăsimi', ef, t.fat, 'mf') + '</div></section>' +
     '<p class="fine pad0">Meniul de azi are în total ' + fmtK(plan.tot.k) + ' kcal și ' + plan.tot.p + ' g proteine, cu porții calculate pentru tine. Bifează fiecare masă după ce o mănânci.</p>';
   if (t.note) h += '<section class="card note warn"><p>' + esc(t.note) + '</p></section>';
-  h += '<section class="card water"><div><b>Apă</b><small>' + fmtN(w * 0.25) + ' din ' + fmtN(t.water) + ' litri · un pahar = 250 ml</small></div><div class="stepper"><button data-act="water" data-d="-1" aria-label="Scade un pahar">−</button><span>' + w + '<small>/' + glasses + '</small></span><button data-act="water" data-d="1" aria-label="Adaugă un pahar">+</button></div></section>';
+  h += '<section class="card water"><div><b>Apă</b><small>' + fmtN(w * 0.25) + ' din ' + fmtN(t.water) + ' litri</small><small>un pahar = 250 ml</small></div><div class="stepper"><button data-act="water" data-d="-1" aria-label="Scade un pahar">−</button><span>' + w + '<small>/' + glasses + '</small></span><button data-act="water" data-d="1" aria-label="Adaugă un pahar">+</button></div></section>';
   h += '<div class="row2"><button class="btn" data-act="shuffle">Amestecă tot meniul</button><button class="btn ghost" data-act="shop">Lista de ingrediente</button></div>';
   h += plan.meals.map(m => {
     const on = !!eat[m.slot], open = ui.meal === m.slot;
     return '<section class="meal' + (on ? ' eaten' : '') + (open ? ' open' : '') + '"><div class="meal-head"><button class="mchk' + (on ? ' on' : '') + '" data-act="eat" data-slot="' + m.slot + '" aria-label="Am mâncat">✓</button>' +
       '<button class="meal-txt" data-act="meal" data-slot="' + m.slot + '"><small>' + SLOTS[m.slot] + ' · ' + m.k + ' kcal · ' + m.p + ' g proteine</small><b>' + esc(m.name) + '</b></button>' +
-      '<button class="icon" data-act="reroll" data-slot="' + m.slot + '" aria-label="Altă rețetă">↻</button></div>' +
+      '<button class="icon" data-act="reroll" data-slot="' + m.slot + '" aria-label="Altă rețetă"' + (on ? ' aria-disabled="true"' : '') + '>↻</button></div>' +
       (open ? '<div class="meal-body"><ul class="ingr">' + m.items.map(it => '<li>' + esc(qtyText(it)) + '</li>').join('') + '</ul><p class="prep">' + esc(m.prep) + '</p><p class="fine">' + m.c + ' g carbohidrați · ' + m.f + ' g grăsimi</p></div>' : '') + '</section>';
   }).join('');
   h += '<p class="fine pad">Valorile sunt estimări (±10%). Carnea, peștele, orezul, pastele și quinoa se cântăresc crude. Sare, condimente, lămâie și verdețuri după gust.</p>';
@@ -252,7 +264,11 @@ function spark(vals) {
   return '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Evoluție"><polyline fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="' + pts.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ') + '"/><circle cx="' + l[0].toFixed(1) + '" cy="' + l[1].toFixed(1) + '" r="4.5" fill="var(--accent)"/></svg>';
 }
 function bwAdvice(p) {
-  const b = p.bw; if (b.length < 2) return null;
+  /* după o schimbare a țintei de calorii, ritmul se măsoară doar pe cântăririle de după schimbare,
+     altfel aceeași recomandare s-ar aplica de mai multe ori pe aceleași date */
+  const at = p.kcalAt, b = at ? p.bw.filter(x => x.d > at) : p.bw;
+  if (at && (b.length < 2 || daysBetween(b[0].d, b[b.length - 1].d) < 10)) return {cls: '', text: 'Ai schimbat ținta de calorii pe ' + fmtD(at, {day: 'numeric', month: 'long'}) + '. Îți dau o nouă recomandare după ce strâng cântăriri pe cel puțin 10 zile de atunci.'};
+  if (b.length < 2) return null;
   const last = b[b.length - 1]; let first = b[0];
   for (let i = 0; i < b.length; i++) if (daysBetween(b[i].d, last.d) <= 35) { first = b[i]; break; }
   const days = daysBetween(first.d, last.d);
@@ -282,7 +298,7 @@ function vProg(p) {
   let streak = 0; const wkSet = {}; done.forEach(s => { wkSet[mondayOf(s.d)] = 1; });
   const d0 = parseYmd(mondayOf(today)); if (!wkSet[ymd(d0)]) d0.setDate(d0.getDate() - 7);
   while (wkSet[ymd(d0)]) { streak++; d0.setDate(d0.getDate() - 7); }
-  let h = '<div class="stats"><div><b>' + wk + '/' + p.days + '</b><span>săptămâna aceasta</span></div><div><b>' + done.length + '</b><span>antrenamente în total</span></div><div><b>' + streak + '</b><span>săptămâni la rând</span></div></div>';
+  let h = '<div class="stats"><div><b>' + wk + '/' + p.days + '</b><span>săptămâna asta</span></div><div><b>' + done.length + '</b><span>antrenamente</span></div><div><b>' + streak + '</b><span>' + (streak === 1 ? 'săptămână' : 'săptămâni') + ' la rând</span></div></div>';
   if (done.length) {
     const vol = {}; done.forEach(s => { const m = mondayOf(s.d); vol[m] = (vol[m] || 0) + sesVolume(s); });
     const m0 = parseYmd(mondayOf(today)), weeksV = [];
@@ -292,14 +308,14 @@ function vProg(p) {
   }
 
   const adv = bwAdvice(p), last = p.bw[p.bw.length - 1];
-  h += '<section class="card"><h3>Greutate corporală</h3><div class="bwrow"><label>Greutate (kg)<input class="in" id="bw-w" inputmode="decimal" autocomplete="off" placeholder="' + (last ? fmtN(last.w) : '70,5') + '"></label><label>Talie (cm), opțional<input class="in" id="bw-c" inputmode="decimal" autocomplete="off" placeholder="' + (last && last.c ? fmtN(last.c) : '—') + '"></label><button class="btn" data-act="bwsave">Salvează</button></div>' +
+  h += '<section class="card"><h3>Greutate corporală</h3><div class="bwrow"><label>Greutate (kg)<input class="in" id="bw-w" inputmode="decimal" autocomplete="off" placeholder="' + (last ? fmtN(last.w) : '70,5') + '"></label><label>Talie (cm)<input class="in" id="bw-c" inputmode="decimal" autocomplete="off" placeholder="' + (last && last.c ? fmtN(last.c) : 'opțional') + '"></label><button class="btn" data-act="bwsave">Salvează</button></div>' +
     spark(p.bw.slice(-14).map(x => x.w)) + (adv ? '<div class="advice ' + adv.cls + '"><p>' + esc(adv.text) + '</p>' + (adv.nk ? '<button class="btn small" data-act="applykcal" data-k="' + adv.nk + '">Aplică: ' + fmtK(adv.cur) + ' → ' + fmtK(adv.nk) + ' kcal</button>' : '') + '</div>' : '<p class="fine">Cântărește-te dimineața, pe nemâncate, de 2-3 ori pe săptămână. După două săptămâni îți spun dacă trebuie ajustate caloriile.</p>') +
     '<ul class="list">' + p.bw.slice(-5).reverse().map(x => '<li><span>' + fmtD(x.d, {day: 'numeric', month: 'short', year: 'numeric'}) + '</span><b>' + fmtN(x.w) + ' kg' + (x.c ? ' · talie ' + fmtN(x.c) + ' cm' : '') + '</b></li>').join('') + '</ul></section>';
 
   const pr = {};
   done.forEach(s => Object.keys(s.sets).forEach(id => { if (!EX[id]) return; okSets(s, id).forEach(x => { const v = score(id, x); if (!pr[id] || v > pr[id].v) pr[id] = {v, w: x.w, r: x.r, d: s.d}; }); }));
-  const ids = Object.keys(pr);
-  h += '<section class="card"><h3>Recorduri personale</h3>' + (ids.length ? '<ul class="list tap">' + ids.map(id => '<li data-act="exhist" data-id="' + id + '"><span>' + esc(EX[id].n) + '<small>' + fmtD(pr[id].d) + '</small></span><b>' + (EX[id].k === 't' ? pr[id].r + ' sec' : (pr[id].w ? fmtN(pr[id].w) + ' kg × ' : '') + pr[id].r) + ' ›</b></li>').join('') + '</ul>' : '<p class="fine">Aici apar cele mai bune seturi ale tale la fiecare exercițiu, după primul antrenament.</p>') + '</section>';
+  const ids = Object.keys(pr).sort((a, b) => (pr[a].d < pr[b].d ? 1 : pr[a].d > pr[b].d ? -1 : 0));
+  h += '<section class="card"><h3>Recorduri personale</h3>' + (ids.length ? '<ul class="list tap">' + ids.map(id => '<li' + TAP + ' data-act="exhist" data-id="' + id + '"><span>' + esc(EX[id].n) + '<small>' + fmtD(pr[id].d) + '</small></span><b>' + (EX[id].k === 't' ? pr[id].r + ' sec' : (pr[id].w ? fmtN(pr[id].w) + ' kg × ' : '') + pr[id].r) + ' ›</b></li>').join('') + '</ul>' : '<p class="fine">Aici apar cele mai bune seturi ale tale la fiecare exercițiu, după primul antrenament.</p>') + '</section>';
 
   h += '<section class="card"><h3>Istoric antrenamente</h3>' + (done.length ? done.slice(-30).reverse().map(s => {
     const key = s.d + '|' + s.i, open = ui.hist === key;
@@ -326,10 +342,11 @@ function vMe(p) {
 
   h += '<section class="card"><h3>Ținte personalizate</h3><p class="fine">Lasă gol ca să folosești valorile calculate (' + fmtK(t.auto.kcal) + ' kcal, ' + t.auto.prot + ' g proteine).</p><div class="bwrow"><label>Calorii pe zi<input class="in" id="o-k" inputmode="numeric" autocomplete="off" value="' + (p.kcalO || '') + '" placeholder="' + t.auto.kcal + '"></label><label>Proteine (g)<input class="in" id="o-p" inputmode="numeric" autocomplete="off" value="' + (p.protO || '') + '" placeholder="' + t.auto.prot + '"></label><button class="btn" data-act="osave">Salvează</button></div></section>';
 
-  h += '<section class="card"><h3>Cine folosește aplicația</h3><ul class="list tap">' + others.map(o => '<li data-act="switch" data-id="' + o.id + '"><span><i class="dot" style="background:' + (ACCENTS[o.accent] || ACCENTS.rust)[0] + '"></i>' + esc(o.name) + '<small>' + GOALS[o.goal] + '</small></span><b>' + (o.id === p.id ? 'activ' : 'Alege ›') + '</b></li>').join('') + '</ul><div class="row2"><button class="btn ghost" data-act="newprofile">Adaugă profil</button><button class="btn ghost danger" data-act="delprofile">Șterge profilul</button></div><p class="fine">Fiecare profil are propriul plan, meniu și istoric. Pe telefonul fiecăruia, aplicația pornește cu profilul lui.</p></section>';
+  h += '<section class="card"><h3>Cine folosește aplicația</h3><ul class="list tap">' + others.map(o => '<li' + TAP + ' data-act="switch" data-id="' + o.id + '"><span><i class="dot" style="background:' + (ACCENTS[o.accent] || ACCENTS.rust)[0] + '"></i>' + esc(o.name) + '<small>' + GOALS[o.goal] + '</small></span><b>' + (o.id === p.id ? 'activ' : 'Alege ›') + '</b></li>').join('') + '</ul><button class="btn ghost big" data-act="newprofile">+ Adaugă profil</button><p class="fine pad">Fiecare profil are propriul plan, meniu și istoric. Pe telefonul fiecăruia, aplicația pornește cu profilul lui.</p></section>';
 
-  h += '<section class="card"><h3>Datele tale</h3><p class="fine">Totul se salvează doar pe acest telefon, în aplicație. Nu se trimite nimic pe internet. Fă din când în când o copie de siguranță, mai ales înainte să schimbi telefonul.</p><div class="row2"><button class="btn ghost" data-act="export">Salvează o copie</button><button class="btn ghost" data-act="import">Restaurează</button></div><input type="file" id="imp" accept="application/json,.json" hidden>' +
+  h += '<section class="card"><h3>Datele tale</h3><p class="fine">Totul se salvează doar pe acest telefon, în aplicație. Nu se trimite nimic pe internet. Fă din când în când o copie de siguranță, mai ales înainte să schimbi telefonul.</p><p class="bk' + (S.bk ? '' : ' none') + '">' + (S.bk ? 'Ultima copie: ' + fmtD(S.bk, {day: 'numeric', month: 'long', year: 'numeric'}) : 'Nu ai făcut încă nicio copie de siguranță.') + '</p><div class="row2"><button class="btn ghost" data-act="export">Salvează o copie</button><button class="btn ghost" data-act="import">Restaurează</button></div><input type="file" id="imp" accept="application/json,.json" hidden>' +
     '<details class="how"><summary>Cum pun aplicația pe ecranul telefonului</summary><p><b>iPhone:</b> deschide adresa aplicației în Safari, apasă butonul de partajare (pătratul cu săgeată) și alege „Adaugă pe ecranul principal”.</p><p><b>Android:</b> deschide adresa în Chrome, apasă meniul cu trei puncte și alege „Instalează aplicația” sau „Adaugă pe ecranul principal”.</p><p>După instalare merge și fără internet. Folosește mereu pictograma de pe ecran: acolo sunt salvate datele.</p></details></section>';
+  h += '<section class="card dz"><h3>Șterge profilul</h3><p class="fine">Șterge profilul „' + esc(p.name) + '” de pe acest telefon, cu tot istoricul lui. Nu se poate anula, așa că fă înainte o copie de siguranță.</p><button class="btn ghost danger" data-act="delprofile">Șterge profilul ' + esc(p.name) + '</button></section>';
   h += '<p class="fine pad">Training Master ' + APP_VERSION + '. Recomandările sunt generale, pentru adulți sănătoși. Dacă ești însărcinată, ai o problemă medicală sau o accidentare, cere întâi sfatul medicului.</p>';
   return h;
 }
@@ -409,8 +426,22 @@ function vPlanSheet(p) {
 }
 
 /* ---------- foi (ferestre de jos) și mesaje ---------- */
-function openSheet(html) { const s = $('#sheet'); $('#sheet-in').innerHTML = html; s.hidden = false; document.body.classList.add('noscroll'); $('#sheet-in').scrollTop = 0; }
-function closeSheet() { $('#sheet').hidden = true; document.body.classList.remove('noscroll'); }
+/* pe iPhone, overflow:hidden nu oprește derularea paginii din spate: corpul paginii se fixează pe loc și se reface la închidere */
+function openSheet(html) {
+  const s = $('#sheet'), b = document.body;
+  $('#sheet-in').innerHTML = html;
+  if (s.hidden) { ui.sy = window.scrollY; b.style.top = -ui.sy + 'px'; b.classList.add('noscroll'); s.hidden = false; }
+  $('#sheet-in').scrollTop = 0;
+}
+function closeSheet() {
+  const s = $('#sheet'), b = document.body; if (s.hidden) return;
+  s.hidden = true; ui.ask = null; b.classList.remove('noscroll'); b.style.top = ''; window.scrollTo(0, ui.sy || 0);
+}
+/* confirmare în fereastra aplicației, în loc de fereastra sistemului */
+function ask(title, text, okLabel, fn) {
+  openSheet('<h3>' + esc(title) + '</h3><p class="fine">' + esc(text) + '</p><div class="row2"><button class="btn ghost" data-act="closesheet">Renunță</button><button class="btn danger-fill" data-act="askok">' + esc(okLabel) + '</button></div>');
+  ui.ask = fn;
+}
 let toastT = null;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
 function curDay() { return dayByIndex(P(), ui.day == null ? 0 : ui.day); }
@@ -418,22 +449,24 @@ function curDay() { return dayByIndex(P(), ui.day == null ? 0 : ui.day); }
 /* ---------- ACȚIUNI ---------- */
 const ACT = {
   tab(el) { ui.tab = el.dataset.tab; render(); window.scrollTo(0, 0); },
-  day(el) { ui.day = +el.dataset.i; ui.open = null; rerender(); },
+  day(el) { ui.day = +el.dataset.i; ui.open = null; const p = P(); if (p.pick) { delete p.pick; save(); } rerender(); },
   picker() { openSheet(vPicker(P())); ANIM.scan(); },
   pickday(el) {
-    ui.day = +el.dataset.i; ui.open = null; closeSheet(); render(); window.scrollTo(0, 0);
+    const p = P(); ui.day = +el.dataset.i; ui.open = null;
+    if (ui.day >= 100) p.pick = {d: trainDate(p), i: ui.day}; else delete p.pick;
+    save(); closeSheet(); render(); window.scrollTo(0, 0);
     toast('Antrenamentul de azi: ' + curDay().name);
   },
-  jump(el) { const t = document.getElementById(el.dataset.to), box = $('#sheet-in'); if (t && box) box.scrollTo({top: t.offsetTop - 8, behavior: 'smooth'}); },
+  jump(el) { const t = document.getElementById(el.dataset.to), box = $('#sheet-in'), j = $('.jumps', box); if (t && box) box.scrollTo({top: t.offsetTop - (j ? j.offsetHeight : 0) - 8, behavior: 'smooth'}); },
   start() {
-    const p = P(), day = curDay(), ses = findSession(p, TODAY(), day.i), nx = day.ex.find(x => !ses || okSets(ses, x.id).length < x.sets);
+    const p = P(), day = curDay(), ses = findSession(p, trainDate(p), day.i), nx = day.ex.find(x => !ses || okSets(ses, x.id).length < x.sets);
     if (!nx) return;
     ui.open = nx.id; rerender();
     const c = $('#ex-' + nx.id); if (c) window.scrollTo(0, window.scrollY + c.getBoundingClientRect().top - 12);
   },
   ex(el) { ui.open = ui.open === el.dataset.id ? null : el.dataset.id; rerender(); const c = $('#ex-' + el.dataset.id); if (c && ui.open) { const r = c.getBoundingClientRect(); if (r.top < 0 || r.top > window.innerHeight * 0.6) window.scrollTo(0, window.scrollY + r.top - 80); } },
   chk(el) {
-    const p = P(), today = TODAY(), day = curDay(), id = el.dataset.id, j = +el.dataset.j, ex = day.ex.find(x => x.id === id), e = EX[id];
+    const p = P(), today = trainDate(p), day = curDay(), id = el.dataset.id, j = +el.dataset.j, ex = day.ex.find(x => x.id === id), e = EX[id];
     if (!ex) return;
     const ses = ensureSession(p, today, day), rows = ses.sets[id] || (ses.sets[id] = []);
     for (let k = 0; k <= j; k++) rows[k] = rows[k] || {};
@@ -452,24 +485,24 @@ const ACT = {
     ses.t1 = Date.now(); ses.done = false;
     save(); keepAwake(); startTimer(restFor(id)); rerender();
   },
-  addset(el) { const p = P(), day = curDay(), id = el.dataset.id, ex = day.ex.find(x => x.id === id), ses = ensureSession(p, TODAY(), day), rows = ses.sets[id] || (ses.sets[id] = []); while (rows.length < ex.sets) rows.push({}); if (rows.length >= 8) return toast('Opt seturi sunt de ajuns.'); rows.push({}); save(); rerender(); },
-  delset(el) { const p = P(), ses = findSession(p, TODAY(), curDay().i); if (ses && ses.sets[el.dataset.id]) { ses.sets[el.dataset.id].pop(); save(); rerender(); } },
+  addset(el) { const p = P(), day = curDay(), id = el.dataset.id, ex = day.ex.find(x => x.id === id), ses = ensureSession(p, trainDate(p), day), rows = ses.sets[id] || (ses.sets[id] = []); while (rows.length < ex.sets) rows.push({}); if (rows.length >= 8) return toast('Opt seturi sunt de ajuns.'); rows.push({}); save(); rerender(); },
+  delset(el) { const p = P(), ses = findSession(p, trainDate(p), curDay().i); if (ses && ses.sets[el.dataset.id]) { ses.sets[el.dataset.id].pop(); save(); rerender(); } },
   swap(el) {
     const base = el.dataset.base, cur = el.dataset.id, list = [base].concat(EX[base].alt);
-    openSheet('<h3>Înlocuiește exercițiul</h3><p class="fine">Aparat ocupat sau exercițiu care nu ți se potrivește? Alege o variantă care lucrează aceiași mușchi. Alegerea rămâne salvată pentru ziua aceasta din plan.</p><ul class="list tap">' + list.map(id => '<li data-act="swapset" data-base="' + base + '" data-to="' + id + '"><span>' + esc(EX[id].n) + '<small>' + esc(EX[id].eq) + '</small></span><b>' + (id === cur ? 'ales' : id === base ? 'original ›' : 'Alege ›') + '</b></li>').join('') + '</ul><button class="btn ghost big" data-act="closesheet">Închide</button>');
+    openSheet('<h3>Înlocuiește exercițiul</h3><p class="fine">Aparat ocupat sau exercițiu care nu ți se potrivește? Alege o variantă care lucrează aceiași mușchi. Alegerea rămâne salvată pentru ziua aceasta din plan.</p><ul class="list tap">' + list.map(id => '<li' + TAP + ' data-act="swapset" data-base="' + base + '" data-to="' + id + '"><span>' + esc(EX[id].n) + '<small>' + esc(EX[id].eq) + '</small></span><b>' + (id === cur ? 'ales' : id === base ? 'original ›' : 'Alege ›') + '</b></li>').join('') + '</ul><button class="btn ghost big" data-act="closesheet">Închide</button>');
   },
   swapset(el) { const p = P(), day = curDay(), key = day.k + ':' + el.dataset.base; if (el.dataset.to === el.dataset.base) delete p.swaps[key]; else p.swaps[key] = el.dataset.to; ui.open = el.dataset.to; save(); closeSheet(); rerender(); },
   finish() {
-    const p = P(), today = TODAY(), ses = findSession(p, today, curDay().i); if (!ses) return;
+    const p = P(), today = trainDate(p), ses = findSession(p, today, curDay().i); if (!ses) return;
     ses.done = true; ses.t1 = Date.now(); save(); stopTimer(); releaseWake();
     const prs = [];
     Object.keys(ses.sets).forEach(id => { if (!EX[id]) return; const old = bestBefore(p, id, today); if (!old) return; const now = Math.max.apply(null, okSets(ses, id).map(x => score(id, x)).concat([0])); if (now > old + 0.001) prs.push(EX[id].n); });
     const mins = ses.t0 ? Math.max(1, Math.round((ses.t1 - ses.t0) / 60000)) : 0;
     openSheet('<h3>Bravo, ' + esc(p.name) + '!</h3><div class="tgrid"><div><b>' + sesSetCount(ses) + '</b><span>seturi</span></div><div><b>' + fmtK(sesVolume(ses)) + '</b><span>kg volum</span></div><div><b>' + (mins || '—') + '</b><span>minute</span></div><div><b>' + weekDates(p, today) + '/' + p.days + '</b><span>săptămâna</span></div></div>' +
       (prs.length ? '<div class="advice good"><p><b>Recorduri noi:</b> ' + prs.map(esc).join(', ') + '.</p></div>' : '') + '<p class="fine">Mănâncă o masă cu proteine în următoarele două ore și bea apă.</p><button class="btn big" data-act="closesheet">Gata</button>');
-    ui.open = null; rerender();
+    ui.open = null; if (p.pick) delete p.pick; save(); rerender();
   },
-  reopen() { const ses = findSession(P(), TODAY(), curDay().i); if (ses) { ses.done = false; save(); rerender(); } },
+  reopen() { const ses = findSession(P(), trainDate(), curDay().i); if (ses) { ses.done = false; save(); rerender(); } },
   deload() { P().deload = TODAY(); save(); rerender(); },
   tminus() { if (timer) { timer.end -= 15000; tick(); } },
   tplus() { if (timer) { timer.end += 15000; timer.total += 15; timer.fin = 0; tick(); } },
@@ -477,8 +510,8 @@ const ACT = {
 
   eat(el) { const f = foodDay(P(), TODAY()); f.eat[el.dataset.slot] = f.eat[el.dataset.slot] ? 0 : 1; save(); rerender(); },
   meal(el) { ui.meal = ui.meal === el.dataset.slot ? null : el.dataset.slot; rerender(); },
-  reroll(el) { const p = P(), d = TODAY(), slot = el.dataset.slot, f = foodDay(p, d), n = RECIPES[slot].length, cur = pickIdx(p, d, slot); f.pick[slot] = (cur + 1 + Math.floor(Math.random() * (n - 1))) % n; ui.meal = slot; save(); rerender(); },
-  shuffle() { const p = P(), d = TODAY(), f = foodDay(p, d); Object.keys(RECIPES).forEach(slot => { const n = RECIPES[slot].length, cur = pickIdx(p, d, slot); f.pick[slot] = (cur + 1 + Math.floor(Math.random() * (n - 1))) % n; }); ui.meal = null; save(); rerender(); toast('Meniu nou pentru azi.'); },
+  reroll(el) { const p = P(), d = TODAY(), slot = el.dataset.slot, f = foodDay(p, d); if (f.eat[slot]) return toast('Ai bifat masa ca mâncată. Debifeaz-o ca s-o schimbi.'); const n = RECIPES[slot].length, cur = pickIdx(p, d, slot); f.pick[slot] = (cur + 1 + Math.floor(Math.random() * (n - 1))) % n; ui.meal = slot; save(); rerender(); },
+  shuffle() { const p = P(), d = TODAY(), f = foodDay(p, d); let kept = 0; Object.keys(RECIPES).forEach(slot => { if (f.eat[slot]) { kept++; return; } const n = RECIPES[slot].length, cur = pickIdx(p, d, slot); f.pick[slot] = (cur + 1 + Math.floor(Math.random() * (n - 1))) % n; }); ui.meal = null; save(); rerender(); toast(kept ? 'Meniu nou. Mesele bifate au rămas la fel.' : 'Meniu nou pentru azi.'); },
   water(el) { const f = foodDay(P(), TODAY()); f.water = clamp((f.water || 0) + (+el.dataset.d), 0, 30); save(); rerender(); },
   shop() {
     const plan = planDay(P(), TODAY()), sum = {};
@@ -496,9 +529,12 @@ const ACT = {
     p.bw = p.bw.filter(x => x.d !== today); const e = {d: today, w}; if (c) e.c = c; p.bw.push(e); p.w = w;
     save(); rerender(); toast('Cântărire salvată.');
   },
-  applykcal(el) { const p = P(); p.kcalO = +el.dataset.k; save(); rerender(); toast('Ținta de calorii a fost actualizată.'); },
+  applykcal(el) { const p = P(); p.kcalO = +el.dataset.k; p.kcalAt = TODAY(); save(); rerender(); toast('Ținta de calorii a fost actualizată.'); },
   hist(el) { ui.hist = ui.hist === el.dataset.k ? null : el.dataset.k; rerender(); },
-  delses(el) { if (!confirm('Ștergi această ședință din istoric?')) return; const p = P(), a = el.dataset.k.split('|'); p.sessions = p.sessions.filter(s => !(s.d === a[0] && s.i === +a[1])); ui.hist = null; save(); rerender(); },
+  delses(el) {
+    const a = el.dataset.k.split('|');
+    ask('Ștergi ședința?', 'Ședința din ' + fmtD(a[0], {day: 'numeric', month: 'long'}) + ' dispare din istoric și din recorduri. Nu se poate anula.', 'Șterge ședința', () => { const p = P(); p.sessions = p.sessions.filter(s => !(s.d === a[0] && s.i === +a[1])); ui.hist = null; save(); rerender(); toast('Ședința a fost ștearsă.'); });
+  },
   exhist(el) {
     const p = P(), id = el.dataset.id, e = EX[id], rows = [];
     p.sessions.forEach(s => { const o = okSets(s, id); if (o.length) rows.push({d: s.d, sets: o, v: Math.max.apply(null, o.map(x => score(id, x)))}); });
@@ -507,7 +543,7 @@ const ACT = {
 
   profiles() {
     const p = P();
-    openSheet('<h3>Cine se antrenează?</h3><ul class="list tap">' + Object.values(S.profiles).map(o => '<li data-act="switch" data-id="' + o.id + '"><span><i class="dot" style="background:' + (ACCENTS[o.accent] || ACCENTS.rust)[0] + '"></i>' + esc(o.name) + '<small>' + GOALS[o.goal] + ' · ' + o.days + ' zile</small></span><b>' + (o.id === p.id ? 'activ' : 'Alege ›') + '</b></li>').join('') + '</ul><div class="row2"><button class="btn ghost" data-act="newprofile">Adaugă profil</button><button class="btn ghost" data-act="closesheet">Închide</button></div>');
+    openSheet('<h3>Cine se antrenează?</h3><ul class="list tap">' + Object.values(S.profiles).map(o => '<li' + TAP + ' data-act="switch" data-id="' + o.id + '"><span><i class="dot" style="background:' + (ACCENTS[o.accent] || ACCENTS.rust)[0] + '"></i>' + esc(o.name) + '<small>' + GOALS[o.goal] + ' · ' + o.days + ' zile</small></span><b>' + (o.id === p.id ? 'activ' : 'Alege ›') + '</b></li>').join('') + '</ul><div class="row2"><button class="btn ghost" data-act="newprofile">Adaugă profil</button><button class="btn ghost" data-act="closesheet">Închide</button></div>');
   },
   'switch'(el) { if (S.profiles[el.dataset.id]) { S.active = el.dataset.id; ui.day = null; ui.open = null; ui.meal = null; ui.hist = null; stopTimer(); save(); closeSheet(); render(); window.scrollTo(0, 0); toast('Profil activ: ' + P().name); } },
   newprofile() { const used = Object.values(S.profiles).map(o => o.accent), free = Object.keys(ACCENTS).find(k => used.indexOf(k) < 0) || 'rust'; closeSheet(); ui.form = {mode: 'new', d: {accent: free, meals: 0}}; render(); window.scrollTo(0, 0); },
@@ -519,11 +555,15 @@ const ACT = {
     f.err = ''; f.step = Math.min(3, (f.step || 0) + 1); render(); window.scrollTo(0, 0);
   },
   fback() { const f = ui.form; f.err = ''; f.step = Math.max(0, (f.step || 0) - 1); render(); window.scrollTo(0, 0); },
-  delprofile() { const p = P(); if (!confirm('Ștergi profilul „' + p.name + '” cu tot istoricul lui? Nu se poate anula.')) return; delete S.profiles[p.id]; S.active = Object.keys(S.profiles)[0] || null; ui.day = null; ui.tab = 'train'; save(); render(); window.scrollTo(0, 0); },
+  delprofile() {
+    const p = P();
+    ask('Ștergi profilul ' + p.name + '?', 'Dispar planul, meniul și tot istoricul lui de pe acest telefon. Nu se poate anula.', 'Șterge definitiv', () => { delete S.profiles[p.id]; S.active = Object.keys(S.profiles)[0] || null; ui.day = null; ui.tab = 'train'; save(); render(); window.scrollTo(0, 0); });
+  },
   osave() {
     const p = P(), k = num($('#o-k').value), pr = num($('#o-p').value);
     if (k != null && (k < 1200 || k > 6000)) return toast('Caloriile trebuie să fie între 1.200 și 6.000.');
     if (pr != null && (pr < 40 || pr > 350)) return toast('Proteinele trebuie să fie între 40 și 350 g.');
+    if ((k ? Math.round(k) : 0) !== (p.kcalO || 0)) p.kcalAt = TODAY();
     if (k) p.kcalO = Math.round(k); else delete p.kcalO;
     if (pr) p.protO = Math.round(pr); else delete p.protO;
     save(); rerender(); toast('Țintele au fost salvate.');
@@ -532,24 +572,30 @@ const ACT = {
     const name = 'training-master-' + TODAY() + '.json', text = JSON.stringify(S);
     try {
       const file = new File([text], name, {type: 'application/json'});
-      if (navigator.canShare && navigator.canShare({files: [file]})) { navigator.share({files: [file], title: 'Copie de siguranță'}).catch(() => {}); return; }
+      if (navigator.canShare && navigator.canShare({files: [file]})) { navigator.share({files: [file], title: 'Copie de siguranță'}).then(() => { S.bk = TODAY(); save(); rerender(); }).catch(() => {}); return; }
     } catch (e) {}
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type: 'application/json'})); a.download = name; document.body.appendChild(a); a.click(); a.remove();
-    toast('Copia a fost descărcată.');
+    S.bk = TODAY(); save(); rerender(); toast('Copia a fost descărcată.');
   },
   'import'() { $('#imp').click(); },
   animtoggle() { ANIM.toggle(); },
   closesheet() { closeSheet(); },
+  askok() { const f = ui.ask; closeSheet(); if (f) f(); },
   sheetbg(el, e) { if (e.target === el) closeSheet(); }
 };
 
 document.addEventListener('click', e => { const el = e.target.closest('[data-act]'); if (el && ACT[el.dataset.act]) ACT[el.dataset.act](el, e); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !$('#sheet').hidden) { closeSheet(); return; }
+  const el = e.target;
+  if ((e.key === 'Enter' || e.key === ' ') && el.getAttribute && el.getAttribute('role') === 'button' && el.tagName !== 'BUTTON' && el.dataset.act) { e.preventDefault(); el.click(); }
+});
 document.addEventListener('input', e => {
   const el = e.target; if (!el.dataset) return;
   if (el.dataset.in === 'set') {
     /* valorile scrise se păstrează ca ciornă chiar dacă setul nu e încă bifat */
     const p = P(), day = curDay(), id = el.dataset.id, j = +el.dataset.j, f = el.dataset.f;
-    const ses = ensureSession(p, TODAY(), day), rows = ses.sets[id] || (ses.sets[id] = []);
+    const ses = ensureSession(p, trainDate(p), day), rows = ses.sets[id] || (ses.sets[id] = []);
     for (let k = 0; k <= j; k++) rows[k] = rows[k] || {};
     const v = num(el.value);
     if (v == null || v < 0) { if (!rows[j].ok) delete rows[j][f]; }
@@ -566,10 +612,12 @@ document.addEventListener('change', e => {
         const data = JSON.parse(rd.result);
         if (!data || !data.profiles || !Object.keys(data.profiles).length) throw new Error('gol');
         Object.values(data.profiles).forEach(o => { if (!o.id || !o.name || !o.sex || !o.h) throw new Error('profil'); });
-        if (!confirm('Restaurarea înlocuiește toate datele din aplicație cu cele din copie. Continui?')) return;
-        S = {v: 2, active: data.active, profiles: data.profiles}; Object.values(S.profiles).forEach(normProfile);
-        if (!S.profiles[S.active]) S.active = Object.keys(S.profiles)[0];
-        ui.day = null; save(); render(); toast('Datele au fost restaurate.');
+        const n = Object.keys(data.profiles).length;
+        ask('Restaurezi copia?', 'Copia are ' + (n === 1 ? 'un profil' : n + ' profiluri') + '. Toate datele de acum din aplicație vor fi înlocuite cu cele din copie.', 'Restaurează', () => {
+          S = {v: 2, active: data.active, profiles: data.profiles, bk: data.bk}; Object.values(S.profiles).forEach(normProfile);
+          if (!S.profiles[S.active]) S.active = Object.keys(S.profiles)[0];
+          ui.day = null; ui.form = null; save(); render(); toast('Datele au fost restaurate.');
+        });
       } catch (err) { toast('Fișierul nu este o copie validă.'); }
     };
     rd.readAsText(el.files[0]); el.value = '';
@@ -588,7 +636,7 @@ document.addEventListener('submit', e => { if (e.target.id !== 'pform') return; 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') return;
   if (ui.lastDate !== ymd()) { ui.lastDate = ymd(); ui.day = null; if (!ui.form) rerender(); }
-  const p = P(); if (p && p.sessions.some(s => s.d === TODAY() && !s.done && hasOk(s))) keepAwake();
+  const p = P(); if (p && p.sessions.some(s => s.d === trainDate(p) && !s.done && hasOk(s))) keepAwake();
   tick();
 });
 
