@@ -21,7 +21,7 @@
 :root{
   --bg:#141619; --surface:#1D2025; --surface-2:#272B32; --line:#353A43;
   --text:#EFEBE3; --muted:#959CA7; --good:#5DBB8A; --warn:#E0B552; --danger:#E0736B;
-  --accent:#DB7440; --accent-dim:#7A3F1E; --anim-outline:#0D0F12; --anim-pad:#2B3037; --anim-padhi:#4B535E; --anim-metal:#6E7682; --anim-metal2:#3B4149; --anim-steel:#A9B0BA; --anim-floor:#191C20; --anim-body:#E6E0D6; --anim-body2:#7D838D; --anim-hair:#2B2420; --anim-mp:var(--accent); --anim-ms:rgba(219,116,64,.45); --glow:rgba(219,116,64,.26);
+  --accent:#DB7440; --accent-dim:#7A3F1E; --anim-outline:#0D0F12; --map-base:#3A414B; --map-line:rgba(0,0,0,.35); --anim-pad:#2B3037; --anim-padhi:#4B535E; --anim-metal:#6E7682; --anim-metal2:#3B4149; --anim-steel:#A9B0BA; --anim-floor:#191C20; --anim-body:#E6E0D6; --anim-body2:#7D838D; --anim-hair:#2B2420; --anim-mp:var(--accent); --anim-ms:rgba(219,116,64,.45); --glow:rgba(219,116,64,.26);
   --r:14px; --tab-h:62px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -331,6 +331,34 @@ h1{letter-spacing:-.03em}
 .vb span{font-size:10px;color:var(--muted);white-space:nowrap}
 .vb b{font-size:10px;color:var(--text);font-weight:700;min-height:12px}
 
+/* ---------- v2.5: alegerea antrenamentului ---------- */
+.bmap{display:block}
+.bmap text{font-size:5.2px;fill:var(--muted);font-family:inherit;letter-spacing:.02em}
+.hero-body{display:flex;gap:12px;align-items:center;margin-top:12px}
+.hero-body .bmap{width:92px;flex:none}
+.hero-body .mus{margin-top:0;align-content:center}
+.linkbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;margin-top:6px;color:var(--accent);font-weight:700;font-size:14px;border-radius:12px}
+.linkbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.linkbtn:active{background:rgba(255,255,255,.04)}
+.chip.more{border-style:dashed;background:transparent}
+.chip.more i{font-size:16px;line-height:1;color:var(--accent)}
+.jumps{display:flex;gap:6px;overflow-x:auto;margin:12px -18px 4px;padding:0 18px 4px;scrollbar-width:none;position:sticky;top:-22px;z-index:2;background:var(--surface);padding-top:10px}
+.jumps::-webkit-scrollbar{display:none}
+.jumps button{flex:none;font-size:12.5px;font-weight:700;padding:8px 12px;border-radius:999px;border:1px solid var(--line);color:var(--text);background:var(--surface-2);white-space:nowrap}
+.pk{margin-top:18px}
+.pk h4{display:flex;align-items:center;gap:8px;font-size:15px;text-transform:none;letter-spacing:0;color:var(--text);margin:0 0 4px}
+.pk>.fine{margin-bottom:10px}
+.wgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.wcard{display:flex;flex-direction:column;gap:8px;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:10px 10px 12px;transition:border-color .2s, transform .1s}
+.wcard:active{transform:scale(.98)}
+.wcard .bmap{width:100%;height:auto;max-height:96px;border-radius:10px;background:radial-gradient(90% 90% at 50% 30%, #2E343C, #23272D);padding:6px 0 2px}
+.wcard.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.wtxt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.wtxt b{font-size:14px;line-height:1.25}
+.wtxt small{font-size:11.5px;line-height:1.3}
+.wtxt em{font-style:normal;font-size:11.5px;color:var(--muted);font-weight:600}
+.badge{display:inline-block;align-self:flex-start;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#17120E;background:var(--accent);border-radius:999px;padding:3px 7px}
+
 </style>
 </head>
 <body>
@@ -638,6 +666,12 @@ const BLOCKS = {
   GC:  {n:'Fesieri complet', s:'Fesieri · Abdomen', e:[['hipthrust',3,'12-15'],['stepup',3,'10-12'],['backext',3,'12-15'],['goblet',3,'10-12'],['kickback',3,'12-15'],['legraise',3,'10-12']]},
   UL:  {n:'Superior complet', s:'Spate · Umeri · Piept · Brațe', e:[['latpull',3,'8-10'],['dbshoulder',3,'8-10'],['crow',3,'10-12'],['incline',3,'10-12'],['latraise',3,'12-15'],['tricep',2,'10-12'],['bicep',2,'10-12']]},
   UL2: {n:'Superior și abdomen', s:'Spate · Piept · Umeri · Abdomen', e:[['asstpull',3,'6-10'],['chestpress',3,'10-12'],['dbrow',3,'8-10'],['latraise',3,'12-15'],['facepull',3,'12-15'],['plank',3,'30-45']]},
+  LEGS:{n:'Picioare', s:'Cvadriceps · Ischiogambieri · Fesieri · Gambe', e:[['squat',4,'6-10'],['rdl',3,'8-10'],['legpress',3,'10-12'],['legcurl',3,'10-12'],['legext',3,'12-15'],['calf',4,'10-15']]},
+  CT:  {n:'Piept și triceps', s:'Piept · Triceps · Umeri', e:[['bench',4,'6-10'],['incline',3,'8-10'],['chestpress',3,'10-12'],['flye',3,'12-15'],['tricep',3,'10-12'],['ohtri',3,'10-12']]},
+  BB:  {n:'Spate și biceps', s:'Spate · Biceps · Umeri (spate)', e:[['latpull',4,'8-10'],['crow',3,'8-10'],['dbrow',3,'8-10'],['facepull',3,'12-15'],['bicep',3,'10-12'],['hammer',3,'10-12']]},
+  CORE:{n:'Abdomen și core', s:'Abdomen · Zona lombară', e:[['plank',3,'30-60'],['cablecrunch',3,'12-15'],['legraise',3,'10-15'],['backext',3,'12-15']]},
+  GABS:{n:'Fesieri și abdomen', s:'Fesieri · Abdomen', e:[['hipthrust',4,'8-12'],['kickback',3,'12-15'],['abduction',3,'15-20'],['cablecrunch',3,'12-15'],['legraise',3,'10-12'],['plank',2,'30-45']]},
+  FW:  {n:'Tot corpul, accent pe fesieri', s:'Fesieri · Picioare · Spate · Piept', e:[['hipthrust',3,'8-12'],['goblet',3,'10-12'],['latpull',3,'8-10'],['chestpress',3,'10-12'],['legcurl',3,'10-12'],['abduction',2,'15-20'],['plank',2,'30-45']]},
   MX:  {n:'Fesieri și superior', s:'Fesieri · Spate · Piept', e:[['hipthrust',3,'12-15'],['backext',3,'12-15'],['kickback',3,'12-15'],['asstpull',3,'6-10'],['chestpress',3,'10-12'],['dbrow',3,'8-10'],['plank',3,'30-45']]}
 };
 
@@ -647,6 +681,20 @@ const PROGRAMS = {
   inferior:   {3:['GA','UL','GB'], 4:['GA','UL','GB','MX'], 5:['GA','UL','GB','UL2','GC']},
   superior:   {3:['UA','LA','UB'], 4:['UA','LA','UB','SA'], 5:['PUSH','PULL','LA','UA','SA']}
 };
+/* Biblioteca: orice antrenament poate fi ales în ziua respectivă, în afara programului.
+   Note din cercetare: fiecare grupă de 2 ori pe săptămână crește mai mult decât o dată (Schoenfeld 2016);
+   fesierii răspund cel mai bine la 2-3 ședințe pe săptămână, alternând zile cu accent pe șold și pe cvadriceps. */
+const LIB = [
+  {id:'ppl', n:'Push · Pull · Legs', d:'Împins (piept, umeri, triceps), tras (spate, biceps) și picioare, în zile separate. Repetă ciclul ca fiecare grupă să ajungă de 2 ori pe săptămână.', k:['PUSH','PULL','LEGS']},
+  {id:'bro', n:'Pe grupe musculare', d:'Două grupe pe zi. Fiecare grupă e lucrată o singură dată pe săptămână, așa că fă toate zilele din listă în aceeași săptămână.', k:['CT','BB','SA','LEGS']},
+  {id:'ul', n:'Superior · Inferior', d:'Alternezi partea de sus cu cea de jos. La 4 antrenamente pe săptămână, fiecare grupă e lucrată de 2 ori.', k:['UA','UB','LA','LB']},
+  {id:'full', n:'Tot corpul', d:'Toate grupele într-o singură ședință. Ideal la 2-3 antrenamente pe săptămână sau când ai puțin timp.', k:['FA','FB','FC','FW']},
+  {id:'glute', n:'Fesieri și picioare', d:'Alternează o zi cu accent pe fesieri și ischiogambieri cu una cu accent pe cvadriceps. Fesierii cresc cel mai bine lucrați de 2-3 ori pe săptămână.', k:['GA','GB','GC','GABS']},
+  {id:'upw', n:'Partea superioară', d:'Spate, umeri, piept și brațe, pentru o siluetă echilibrată și postură bună.', k:['UL','UL2','MX']},
+  {id:'core', n:'Abdomen', d:'O sesiune scurtă pentru abdomen și zona lombară. Merge și după alt antrenament.', k:['CORE']}
+];
+const LIB_ORDER = {m: ['ppl', 'bro', 'ul', 'full', 'glute', 'upw', 'core'], f: ['glute', 'full', 'upw', 'ul', 'ppl', 'bro', 'core']};
+const LIBK = LIB.reduce((a, c) => a.concat(c.k.filter(k => !a.includes(k))), []);
 const WEEKPLAN = {3:'Luni · Miercuri · Vineri', 4:'Luni · Marți · Joi · Vineri', 5:'Luni · Marți · Miercuri · Vineri · Sâmbătă'};
 
 /* ---------- INGREDIENTE: valori la 100 g (kcal, proteine, carbohidrați, grăsimi) ----------
@@ -808,7 +856,7 @@ const RECIPES = {
   ]
 };
 
-if (typeof module !== 'undefined') module.exports = {EX, BLOCKS, PROGRAMS, WEEKPLAN, ING, SLOTS, SLOTSETS, RECIPES};
+if (typeof module !== 'undefined') module.exports = {EX, BLOCKS, PROGRAMS, WEEKPLAN, ING, SLOTS, SLOTSETS, RECIPES, LIB, LIB_ORDER, LIBK};
 
 /* ============ CALCULE: ținte nutriționale, program, porții, progresie ============ */
 
@@ -855,15 +903,21 @@ function targets(p) {
 function mealCount(p, kcal) { return p.meals || (kcal < 1900 ? 4 : kcal < 2500 ? 5 : 6); }
 
 /* Programul profilului: zile + exerciții (cu înlocuirile alese și seturi în plus la nivel intermediar) */
-function program(p) {
-  const keys = (PROGRAMS[p.focus] || PROGRAMS.echilibrat)[p.days] || PROGRAMS.echilibrat[4];
-  return keys.map((k, i) => {
-    const b = BLOCKS[k];
-    return {i, k, name: b.n, sub: b.s, ex: b.e.map((e, j) => {
-      const sw = p.swaps && p.swaps[k + ':' + e[0]];
-      return {base: e[0], id: sw && EX[sw] ? sw : e[0], sets: e[1] + (p.level === 'int' && j < 2 ? 1 : 0), reps: e[2]};
-    })};
-  });
+function buildDay(p, k, i) {
+  const b = BLOCKS[k];
+  return {i, k, name: b.n, sub: b.s, lib: i >= 100, ex: b.e.map((e, j) => {
+    const sw = p.swaps && p.swaps[k + ':' + e[0]];
+    return {base: e[0], id: sw && EX[sw] ? sw : e[0], sets: e[1] + (p.level === 'int' && j < 2 ? 1 : 0), reps: e[2]};
+  })};
+}
+function programKeys(p) { return (PROGRAMS[p.focus] || PROGRAMS.echilibrat)[p.days] || PROGRAMS.echilibrat[4]; }
+function program(p) { return programKeys(p).map((k, i) => buildDay(p, k, i)); }
+/* indicele unei zile: dacă antrenamentul e în programul tău, rămâne ziua din program (rotația continuă firesc) */
+function dayIndexFor(p, k) { const i = programKeys(p).indexOf(k); return i >= 0 ? i : 100 + LIBK.indexOf(k); }
+function dayByIndex(p, i) {
+  const keys = programKeys(p);
+  if (i >= 100 && LIBK[i - 100]) return buildDay(p, LIBK[i - 100], i);
+  return buildDay(p, keys[Math.min(Math.max(0, i || 0), keys.length - 1)], Math.min(Math.max(0, i || 0), keys.length - 1));
 }
 
 function repRange(reps) { const m = String(reps).match(/(\d+)\D+(\d+)/); return m ? [+m[1], +m[2]] : [+reps || 0, +reps || 0]; }
@@ -1020,7 +1074,7 @@ function planDay(p, date, t) {
   return {meals: best.meals, tot: best.tot, t};
 }
 
-if (typeof module !== 'undefined') module.exports = {targets, program, planDay, solveMeal, suggest, qtyText, mealCount, ymd, mondayOf, repRange, score};
+if (typeof module !== 'undefined') module.exports = {targets, program, buildDay, dayByIndex, dayIndexFor, planDay, solveMeal, suggest, qtyText, mealCount, ymd, mondayOf, repRange, score};
 
 /* ============ ANIMAȚII: siluetă SVG pentru fiecare exercițiu ============
    Vedere laterală, silueta privește spre dreapta. Unghiuri în grade, în coordonate SVG:
@@ -1431,6 +1485,50 @@ const ANIM = (() => {
     return sideSVG(def, solve(P), id, sA);
   }
 
+  /* ---------- harta musculară: corp văzut din față și din spate, cu grupele colorate ---------- */
+  function bodyMap(m) {
+    const col = k => m.p.includes(k) ? 'var(--accent)' : m.s.includes(k) ? 'var(--anim-ms)' : null;
+    const BASE = 'var(--map-base)', LINE = 'var(--map-line)';
+    const el = (x, y, rx, ry, f) => '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '"/>';
+    const rr = (x, y, w, h, r, f) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + r + '" fill="' + f + '"/>';
+    const pair = (cx, dx, y, rx, ry, f) => el(cx - dx, y, rx, ry, f) + el(cx + dx, y, rx, ry, f);
+    function base(cx) {
+      return el(cx, 9, 6, 6.6, BASE) + rr(cx - 2.6, 14, 5.2, 5, 1.5, BASE) +
+        '<path d="M' + (cx - 11) + ',20 Q' + cx + ',16 ' + (cx + 11) + ',20 L' + (cx + 9.5) + ',38 L' + (cx + 7.5) + ',51 L' + (cx - 7.5) + ',51 L' + (cx - 9.5) + ',38 Z" fill="' + BASE + '"/>' +
+        rr(cx - 8.5, 48, 17, 10, 4, BASE) + pair(cx, 11.5, 23, 4.8, 4.4, BASE) +
+        pair(cx, 14, 34, 3.1, 7.4, BASE) + pair(cx, 16, 49, 2.5, 7.2, BASE) + pair(cx, 16.6, 58, 1.9, 2.3, BASE) +
+        pair(cx, 4.8, 68, 4.9, 11.5, BASE) + pair(cx, 4.8, 81, 3.3, 2.6, BASE) + pair(cx, 4.8, 92, 3.3, 9, BASE) + pair(cx, 5.3, 103, 3.4, 1.7, BASE);
+    }
+    const F = 25, B = 75;
+    let h = '<svg class="bmap" viewBox="0 0 100 108" aria-hidden="true">' + base(F) + base(B);
+    /* față */
+    if (col('shoulders')) h += pair(F, 11.5, 23, 4.6, 4.2, col('shoulders'));
+    if (col('chest')) h += '<path d="M' + (F - 0.6) + ',24 Q' + (F - 9) + ',22.5 ' + (F - 9) + ',27.5 Q' + (F - 7.5) + ',32.5 ' + (F - 0.6) + ',31.5 Z" fill="' + col('chest') + '"/><path d="M' + (F + 0.6) + ',24 Q' + (F + 9) + ',22.5 ' + (F + 9) + ',27.5 Q' + (F + 7.5) + ',32.5 ' + (F + 0.6) + ',31.5 Z" fill="' + col('chest') + '"/>';
+    if (col('abs')) h += rr(F - 4, 33.5, 8, 16, 3, col('abs')) + '<path d="M' + F + ',34 V49 M' + (F - 4) + ',38.5 H' + (F + 4) + ' M' + (F - 4) + ',43.5 H' + (F + 4) + '" stroke="' + LINE + '" stroke-width=".6"/>';
+    if (col('biceps')) h += pair(F, 14, 34, 2.7, 6.2, col('biceps'));
+    if (col('forearms')) { h += pair(F, 16, 49, 2.2, 6.2, col('forearms')); h += pair(B, 16, 49, 2.2, 6.2, col('forearms')); }
+    if (col('hipflex')) h += pair(F, 4.8, 58.5, 3.6, 3.4, col('hipflex'));
+    if (col('quads')) h += pair(F, 4.8, 68, 4.4, 10.5, col('quads'));
+    if (col('gmed')) h += pair(F, 8.2, 58, 1.8, 4, col('gmed'));
+    /* spate */
+    if (col('traps')) h += '<path d="M' + B + ',14 L' + (B - 9.5) + ',20.5 L' + B + ',29 L' + (B + 9.5) + ',20.5 Z" fill="' + col('traps') + '"/>';
+    if (col('shoulders') || col('reardelt')) h += pair(B, 11.5, 23, 4.6, 4.2, col('reardelt') || col('shoulders'));
+    if (col('back')) h += '<path d="M' + (B - 1) + ',27 L' + (B - 9) + ',23.5 L' + (B - 8) + ',35 L' + (B - 1.5) + ',42 Z" fill="' + col('back') + '"/><path d="M' + (B + 1) + ',27 L' + (B + 9) + ',23.5 L' + (B + 8) + ',35 L' + (B + 1.5) + ',42 Z" fill="' + col('back') + '"/>';
+    if (col('lowerback')) h += rr(B - 4.5, 41, 9, 9, 3, col('lowerback'));
+    if (col('triceps')) h += pair(B, 14, 34, 2.7, 6.2, col('triceps'));
+    if (col('glutes')) h += pair(B, 4.4, 56, 4.6, 4.6, col('glutes'));
+    if (col('gmed')) h += pair(B, 8.2, 52.5, 2, 3.6, col('gmed'));
+    if (col('hamstrings')) h += pair(B, 4.8, 70, 4.1, 9.5, col('hamstrings'));
+    if (col('calves')) h += pair(B, 4.8, 91, 3, 7.5, col('calves'));
+    return h + '<text x="' + F + '" y="107.5" text-anchor="middle">față</text><text x="' + B + '" y="107.5" text-anchor="middle">spate</text></svg>';
+  }
+  function dayMuscles(exIds) {
+    const p = [], s = [];
+    exIds.forEach(id => muscles(id).p.forEach(k => { if (!p.includes(k)) p.push(k); }));
+    exIds.forEach(id => muscles(id).s.forEach(k => { if (!p.includes(k) && !s.includes(k)) s.push(k); }));
+    return {p, s};
+  }
+
   /* ---------- redare în pagină ---------- */
   const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   let paused = reduce, frozenAt = 0.5, raf = 0, last = 0;
@@ -1498,7 +1596,7 @@ const ANIM = (() => {
       '<button class="anim-btn" data-act="animtoggle" aria-label="Oprește animația">❚❚</button>' + legend(id) + '</div>';
   }
   function thumb(id) { return D[id] ? '<span class="anim-thumb" data-thumb="' + id + '" aria-hidden="true"><svg viewBox="' + VB + '"></svg></span>' : ''; }
-  return {D, VB, MN, svgInner, html, thumb, scan, toggle, muscles, has: id => !!D[id]};
+  return {D, VB, MN, svgInner, html, thumb, scan, toggle, muscles, bodyMap, dayMuscles, has: id => !!D[id]};
 })();
 
 if (typeof module !== 'undefined') module.exports = {ANIM};
@@ -1506,7 +1604,7 @@ if (typeof module !== 'undefined') module.exports = {ANIM};
 /* ============ APLICAȚIA: stare, ecrane, acțiuni ============ */
 
 const LS_KEY = 'fisa-antrenament.v2'; /* nume intern vechi, păstrat ca datele salvate să rămână */
-const APP_VERSION = '2.4';
+const APP_VERSION = '2.5';
 const ACCENTS = {rust: ['#DB7440', '#7A3F1E'], teal: ['#4FB3A2', '#235B52'], violet: ['#A488E6', '#4E3C86'], rose: ['#E0708F', '#7E3550']};
 const GOALS = {masa: 'Masă musculară', ton: 'Tonifiere și formă', slab: 'Slăbire'};
 const FOCUS = {echilibrat: 'Echilibrat, tot corpul', inferior: 'Accent pe fesieri și picioare', superior: 'Accent pe partea superioară'};
@@ -1548,9 +1646,9 @@ function ensureSession(p, d, day) {
 }
 function nextDay(p, prog, today) {
   const ss = p.sessions;
-  const cur = ss.filter(s => s.d === today && !s.done && hasOk(s)).pop();
+  const cur = ss.filter(s => s.d === today && !s.done && hasOk(s) && s.i < 100).pop();
   if (cur) return cur.i % prog.length;
-  for (let i = ss.length - 1; i >= 0; i--) if (hasOk(ss[i])) return (ss[i].i + 1) % prog.length;
+  for (let i = ss.length - 1; i >= 0; i--) if (hasOk(ss[i]) && ss[i].i < 100) return (ss[i].i + 1) % prog.length;
   return 0;
 }
 function sesVolume(s) { let v = 0; Object.keys(s.sets).forEach(id => { if (EX[id] && EX[id].k !== 't' && !EX[id].assist) okSets(s, id).forEach(x => { v += (x.w || 0) * x.r; }); }); return v; }
@@ -1601,12 +1699,9 @@ function plates(done, total) {
 }
 
 /* ---------- ANTRENAMENT ---------- */
-function dayMuscles(day) {
-  const p = [], q = [];
-  day.ex.forEach(x => ANIM.muscles(x.id).p.forEach(k => { if (!p.includes(k)) p.push(k); }));
-  day.ex.forEach(x => ANIM.muscles(x.id).s.forEach(k => { if (!p.includes(k) && !q.includes(k)) q.push(k); }));
-  return {p, s: q};
-}
+function dayMuscles(day) { return ANIM.dayMuscles(day.ex.map(x => x.id)); }
+function dayMins(day) { return Math.round(day.ex.reduce((n, x) => n + x.sets * (restFor(x.id) + 45), 0) / 60 + 8); }
+function libCat(k) { return LIB.find(c => c.k.includes(k)) || LIB[0]; }
 function musChips(m, maxP, maxS) { return '<div class="mus">' + m.p.slice(0, maxP).map(k => '<span class="mu p">' + ANIM.MN[k] + '</span>').join('') + m.s.slice(0, maxS).map(k => '<span class="mu s">' + ANIM.MN[k] + '</span>').join('') + '</div>'; }
 function ring(done, total, label) {
   const C = 2 * Math.PI * 22, fr = total ? clamp(done / total, 0, 1) : 0;
@@ -1615,35 +1710,60 @@ function ring(done, total, label) {
 function sesDone(ses, day) { return ses ? day.ex.reduce((n, x) => n + Math.min(x.sets, okSets(ses, x.id).length), 0) : 0; }
 function vTrain(p) {
   const prog = program(p), today = TODAY();
-  if (ui.day == null || ui.day >= prog.length) {
-    /* dacă azi s-a lucrat deja, rămâi pe ziua de azi; altfel arată ziua care urmează în rotație */
-    const mine = p.sessions.filter(s => s.d === today && hasOk(s) && s.i < prog.length).pop();
+  if (ui.day == null || (ui.day < 100 && ui.day >= prog.length)) {
+    /* dacă azi s-a lucrat deja, rămâi pe antrenamentul de azi; altfel arată ziua care urmează în rotație */
+    const mine = p.sessions.filter(s => s.d === today && hasOk(s) && (s.i < prog.length || s.i >= 100)).pop();
     ui.day = mine ? mine.i : nextDay(p, prog, today);
   }
-  const nd = nextDay(p, prog, today), day = prog[ui.day], ses = findSession(p, today, ui.day), wk = weekDates(p, today);
-  const total = day.ex.reduce((n, x) => n + x.sets, 0), done = sesDone(ses, day);
-  const mins = Math.round(day.ex.reduce((n, x) => n + x.sets * (restFor(x.id) + 45), 0) / 60 + 8);
+  const nd = nextDay(p, prog, today), day = dayByIndex(p, ui.day), ses = findSession(p, today, day.i), wk = weekDates(p, today);
+  const total = day.ex.reduce((n, x) => n + x.sets, 0), done = sesDone(ses, day), mins = dayMins(day);
   const nextEx = day.ex.find(x => !ses || okSets(ses, x.id).length < x.sets);
-  const status = ses && ses.done ? 'Încheiat azi' : done ? 'În desfășurare' : ui.day === nd ? 'Azi' : 'Ales de tine';
-  let h = '<section class="hero"><div class="hero-top"><div><div class="eyebrow">' + status + ' · ziua ' + (day.i + 1) + ' din ' + prog.length + '</div><h2>' + esc(day.name) + '</h2></div>' + ring(done, total, 'seturi') + '</div>' +
-    musChips(dayMuscles(day), 5, 2) +
+  const status = ses && ses.done ? 'Încheiat azi' : done ? 'În desfășurare' : day.i === nd ? 'Azi' : 'Ales de tine';
+  const where = day.lib ? libCat(day.k).n : 'ziua ' + (day.i + 1) + ' din ' + prog.length;
+  let h = '<section class="hero"><div class="hero-top"><div><div class="eyebrow">' + status + ' · ' + esc(where) + '</div><h2>' + esc(day.name) + '</h2></div>' + ring(done, total, 'seturi') + '</div>' +
+    '<div class="hero-body">' + ANIM.bodyMap(dayMuscles(day)) + musChips(dayMuscles(day), 4, 2) + '</div>' +
     '<div class="hero-stats"><span><b>' + day.ex.length + '</b> exerciții</span><span><b>' + total + '</b> seturi</span><span><b>~' + mins + '</b> minute</span></div>' +
     (ses && ses.done ? '<div class="hero-done"><span>✓ ' + sesSetCount(ses) + ' seturi · ' + fmtK(sesVolume(ses)) + ' kg volum</span><button class="btn small ghost" data-act="reopen">Redeschide</button></div>'
       : nextEx ? '<button class="btn big" data-act="start">' + (done ? 'Continuă: ' + esc(EX[nextEx.id].n) : 'Începe antrenamentul') + '</button>'
-      : '<button class="btn big" data-act="finish">Încheie antrenamentul</button>') + '</section>';
+      : '<button class="btn big" data-act="finish">Încheie antrenamentul</button>') +
+    (done ? '' : '<button class="linkbtn" data-act="picker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>Vreau alt antrenament azi</button>') + '</section>';
+  if (day.lib && libCat(day.k).id === 'bro') h += '<section class="card note"><b>Antrenament pe grupe</b><p>Aici fiecare grupă e lucrată o dată pe săptămână. Ca să crești la fel de bine ca în program, fă în aceeași săptămână și celelalte zile: piept și triceps, spate și biceps, umeri și brațe, picioare.</p></section>';
   h += '<section class="card week"><div><b>' + wk + ' din ' + p.days + '</b> antrenamente săptămâna aceasta<small>' + (wk >= p.days ? 'Ținta săptămânii este atinsă.' : 'Program sugerat: ' + WEEKPLAN[p.days]) + '</small></div>' + plates(wk, p.days) + '</section>';
 
   const from = p.deload || p.created, weeks = {};
   p.sessions.forEach(s => { if (s.d > from && hasOk(s)) weeks[mondayOf(s.d)] = 1; });
   if (Object.keys(weeks).length >= 7) h += '<section class="card note warn"><b>E timpul pentru o săptămână ușoară</b><p>Ai strâns 7 săptămâni de antrenament. Săptămâna aceasta fă aceleași exerciții cu un set mai puțin și cu greutăți cu 10-20% mai mici. Corpul se reface și revii mai puternic.</p><button class="btn small" data-act="deload">Am înțeles, repornește numărătoarea</button></section>';
 
-  h += '<h3 class="sec">Zilele programului</h3><div class="chips">' + prog.map(d => '<button class="chip' + (d.i === ui.day ? ' on' : '') + '" data-act="day" data-i="' + d.i + '"><b>Ziua ' + (d.i + 1) + '</b><span>' + esc(d.name) + '</span>' + (d.i === nd ? '<i>urmează</i>' : '') + '</button>').join('') + '</div>';
-  if (!p.sessions.some(hasOk)) h += '<section class="card note"><b>Cum funcționează</b><p>Începe cu 5-8 minute de încălzire ușoară (bandă, bicicletă). Apasă pe un exercițiu: vezi mișcarea animată și mușchii lucrați, scrii greutatea și repetările, apoi bifezi setul. Cronometrul de pauză pornește singur.</p></section>';
+  h += '<h3 class="sec">Programul tău</h3><div class="chips">' +
+    (day.lib ? '<button class="chip on" data-act="picker"><b>Ales azi</b><span>' + esc(day.name) + '</span><i>schimbă</i></button>' : '') +
+    prog.map(d => '<button class="chip' + (d.i === ui.day ? ' on' : '') + '" data-act="day" data-i="' + d.i + '"><b>Ziua ' + (d.i + 1) + '</b><span>' + esc(d.name) + '</span>' + (d.i === nd ? '<i>urmează</i>' : '') + '</button>').join('') +
+    '<button class="chip more" data-act="picker"><b>Altceva</b><span>Toate antrenamentele</span><i>+</i></button></div>';
+  if (!p.sessions.some(hasOk)) h += '<section class="card note"><b>Cum funcționează</b><p>Începe cu 5-8 minute de încălzire ușoară (bandă, bicicletă). Apasă pe un exercițiu: vezi mișcarea animată și mușchii lucrați, scrii greutatea și repetările, apoi bifezi setul. Cronometrul de pauză pornește singur. Dacă azi vrei altceva decât programul, alege din „Altceva”.</p></section>';
   h += '<h3 class="sec">Exercițiile zilei</h3>' + day.ex.map(ex => vExercise(p, ex, ses, today)).join('');
 
   if (ses && hasOk(ses) && !ses.done && nextEx) h += '<button class="btn big ghost" data-act="finish">Încheie antrenamentul</button>';
   if (targets(p).goal === 'slab') h += '<section class="card note"><b>Pentru slăbire</b><p>Greutățile rămân la fel de grele ca la masă musculară: ele îți păstrează mușchii. Adaugă 8.000-10.000 de pași pe zi și, dacă vrei, 20-30 de minute de mers alert după antrenament.</p></section>';
   return h;
+}
+
+/* fereastra „Ce lucrezi azi?”: programul tău + toată biblioteca, pe categorii */
+function vPicker(p) {
+  const prog = program(p), nd = nextDay(p, prog, TODAY()), order = LIB_ORDER[p.sex] || LIB_ORDER.m;
+  const card = (d, badge) => {
+    const m = dayMuscles(d);
+    return '<button class="wcard' + (d.i === ui.day ? ' on' : '') + '" data-act="pickday" data-i="' + d.i + '">' + ANIM.bodyMap(m) +
+      '<span class="wtxt">' + (badge ? '<i class="badge">' + badge + '</i>' : '') + '<b>' + esc(d.name) + '</b><small>' + m.p.slice(0, 3).map(k => ANIM.MN[k]).join(' · ') + '</small><em>' + d.ex.length + ' exerciții · ~' + dayMins(d) + ' min</em></span></button>';
+  };
+  let h = '<h3>Ce lucrezi azi?</h3><p class="fine">Alege orice antrenament. Greutățile și recordurile se păstrează pe fiecare exercițiu, indiferent de ziua în care îl faci.</p>' +
+    '<div class="jumps"><button data-act="jump" data-to="pk-prog">Programul tău</button>' + order.map(id => '<button data-act="jump" data-to="pk-' + id + '">' + LIB.find(c => c.id === id).n + '</button>').join('') + '</div>' +
+    '<section class="pk" id="pk-prog"><h4>Programul tău</h4><p class="fine">' + esc(FOCUS[p.focus]) + ' · ' + p.days + ' zile pe săptămână</p><div class="wgrid">' +
+    prog.map(d => card(d, d.i === nd ? 'urmează' : '')).join('') + '</div></section>';
+  order.forEach((id, n) => {
+    const c = LIB.find(x => x.id === id);
+    h += '<section class="pk" id="pk-' + id + '"><h4>' + c.n + (n === 0 ? ' <i class="badge">potrivit pentru tine</i>' : '') + '</h4><p class="fine">' + c.d + '</p><div class="wgrid">' +
+      c.k.map(k => card(dayByIndex(p, dayIndexFor(p, k)))).join('') + '</div></section>';
+  });
+  return h + '<button class="btn ghost big" data-act="closesheet">Închide</button>';
 }
 
 function vExercise(p, ex, ses, today) {
@@ -1896,12 +2016,18 @@ function openSheet(html) { const s = $('#sheet'); $('#sheet-in').innerHTML = htm
 function closeSheet() { $('#sheet').hidden = true; document.body.classList.remove('noscroll'); }
 let toastT = null;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
-function curDay() { const p = P(), prog = program(p); return prog[Math.min(ui.day || 0, prog.length - 1)]; }
+function curDay() { return dayByIndex(P(), ui.day == null ? 0 : ui.day); }
 
 /* ---------- ACȚIUNI ---------- */
 const ACT = {
   tab(el) { ui.tab = el.dataset.tab; render(); window.scrollTo(0, 0); },
   day(el) { ui.day = +el.dataset.i; ui.open = null; rerender(); },
+  picker() { openSheet(vPicker(P())); ANIM.scan(); },
+  pickday(el) {
+    ui.day = +el.dataset.i; ui.open = null; closeSheet(); render(); window.scrollTo(0, 0);
+    toast('Antrenamentul de azi: ' + curDay().name);
+  },
+  jump(el) { const t = document.getElementById(el.dataset.to), box = $('#sheet-in'); if (t && box) box.scrollTo({top: t.offsetTop - 8, behavior: 'smooth'}); },
   start() {
     const p = P(), day = curDay(), ses = findSession(p, TODAY(), day.i), nx = day.ex.find(x => !ses || okSets(ses, x.id).length < x.sets);
     if (!nx) return;
